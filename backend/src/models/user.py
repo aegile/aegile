@@ -53,7 +53,7 @@ user_set_association = db.Table(
 user_fetch_output = api.model(
     "UserFetchOutput",
     {
-        "email": fields.String,
+        # "email": fields.String,
         "first_name": fields.String,
         "last_name": fields.String,
         "handle": fields.String,
@@ -79,5 +79,20 @@ user_update_input = api.model(
         "email": fields.String,
         "password": fields.String,
         "image": fields.String,
+    },
+)
+
+userset_list_input = api.model(
+    "UserSetListInput",
+    {
+        "members": fields.List(fields.String),
+    },
+)
+
+userset_list_output = api.model(
+    "UserSetListOutput",
+    {
+        "id": fields.Integer,
+        "members": fields.List(fields.Nested(user_fetch_output)),
     },
 )

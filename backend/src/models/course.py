@@ -1,6 +1,7 @@
 from flask_restx import fields
 from ..extensions import api, db
-from .user import UserSet
+from .user import User, UserSet, userset_list_output
+from .helpers import get_with_default
 
 
 class Course(db.Model):
@@ -15,6 +16,13 @@ class Course(db.Model):
         self.name = name
         self.userset = UserSet()
 
+    def update(self, course_data: dict):
+        self.code = get_with_default(course_data, "code", self.code)
+        self.name = get_with_default(course_data, "name", self.name)
+
+    def enroll_users(self, users: list[User]):
+        self.userset.members = users
+
     def __repr__(self):
         return f"<Course {self.code=} {self.name=}>"
 
@@ -24,10 +32,16 @@ class CourseOffering(db.Model):
     term = db.Column(db.String(4), primary_key=True)
 
 
-course_fetch_model = api.model(
-    "Course", {"id": fields.Integer, "code": fields.String, "name": fields.String}
+course_fetch_output = api.model(
+    "CourseFetchOutput",
+    {
+        "id": fields.Integer,
+        "code": fields.String,
+        "name": fields.String,
+        "userset": fields.Nested(userset_list_output),
+    },
 )
 
-course_new_model = api.model(
-    "NewCourseInput", {"code": fields.String, "name": fields.String}
+course_creation_input = api.model(
+    "CourseCreationInput", {"code": fields.String, "name": fields.String}
 )
