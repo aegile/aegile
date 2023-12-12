@@ -1,9 +1,19 @@
 from os import error
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from ..extensions import db
 from ..error import InputError
 from ..models.user import User
+
+AUTH_NAME = "jsonWebToken"
+
+authorizations = {
+    AUTH_NAME: {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+    }
+}
 
 
 def fetch_one(model, filter):
@@ -27,6 +37,26 @@ def fetch_all(model, filter=None):
         raise InputError(f"ERROR: {model.__name__}s not found.") from exc
 
 
+def add_db_object(model, object, error_field):
+    try:
+        db.session.add(object)
+        db.session.commit()
+        return object, 201
+    except IntegrityError as exc:
+        db.session.rollback()
+        raise InputError(f"{model.__name__} {error_field} already exists.") from exc
+
+
+def update_db_object(model, object, error_field):
+    try:
+        db.session.commit()
+        return {}, 200
+    except IntegrityError as exc:
+        db.session.rollback()
+        raise InputError(f"{model.__name__} {error_field} already exists.") from exc
+
+
+# Legacy
 def fetch_one_by_id(model, id, error_message):
     try:
         return db.session.execute(db.select(model).filter_by(id=id)).scalar_one()
