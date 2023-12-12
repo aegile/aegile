@@ -5,7 +5,7 @@ from flask_cors import CORS
 from .extensions import api, db
 from .routes.courses import courses, courses_api
 from .routes.permissions import permissions
-from .routes.users import users
+from .routes.users import users, users_api
 from .routes.projects import projects, projects_api
 from .routes.tasks import tasks
 
@@ -46,6 +46,7 @@ def create_app():
     # app.register_blueprint(projects)
     # app.register_blueprint(tasks)
 
+    api.add_namespace(users_api)
     api.add_namespace(courses_api)
     api.add_namespace(projects_api)
 
