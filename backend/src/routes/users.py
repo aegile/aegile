@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from ..error import InputError
 from flask_restx import Resource, Namespace
+from flask_jwt_extended import jwt_required
 from src.extensions import db
 from src.models.user import (
     User,
@@ -8,18 +9,32 @@ from src.models.user import (
     user_creation_input,
     user_update_input,
 )
-from .helpers import fetch_one
+from .helpers import (
+    fetch_one,
+    add_db_object,
+    update_db_object,
+    authorizations,
+    AUTH_NAME,
+)
 
 
-users_api = Namespace("v1/users", description="User related operations")
+users_api = Namespace(
+    "v1/users",
+    description="User related operations",
+    authorizations=authorizations,
+)
 
 
 @users_api.route("")
 class UserCoreAPI(Resource):
+    method_decorators = [jwt_required()]
+
+    @users_api.doc(security=AUTH_NAME)
     @users_api.marshal_list_with(user_fetch_output)
     def get(self):
         return User.query.all()
 
+    @users_api.doc(security=AUTH_NAME)
     @users_api.expect(user_creation_input)
     def post(self):
         new_user = User(
@@ -28,13 +43,7 @@ class UserCoreAPI(Resource):
             email=users_api.payload["email"],
             password=users_api.payload["password"],
         )
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            return {"handle": new_user.handle}, 201
-        except IntegrityError as exc:
-            db.session.rollback()
-            raise InputError("Email already in use.") from exc
+        return add_db_object(User, new_user, new_user.email)
 
 
 @users_api.route("/<string:user_handle>")
@@ -49,13 +58,7 @@ class CourseWithCodeAPI(Resource):
         if not user:
             raise InputError(f"User {user_handle} not found")
         user.update(profile_data=users_api.payload)
-
-        try:
-            db.session.commit()
-            return {}, 200
-        except IntegrityError as exc:
-            db.session.rollback()
-            raise InputError("Email already in use.") from exc
+        return update_db_object(User, user, user.email)
 
     def delete(self, user_handle: str):
         user: User = fetch_one(User, {"handle": user_handle})

@@ -3,8 +3,8 @@ from ..error import InputError
 from flask_restx import Resource, Namespace
 from ..extensions import db
 from ..models.course import Course, course_fetch_output, course_creation_input
-from ..models.user import userset_list_input
-from .helpers import fetch_user_by_handle, fetch_one, fetch_all
+from ..models.user import User, userset_list_input
+from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 
 courses_api = Namespace("v1/courses", description="Courses related operations")
 
@@ -16,10 +16,12 @@ class CourseAPI(Resource):
         return fetch_all(Course)
 
     @courses_api.expect(course_creation_input)
+    @courses_api.marshal_with({})
     def post(self):
         new_course = Course(
             code=courses_api.payload["code"], name=courses_api.payload["name"]
         )
+        return add_db_object(Course, new_course, new_course.code)
         try:
             db.session.add(new_course)
             db.session.commit()
@@ -39,7 +41,7 @@ class CourseWithCodeAPI(Resource):
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
         course.update(course_data=courses_api.payload)
-
+        return update_db_object(Course, course, course.code)
         try:
             db.session.commit()
             return {}, 200
@@ -60,9 +62,12 @@ class CourseEnrollAPI(Resource):
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
         course.enroll_users(
-            [fetch_user_by_handle(handle) for handle in courses_api.payload["members"]]
+            [
+                fetch_one(User, {"handle": handle})
+                for handle in courses_api.payload["members"]
+            ]
         )
-
+        return update_db_object(Course, course, course.code)
         try:
             db.session.commit()
             return {}, 200
