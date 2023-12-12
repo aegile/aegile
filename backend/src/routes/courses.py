@@ -1,58 +1,74 @@
-from flask import Blueprint
+from sqlalchemy.exc import IntegrityError
+from ..error import InputError
 from flask_restx import Resource, Namespace
 from ..extensions import db
-from ..models.course import Course, course_fetch_model, course_new_model
-
-courses = Blueprint("courses", __name__)
-
-
-@courses.route("/c/<course_code>/new", methods=["POST"])
-def create_new_course(course_code: str):
-    """Creates a new course object.
-
-    Args:
-        course_code (str): the course code of the new course
-    """
-    new_course = Course(code=course_code, name="new course")
-    db.session.add(new_course)
-    db.session.commit()
-
-    return "Created new course!"
-
+from ..models.course import Course, course_fetch_output, course_creation_input
+from ..models.user import userset_list_input
+from .helpers import fetch_user_by_handle, fetch_one, fetch_all
 
 courses_api = Namespace("v1/courses", description="Courses related operations")
 
 
 @courses_api.route("")
 class CourseAPI(Resource):
-    @courses_api.marshal_list_with(course_fetch_model)
+    @courses_api.marshal_list_with(course_fetch_output)
     def get(self):
-        return Course.query.all()
+        return fetch_all(Course)
 
-    @courses_api.expect(course_new_model)
+    @courses_api.expect(course_creation_input)
     def post(self):
         new_course = Course(
             code=courses_api.payload["code"], name=courses_api.payload["name"]
         )
-        db.session.add(new_course)
-        db.session.commit()
-
-        return {}, 201
+        try:
+            db.session.add(new_course)
+            db.session.commit()
+            return {}, 201
+        except IntegrityError as exc:
+            db.session.rollback()
+            raise InputError(f"Course {new_course.code} already exists") from exc
 
 
 @courses_api.route("/<string:course_code>")
 class CourseWithCodeAPI(Resource):
-    @courses_api.marshal_with(course_fetch_model)
+    @courses_api.marshal_with(course_fetch_output)
     def get(self, course_code: str):
-        # return Course.query.filter_by().first()
-        return Course.query.filter_by(code=course_code).first()
+        return fetch_one(Course, {"code": course_code})
+
+    @courses_api.expect(course_creation_input)
+    def put(self, course_code: str):
+        course: Course = fetch_one(Course, {"code": course_code})
+        course.update(course_data=courses_api.payload)
+
+        try:
+            db.session.commit()
+            return {}, 200
+        except IntegrityError as exc:
+            db.session.rollback()
+            raise InputError("ERROR: Course code already in use.") from exc
+
+    def delete(self, course_code: str):
+        course: Course = fetch_one(Course, {"code": course_code})
+        db.session.delete(course)
+        db.session.commit()
+        return {}, 200
 
 
 @courses_api.route("/<string:course_code>/enroll")
 class CourseEnrollAPI(Resource):
-    @courses_api.marshal_list_with(course_fetch_model)
+    @courses_api.expect(userset_list_input)
     def put(self, course_code: str):
-        pass
+        course: Course = fetch_one(Course, {"code": course_code})
+        course.enroll_users(
+            [fetch_user_by_handle(handle) for handle in courses_api.payload["members"]]
+        )
+
+        try:
+            db.session.commit()
+            return {}, 200
+        except IntegrityError as exc:
+            db.session.rollback()
+            raise InputError("ERROR: Course code already in use.") from exc
 
     def post(self, course_code: str):
         pass
