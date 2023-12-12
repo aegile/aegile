@@ -3,6 +3,16 @@ from sqlalchemy.exc import NoResultFound
 
 from ..extensions import db
 from ..error import InputError
+from ..models.user import User
+
+
+def fetch_one(model, filter_criteria, error_message):
+    try:
+        return db.session.execute(
+            db.select(model).filter_by(**filter_criteria)
+        ).scalar_one()
+    except NoResultFound as exc:
+        raise InputError(error_message) from exc
 
 
 def fetch_one_by_id(model, id, error_message):
@@ -11,6 +21,13 @@ def fetch_one_by_id(model, id, error_message):
     except NoResultFound as exc:
         print(error_message)
         raise InputError(error_message) from exc
+
+
+def fetch_user_by_handle(handle):
+    try:
+        return db.session.execute(db.select(User).filter_by(handle=handle)).scalar_one()
+    except NoResultFound as exc:
+        raise InputError(f"ERROR: User {handle} was not found.") from exc
 
 
 def fetch_all_by_id(model, id, error_message):
