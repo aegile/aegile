@@ -1,4 +1,5 @@
-from src.extensions import db
+from flask_restx import fields
+from ..extensions import api, db
 from .user import UserSet
 
 
@@ -17,3 +18,6 @@ class Project(db.Model):
 
     def __repr__(self):
         return f"<Project {self.id=}>"
+
+
+project_new_model = api.model("NewProjectInput", {"name": fields.String})
