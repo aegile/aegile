@@ -3,9 +3,9 @@ from json import dumps, load
 from flask import Flask
 from flask_cors import CORS
 from .extensions import api, db
-from .routes.courses import courses, courses_api
+from .routes.courses import courses_api
 from .routes.permissions import permissions
-from .routes.users import users, users_api
+from .routes.users import users_api
 from .routes.projects import projects, projects_api
 from .routes.tasks import tasks
 
@@ -40,9 +40,7 @@ def create_app():
     api.init_app(app)
     db.init_app(app)
 
-    # app.register_blueprint(courses)
     # app.register_blueprint(permissions)
-    # app.register_blueprint(users)
     # app.register_blueprint(projects)
     # app.register_blueprint(tasks)
 
