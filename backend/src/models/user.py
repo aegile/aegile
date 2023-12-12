@@ -71,6 +71,14 @@ user_creation_input = api.model(
     },
 )
 
+user_login_input = api.model(
+    "UserLoginInput",
+    {
+        "email": fields.String,
+        "password": fields.String,
+    },
+)
+
 user_update_input = api.model(
     "UserUpdateInput",
     {
