@@ -1,7 +1,7 @@
 import pytest
 from src.app import db
 from src.models.course import Course
-from src.models.permission import Permission, Role
+from src.models.role import Permission, Role
 
 # PERMS = {
 #     "course_access": Permission(name="course_access"),
