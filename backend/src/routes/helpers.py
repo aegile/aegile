@@ -1,4 +1,3 @@
-from os import error
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from ..extensions import db
@@ -41,13 +40,13 @@ def add_db_object(model, object, error_field):
     try:
         db.session.add(object)
         db.session.commit()
-        return object, 201
+        return {}, 201
     except IntegrityError as exc:
         db.session.rollback()
         raise InputError(f"{model.__name__} {error_field} already exists.") from exc
 
 
-def update_db_object(model, object, error_field):
+def update_db_object(model, error_field):
     try:
         db.session.commit()
         return {}, 200
