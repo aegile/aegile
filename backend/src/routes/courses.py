@@ -1,9 +1,13 @@
+from flask_restx import Resource, Namespace
 from sqlalchemy.exc import IntegrityError
 from ..error import InputError
-from flask_restx import Resource, Namespace
 from ..extensions import db
-from ..models.course import Course, course_fetch_output, course_creation_input
-from ..models.user import User, userset_list_input
+
+from ..models.course import Course
+from ..models.user import User
+from ..api_models.course_api import course_fetch_output, course_creation_input
+from ..api_models.user_api import userset_list_input
+
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 
 courses_api = Namespace("v1/courses", description="Courses related operations")
@@ -16,7 +20,6 @@ class CourseAPI(Resource):
         return fetch_all(Course)
 
     @courses_api.expect(course_creation_input)
-    @courses_api.marshal_with({})
     def post(self):
         new_course = Course(
             code=courses_api.payload["code"], name=courses_api.payload["name"]
@@ -41,13 +44,7 @@ class CourseWithCodeAPI(Resource):
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
         course.update(course_data=courses_api.payload)
-        return update_db_object(Course, course, course.code)
-        try:
-            db.session.commit()
-            return {}, 200
-        except IntegrityError as exc:
-            db.session.rollback()
-            raise InputError("ERROR: Course code already in use.") from exc
+        return update_db_object(Course, course.code)
 
     def delete(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
@@ -67,13 +64,7 @@ class CourseEnrollAPI(Resource):
                 for handle in courses_api.payload["members"]
             ]
         )
-        return update_db_object(Course, course, course.code)
-        try:
-            db.session.commit()
-            return {}, 200
-        except IntegrityError as exc:
-            db.session.rollback()
-            raise InputError("ERROR: Course code already in use.") from exc
+        return update_db_object(Course, course.code)
 
     def post(self, course_code: str):
         pass

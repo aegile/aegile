@@ -2,13 +2,14 @@ from sqlalchemy.exc import IntegrityError
 from ..error import InputError
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required
-from src.extensions import db
-from src.models.user import (
-    User,
+from ..extensions import db
+from ..models.user import User
+from ..api_models.user_api import (
     user_fetch_output,
     user_creation_input,
     user_update_input,
 )
+
 from .helpers import (
     fetch_one,
     add_db_object,
@@ -58,7 +59,7 @@ class CourseWithCodeAPI(Resource):
         if not user:
             raise InputError(f"User {user_handle} not found")
         user.update(profile_data=users_api.payload)
-        return update_db_object(User, user, user.email)
+        return update_db_object(User, user.email)
 
     def delete(self, user_handle: str):
         user: User = fetch_one(User, {"handle": user_handle})
