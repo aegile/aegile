@@ -1,5 +1,4 @@
-from flask_restx import fields
-from src.extensions import api, db
+from src.extensions import db
 from .helpers import get_with_default
 
 
@@ -47,60 +46,4 @@ user_set_association = db.Table(
     "user_set_association",
     db.Column("user_set", db.Integer, db.ForeignKey("user_set.id"), primary_key=True),
     db.Column("user", db.Integer, db.ForeignKey("user.id"), primary_key=True),
-)
-
-
-user_fetch_output = api.model(
-    "UserFetchOutput",
-    {
-        # "email": fields.String,
-        "first_name": fields.String,
-        "last_name": fields.String,
-        "handle": fields.String,
-        "image": fields.String,
-    },
-)
-
-user_creation_input = api.model(
-    "UserCreationInput",
-    {
-        "first_name": fields.String,
-        "last_name": fields.String,
-        "email": fields.String,
-        "password": fields.String,
-    },
-)
-
-user_login_input = api.model(
-    "UserLoginInput",
-    {
-        "email": fields.String,
-        "password": fields.String,
-    },
-)
-
-user_update_input = api.model(
-    "UserUpdateInput",
-    {
-        "first_name": fields.String,
-        "last_name": fields.String,
-        "email": fields.String,
-        "password": fields.String,
-        "image": fields.String,
-    },
-)
-
-userset_list_input = api.model(
-    "UserSetListInput",
-    {
-        "members": fields.List(fields.String),
-    },
-)
-
-userset_list_output = api.model(
-    "UserSetListOutput",
-    {
-        "id": fields.Integer,
-        "members": fields.List(fields.Nested(user_fetch_output)),
-    },
 )

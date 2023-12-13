@@ -1,6 +1,5 @@
-from flask_restx import fields
-from ..extensions import api, db
-from .user import User, UserSet, userset_list_output
+from ..extensions import db
+from .user import User, UserSet
 from .helpers import get_with_default
 
 
@@ -30,18 +29,3 @@ class Course(db.Model):
 class CourseOffering(db.Model):
     code = db.Column(db.String(8), db.ForeignKey("course.code"), primary_key=True)
     term = db.Column(db.String(4), primary_key=True)
-
-
-course_fetch_output = api.model(
-    "CourseFetchOutput",
-    {
-        "id": fields.Integer,
-        "code": fields.String,
-        "name": fields.String,
-        "userset": fields.Nested(userset_list_output),
-    },
-)
-
-course_creation_input = api.model(
-    "CourseCreationInput", {"code": fields.String, "name": fields.String}
-)
