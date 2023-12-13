@@ -1,5 +1,5 @@
 from src.extensions import db
-from src.models.permission import Permission, Role
+from src.models.role import Permission, Role
 
 
 def fetch_permission(permission_type: str):
