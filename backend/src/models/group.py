@@ -9,7 +9,7 @@ class Group(db.Model):
     tutorial_id = db.Column(db.Integer, db.ForeignKey("tutorial.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
-    userset = db.relationship("UserSet", backref="courses", uselist=False)
+    userset = db.relationship("UserSet", backref="groups", uselist=False)
 
     def __init__(self, course_code: str, tutorial_id: int, name: str):
         self.course_code = course_code

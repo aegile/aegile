@@ -8,7 +8,7 @@ class Tutorial(db.Model):
     course_code = db.Column(db.String(8), db.ForeignKey("course.code"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
-    userset = db.relationship("UserSet", backref="courses", uselist=False)
+    userset = db.relationship("UserSet", backref="tutorials", uselist=False)
 
     def __init__(self, course_code: str, name: str):
         self.course_code = course_code
