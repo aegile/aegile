@@ -32,7 +32,7 @@ class RoleCore(Resource):
 
 
 @roles_api.route("/<string:role_id>")
-class RoleAssign(Resource):
+class RoleSpecific(Resource):
     @roles_api.marshal_with(role_fetch_output)
     def get(self, role_id: str):
         return fetch_one(Role, {"id": role_id})

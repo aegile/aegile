@@ -1,6 +1,4 @@
 from flask_restx import Resource, Namespace
-from sqlalchemy.exc import IntegrityError
-from ..error import InputError
 from ..extensions import db
 
 from ..models.course import Course
@@ -14,7 +12,7 @@ courses_api = Namespace("v1/courses", description="Courses related operations")
 
 
 @courses_api.route("")
-class CourseAPI(Resource):
+class CourseCore(Resource):
     @courses_api.marshal_list_with(course_fetch_output)
     def get(self):
         return fetch_all(Course)
@@ -25,17 +23,10 @@ class CourseAPI(Resource):
             code=courses_api.payload["code"], name=courses_api.payload["name"]
         )
         return add_db_object(Course, new_course, new_course.code)
-        try:
-            db.session.add(new_course)
-            db.session.commit()
-            return {}, 201
-        except IntegrityError as exc:
-            db.session.rollback()
-            raise InputError(f"Course {new_course.code} already exists") from exc
 
 
 @courses_api.route("/<string:course_code>")
-class CourseWithCodeAPI(Resource):
+class CourseSpecific(Resource):
     @courses_api.marshal_with(course_fetch_output)
     def get(self, course_code: str):
         return fetch_one(Course, {"code": course_code})
@@ -54,7 +45,7 @@ class CourseWithCodeAPI(Resource):
 
 
 @courses_api.route("/<string:course_code>/enroll")
-class CourseEnrollAPI(Resource):
+class CourseEnroll(Resource):
     @courses_api.expect(userset_list_input)
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
