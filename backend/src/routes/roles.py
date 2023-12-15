@@ -14,36 +14,36 @@ from ..api_models.role_models import (
 
 from .helpers import fetch_one, fetch_all, add_db_object
 
-roles_api = Namespace("v1/roles", description="Course Role related operations")
+roles_ns = Namespace("v1/roles", description="Course Role related operations")
 
 
-@roles_api.route("/c/<string:course_code>")
+@roles_ns.route("/c/<string:course_code>")
 class RoleCore(Resource):
-    @roles_api.marshal_with(roles_fetch_output)
+    @roles_ns.marshal_with(roles_fetch_output)
     def get(self, course_code: str):
         fetch_one(Course, {"code": course_code})
         return {"roles": fetch_all(Role, {"course_code": course_code})}
 
-    @roles_api.expect(role_creation_input)
+    @roles_ns.expect(role_creation_input)
     def post(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
-        new_role = Role(name=roles_api.payload["name"], course=course)
+        new_role = Role(name=roles_ns.payload["name"], course=course)
         return add_db_object(Role, new_role, new_role.name)
 
 
-@roles_api.route("/<string:role_id>")
+@roles_ns.route("/<string:role_id>")
 class RoleSpecific(Resource):
-    @roles_api.marshal_with(role_fetch_output)
+    @roles_ns.marshal_with(role_fetch_output)
     def get(self, role_id: str):
         return fetch_one(Role, {"id": role_id})
 
-    @roles_api.expect(role_update_input)
+    @roles_ns.expect(role_update_input)
     def put(self, role_id: str):
-        course: Course = fetch_one(Course, {"code": roles_api.payload["course_code"]})
+        course: Course = fetch_one(Course, {"code": roles_ns.payload["course_code"]})
         role: Role = fetch_one(Role, {"id": role_id})
 
         new_assignees = []
-        for handle in roles_api.payload["members"]:
+        for handle in roles_ns.payload["members"]:
             user = fetch_one(User, {"handle": handle})
             if user in course.userset.members:
                 new_assignees.append(user)

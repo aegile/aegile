@@ -19,46 +19,46 @@ from .helpers import (
 )
 
 
-users_api = Namespace(
+users_ns = Namespace(
     "v1/users",
     description="User related operations",
     authorizations=authorizations,
 )
 
 
-@users_api.route("")
+@users_ns.route("")
 class UserCoreAPI(Resource):
     method_decorators = [jwt_required()]
 
-    @users_api.doc(security=AUTH_NAME)
-    @users_api.marshal_list_with(user_fetch_output)
+    @users_ns.doc(security=AUTH_NAME)
+    @users_ns.marshal_list_with(user_fetch_output)
     def get(self):
         return User.query.all()
 
-    @users_api.doc(security=AUTH_NAME)
-    @users_api.expect(user_creation_input)
+    @users_ns.doc(security=AUTH_NAME)
+    @users_ns.expect(user_creation_input)
     def post(self):
         new_user = User(
-            first_name=users_api.payload["first_name"],
-            last_name=users_api.payload["last_name"],
-            email=users_api.payload["email"],
-            password=users_api.payload["password"],
+            first_name=users_ns.payload["first_name"],
+            last_name=users_ns.payload["last_name"],
+            email=users_ns.payload["email"],
+            password=users_ns.payload["password"],
         )
         return add_db_object(User, new_user, new_user.email)
 
 
-@users_api.route("/<string:user_handle>")
+@users_ns.route("/<string:user_handle>")
 class CourseWithCodeAPI(Resource):
-    @users_api.marshal_with(user_fetch_output)
+    @users_ns.marshal_with(user_fetch_output)
     def get(self, user_handle: str):
         return fetch_one(User, {"handle": user_handle})
 
-    @users_api.expect(user_update_input)
+    @users_ns.expect(user_update_input)
     def put(self, user_handle: str):
         user: User = fetch_one(User, {"handle": user_handle})
         if not user:
             raise InputError(f"User {user_handle} not found")
-        user.update(profile_data=users_api.payload)
+        user.update(profile_data=users_ns.payload)
         return update_db_object(User, user.email)
 
     def delete(self, user_handle: str):

@@ -34,14 +34,14 @@ def add_project_members(project_id: str):
     return f"Added {', '.join([mem.first_name for mem in userset.members])} users to project"
 
 
-projects_api = Namespace("v1/projects", description="Courses related operations")
+projects_ns = Namespace("v1/projects", description="Courses related operations")
 
 
-@projects_api.route("")
+@projects_ns.route("")
 class ProjectAPI(Resource):
-    @projects_api.expect(project_new_model)
+    @projects_ns.expect(project_new_model)
     def post(self):
-        new_project = Project(name=projects_api.payload["name"])
+        new_project = Project(name=projects_ns.payload["name"])
         db.session.add(new_project)
         db.session.commit()
 

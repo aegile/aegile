@@ -3,13 +3,13 @@ from json import dumps, load
 from flask import Flask
 from flask_cors import CORS
 from .extensions import api, db, jwt
-from .routes.auth import auth_api
-from .routes.courses import courses_api
-from .routes.roles import roles_api
-from .routes.users import users_api
+from .routes.auth import auth_ns
+from .routes.courses import courses_ns
+from .routes.roles import roles_ns
+from .routes.users import users_ns
 from .routes.tutorials import tuts_ns
 from .routes.groups import groups_ns
-from .routes.projects import projects, projects_api
+from .routes.projects import projects, projects_ns
 from .routes.tasks import tasks
 from .config import SECRET_KEY
 
@@ -50,12 +50,12 @@ def create_app():
     # app.register_blueprint(projects)
     # app.register_blueprint(tasks)
 
-    api.add_namespace(auth_api)
-    api.add_namespace(users_api)
-    api.add_namespace(roles_api)
-    api.add_namespace(courses_api)
+    api.add_namespace(auth_ns)
+    api.add_namespace(users_ns)
+    api.add_namespace(roles_ns)
+    api.add_namespace(courses_ns)
     api.add_namespace(tuts_ns)
     api.add_namespace(groups_ns)
-    api.add_namespace(projects_api)
+    api.add_namespace(projects_ns)
 
     return app
