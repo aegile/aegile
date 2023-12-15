@@ -19,7 +19,8 @@
                     "PYTHONPATH": "/workspaces/aegile/backend"
                 },
                 "telemetry.telemetryLevel": "off",
-                "python.pythonPath": "/usr/local/bin/python",
+                "python.defaultInterpreterPath": "./backend/.venv/bin/python",
+                "python.pythonPath": "/backend/.venv/bin/python",
                 "python.analysis.extraPaths": ["./venv"],
                 "python.languageServer": "Pylance",
                 "python.formatting.provider": "none",
@@ -35,7 +36,7 @@
                 }
             }
         }
-    }
+    },
 
     // Features to add to the dev container. More info: https://containers.dev/features.
     // "features": {},
@@ -44,7 +45,7 @@
     // "forwardPorts": [],
 
     // Use 'postCreateCommand' to run commands after the container is created.
-    // "postCreateCommand": "bash backend/postCreateCommand.sh"
+    "postCreateCommand": "bash backend/postCreateCommand.sh && source backend/.venv/bin/activate"
 
     // Configure tool-specific properties.
     // "customizations": {},
