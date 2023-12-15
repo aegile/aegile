@@ -1,6 +1,6 @@
 from flask_restx import fields
 from src.extensions import api
-from .user_api import user_fetch_output
+from .user_models import user_fetch_output
 
 role_fetch_output = api.model(
     "RoleFetchInput",

@@ -5,7 +5,7 @@ from ..extensions import db
 from ..models.user import User
 from ..models.course import Course
 from ..models.role import Permission, Role
-from ..api_models.role_api import (
+from ..api_models.role_models import (
     role_fetch_output,
     roles_fetch_output,
     role_creation_input,

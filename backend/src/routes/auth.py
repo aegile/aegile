@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token
 from ..error import InputError
 
 from ..models.user import User
-from ..api_models.user_api import user_creation_input, user_login_input
+from ..api_models.user_models import user_creation_input, user_login_input
 
 from .helpers import fetch_one, add_db_object
 

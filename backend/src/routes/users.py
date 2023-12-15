@@ -4,7 +4,7 @@ from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required
 from ..extensions import db
 from ..models.user import User
-from ..api_models.user_api import (
+from ..api_models.user_models import (
     user_fetch_output,
     user_creation_input,
     user_update_input,

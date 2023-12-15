@@ -5,8 +5,8 @@ from ..extensions import db
 
 from ..models.course import Course
 from ..models.user import User
-from ..api_models.course_api import course_fetch_output, course_creation_input
-from ..api_models.user_api import userset_list_input
+from ..api_models.course_models import course_fetch_output, course_creation_input
+from ..api_models.user_models import userset_list_input
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 
