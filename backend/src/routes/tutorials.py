@@ -3,8 +3,8 @@ from sqlalchemy.exc import IntegrityError
 from ..error import InputError
 from ..extensions import db
 
-# from ..models.course import Course
-# from ..models.user import User
+from ..models.tutorial import Tutorial
+from ..models.user import User
 from ..api_models.tutorial_models import tutorial_fetch_output, tutorial_creation_input
 from ..api_models.user_models import userset_list_input
 
