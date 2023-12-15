@@ -8,6 +8,7 @@ from .routes.courses import courses_api
 from .routes.roles import roles_api
 from .routes.users import users_api
 from .routes.projects import projects, projects_api
+from .routes.tutorials import tuts_ns
 from .routes.tasks import tasks
 from .config import SECRET_KEY
 
@@ -51,6 +52,7 @@ def create_app():
     api.add_namespace(auth_api)
     api.add_namespace(users_api)
     api.add_namespace(courses_api)
+    api.add_namespace(tuts_ns)
     api.add_namespace(roles_api)
     api.add_namespace(projects_api)
 
