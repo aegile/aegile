@@ -1,4 +1,5 @@
 # aegile backend
 
-Create a Virtual Environment by using the `Python: Create Environment > Venv` commands in the Command Palette (Ctrl+Shift+P).
-- Select the requirements.txt checkbox to install the required packages in the virtual environment.
+Once the `postCreateCommand` has finished running, navigate to a python file a wait for the `('.venv': venv)` interpreter to load. 
+
+This allows VSCode to automatically `source ./backend/.venv/bin/activate`. You run this command manually if you wish.
