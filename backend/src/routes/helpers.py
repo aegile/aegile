@@ -3,6 +3,7 @@ from sqlalchemy.exc import NoResultFound, IntegrityError
 from ..extensions import db
 from ..error import InputError
 from ..models.user import User
+from ..handlers.events import trigger_event
 
 AUTH_NAME = "jsonWebToken"
 
@@ -17,11 +18,11 @@ authorizations = {
 
 def fetch_one(model, filter):
     try:
-        return db.session.execute(db.select(model).filter_by(**filter)).scalar_one()
+        return db.session.scalars(db.select(model).filter_by(**filter)).one()
     except NoResultFound as exc:
-        raise InputError(
-            f"ERROR: {model.__name__} {list(filter.values())[0]} was not found."
-        ) from exc
+        msg = f"{model.__name__} {filter} was not found."
+        trigger_event("event_db_query_not_found", msg)
+        raise InputError(f"ERROR: {msg}") from exc
 
 
 def fetch_all(model, filter=None):
@@ -33,7 +34,9 @@ def fetch_all(model, filter=None):
         else:
             return db.session.execute(db.select(model)).scalars().all()
     except NoResultFound as exc:
-        raise InputError(f"ERROR: {model.__name__}s not found.") from exc
+        msg = f"{model.__name__}s not found."
+        trigger_event("event_db_query_not_found", msg)
+        raise InputError(f"ERROR: {msg}") from exc
 
 
 def add_db_object(model, object, error_field):
@@ -60,7 +63,6 @@ def fetch_one_by_id(model, id, error_message):
     try:
         return db.session.execute(db.select(model).filter_by(id=id)).scalar_one()
     except NoResultFound as exc:
-        print(error_message)
         raise InputError(error_message) from exc
 
 

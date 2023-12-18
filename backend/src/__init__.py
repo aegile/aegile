@@ -12,9 +12,15 @@ from .routes.groups import groups_ns
 from .routes.projects import projects, projects_ns
 from .routes.tasks import tasks
 from .config import SECRET_KEY
+from .handlers.log_handler import setup_log_handlers
 
-# log = logging.getLogger("werkzeug")
-# log.setLevel(logging.ERROR)
+log = logging.getLogger("werkzeug")
+log.setLevel(logging.INFO)
+# file_handler = logging.FileHandler("test.log")
+# stream_handler = logging.StreamHandler()
+# if not log.handlers:
+#     log.addHandler(file_handler)
+#     log.addHandler(stream_handler)
 
 
 def defaultHandler(err):
@@ -31,6 +37,8 @@ def defaultHandler(err):
 
 
 def create_app():
+    setup_log_handlers()
+
     app = Flask(__name__)
 
     # app = Flask(__name__, static_url_path="/static/")
