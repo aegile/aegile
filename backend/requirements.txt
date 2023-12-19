@@ -1,0 +1,10 @@
+pytest
+Flask-SQLAlchemy==3.1.1
+Flask_Cors==4.0.0
+flask-restx==1.3.0
+Flask-JWT-Extended==4.5.3
+black==23.11.0
+# Flask_Mail==0.9.1
+# Flask-APScheduler==1.12.4
+# PyJWT==2.7.0
+# pandas==2.0.3
