@@ -5,9 +5,9 @@ from .helpers import get_with_default
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
     course_code = db.Column(db.String(8), db.ForeignKey("course.code"), nullable=False)
     tutorial_id = db.Column(db.Integer, db.ForeignKey("tutorial.id"), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
     userset = db.relationship("UserSet", backref="groups", uselist=False)
 

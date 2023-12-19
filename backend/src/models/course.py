@@ -7,8 +7,11 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(8), nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False)
-    userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
-    userset = db.relationship("UserSet", backref="courses", uselist=False)
+    userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"))
+    userset = db.relationship("UserSet", backref="courses")
+    tutorials = db.relationship(
+        "Tutorial", backref="course", cascade="all, delete-orphan"
+    )
 
     def __init__(self, code: str, name: str):
         self.code = code

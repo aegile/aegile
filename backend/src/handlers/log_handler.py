@@ -1,4 +1,4 @@
-from lib.log import logger
+from ..lib.log import logger
 from .events import subscribe
 from ..models.user import User
 
