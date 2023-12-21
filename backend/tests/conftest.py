@@ -72,3 +72,43 @@ def users_setup(client):
     headers = {"Authorization": f"Bearer {response.json["access_token"]}"}
     response = client.get("v1/users", headers=headers)
     return [user for user in response.json]
+
+@pytest.fixture
+def auth_headers(client):
+    # NOTE: any fixture that returns from v1/users will have John Smith included
+    client.post("v1/auth/register", json={
+        "first_name": "John",
+        "last_name": "Smith",
+        "email": "john@email.com",
+        "password": "JohnSmith123!",
+    })
+    response = client.post(
+        "v1/auth/login",
+        json={"email": "john@email.com", "password": "JohnSmith123!"},
+    )
+
+    token = response.json['access_token']
+
+    return {'Authorization': f'Bearer {token}'}
+
+
+@pytest.fixture
+def auth_client(client, auth_headers):
+    class AuthClient:
+        def __init__(self, client, headers):
+            self._client = client
+            self._headers = headers
+
+        def get(self, url, **kwargs):
+            return self._client.get(url, headers=self._headers, **kwargs)
+
+        def post(self, url, **kwargs):
+            return self._client.post(url, headers=self._headers, **kwargs)
+
+        def put(self, url, **kwargs):
+            return self._client.put(url, headers=self._headers, **kwargs)
+
+        def delete(self, url, **kwargs):
+            return self._client.delete(url, headers=self._headers, **kwargs)
+
+    return AuthClient(client, auth_headers)
