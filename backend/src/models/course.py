@@ -1,6 +1,7 @@
 from ..extensions import db
 from .user import User, UserSet
 from .helpers import get_with_default
+from ..error import InputError
 
 
 class Course(db.Model):
@@ -14,6 +15,8 @@ class Course(db.Model):
     )
 
     def __init__(self, code: str, name: str):
+        if not code or not name:
+            raise InputError("Course code and course name must be given.")
         self.code = code
         self.name = name
         self.userset = UserSet()
