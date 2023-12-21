@@ -1,18 +1,32 @@
 from flask_restx import Resource, Namespace
+from flask_jwt_extended import jwt_required
 from ..extensions import db
-
 from ..models.course import Course
 from ..models.user import User
 from ..api_models.course_models import course_fetch_output, course_creation_input
 from ..api_models.user_models import userset_list_input
 
-from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
+from .helpers import (
+    authorizations,
+    AUTH_NAME,
+    fetch_one,
+    fetch_all,
+    add_db_object,
+    update_db_object,
+)
 
-courses_ns = Namespace("v1/courses", description="Courses related operations")
+courses_ns = Namespace(
+    "v1/courses",
+    description="Courses related operations",
+    authorizations=authorizations,
+    security=AUTH_NAME,
+)
 
 
 @courses_ns.route("")
 class CourseCore(Resource):
+    method_decorators = [jwt_required()]
+
     @courses_ns.marshal_list_with(course_fetch_output)
     def get(self):
         return fetch_all(Course)
@@ -27,6 +41,8 @@ class CourseCore(Resource):
 
 @courses_ns.route("/<string:course_code>")
 class CourseSpecific(Resource):
+    method_decorators = [jwt_required()]
+
     @courses_ns.marshal_with(course_fetch_output)
     def get(self, course_code: str):
         return fetch_one(Course, {"code": course_code})
@@ -46,6 +62,8 @@ class CourseSpecific(Resource):
 
 @courses_ns.route("/<string:course_code>/enroll")
 class CourseEnroll(Resource):
+    method_decorators = [jwt_required()]
+
     @courses_ns.expect(userset_list_input)
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
