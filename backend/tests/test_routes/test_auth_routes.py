@@ -1,32 +1,3 @@
-import pytest
-
-
-@pytest.fixture()
-def _init_auth(client):
-    user_registration_data = [
-        {
-            "first_name": "Alex",
-            "last_name": "Xu",
-            "email": "alex@email.com",
-            "password": "AlexXu123!",
-        },
-        {
-            "first_name": "Sam",
-            "last_name": "Yu",
-            "email": "sam@email.com",
-            "password": "SamYu123!",
-        },
-        {
-            "first_name": "Philip",
-            "last_name": "Tran",
-            "email": "philip@email.com",
-            "password": "PhilipTran123!",
-        },
-    ]
-    for user_form in user_registration_data:
-        client.post("v1/auth/register", json=user_form)
-
-
 def test_valid_registration(client):
     form_data = {
         "first_name": "Alex",
@@ -40,7 +11,7 @@ def test_valid_registration(client):
 
 def test_invalid_name_overflow_registration(client):
     form_data = {
-        "first_name": "AlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlex",
+        "first_name": "A" * 51,
         "last_name": "Xu",
         "email": "alex@email.com",
         "password": "AlexXu123!",
@@ -87,13 +58,13 @@ def test_invalid_password_overflow_registration(client):
         "first_name": "Alex",
         "last_name": "Xu",
         "email": "alex@email.com",
-        "password": "AlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlexAlex",
+        "password": "Alexela" * 10,
     }
     response = client.post("v1/auth/register", json=form_data)
     assert response.status_code == 400
 
 
-def test_invalid_existing_email_registration(client, _init_auth):
+def test_invalid_existing_email_registration(client, users_setup):
     form_data = {
         "first_name": "Alex",
         "last_name": "Xu",
@@ -104,25 +75,25 @@ def test_invalid_existing_email_registration(client, _init_auth):
     assert response.status_code == 400
 
 
-def test_valid_login(client, _init_auth):
+def test_valid_login(client, users_setup):
     form_data = {
         "email": "alex@email.com",
         "password": "AlexXu123!",
     }
     response = client.post("v1/auth/login", json=form_data)
-    assert response.status_code == 201
+    assert response.status_code == 200
 
 
-def test_invalid_password_login(client, _init_auth):
+def test_invalid_password_login(client, users_setup):
     form_data = {
         "email": "alex@email.com",
         "password": "loremipsum",
     }
     response = client.post("v1/auth/login", json=form_data)
-    assert response.status_code == 400
+    assert response.status_code == 401
 
 
-def test_invalid_nonexistent_user_login(client, _init_auth):
+def test_invalid_nonexistent_user_login(client, users_setup):
     form_data = {"email": "nonexistent_user@email.com", "password": "password"}
     response = client.post("v1/auth/login", json=form_data)
-    assert response.status_code == 401
+    assert response.status_code == 400
