@@ -23,7 +23,7 @@ def test_app():
     return app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def client(test_app):
     with test_app.app_context():
         db.create_all()
@@ -39,3 +39,36 @@ def test_db(test_app):
         yield db
         db.session.remove()
         db.drop_all()
+
+
+@pytest.fixture()
+def users_setup(client):
+    user_registration_data = [
+        {
+            "first_name": "Alex",
+            "last_name": "Xu",
+            "email": "alex@email.com",
+            "password": "AlexXu123!",
+        },
+        {
+            "first_name": "Sam",
+            "last_name": "Yu",
+            "email": "sam@email.com",
+            "password": "SamYu123!",
+        },
+        {
+            "first_name": "Philip",
+            "last_name": "Tran",
+            "email": "philip@email.com",
+            "password": "PhilipTran123!",
+        },
+    ]
+    for user_form in user_registration_data:
+        client.post("v1/auth/register", json=user_form)
+    response = client.post(
+        "v1/auth/login",
+        json={"email": "alex@email.com", "password": "AlexXu123!"},
+    )
+    headers = {"Authorization": f"Bearer {response.json["access_token"]}"}
+    response = client.get("v1/users", headers=headers)
+    return [user for user in response.json]
