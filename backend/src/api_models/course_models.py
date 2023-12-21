@@ -8,7 +8,7 @@ course_fetch_output = api.model(
         "id": fields.Integer,
         "code": fields.String,
         "name": fields.String,
-        "members": fields.Nested(userset_list_output),
+        "userset": fields.Nested(userset_list_output),
     },
 )
 
@@ -17,6 +17,7 @@ course_creation_input = api.model(
     {
         "code": fields.String(required=True),
         "name": fields.String(required=True),
-        "members": fields.List(fields.String, required=True),
+        "userset": fields.List(fields.String, required=True),
     },
+    strict=True,
 )

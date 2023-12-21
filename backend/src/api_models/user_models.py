@@ -45,7 +45,7 @@ user_update_input = api.model(
 userset_list_input = api.model(
     "UserSetListInput",
     {
-        "members": fields.List(fields.String, required=True),
+        "userset": fields.List(fields.String, required=True),
     },
 )
 
