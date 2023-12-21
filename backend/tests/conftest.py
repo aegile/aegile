@@ -41,65 +41,6 @@ def test_db(test_app):
         db.drop_all()
 
 
-@pytest.fixture()
-def users_setup(client):
-    user_registration_data = [
-        {
-            "first_name": "Alex",
-            "last_name": "Xu",
-            "email": "alex@email.com",
-            "password": "AlexXu123!",
-        },
-        {
-            "first_name": "Sam",
-            "last_name": "Yu",
-            "email": "sam@email.com",
-            "password": "SamYu123!",
-        },
-        {
-            "first_name": "Philip",
-            "last_name": "Tran",
-            "email": "philip@email.com",
-            "password": "PhilipTran123!",
-        },
-    ]
-    for user_form in user_registration_data:
-        client.post("v1/auth/register", json=user_form)
-    response = client.post(
-        "v1/auth/login",
-        json={"email": "alex@email.com", "password": "AlexXu123!"},
-    )
-    headers = {"Authorization": f"Bearer {response.json['access_token']}"}
-    response = client.get("v1/users", headers=headers)
-    return [user for user in response.json]
-
-
-@pytest.fixture()
-def courses_setup(auth_client):
-    course_creation_data = [
-        {
-            "code": "COMP1511",
-            "name": "Programming Fundamentals",
-            "userset": [],
-        },
-        {
-            "code": "COMP2511",
-            "name": "Object-Oriented Design & Programming",
-            "userset": [],
-        },
-        {
-            "code": "COMP6080",
-            "name": "Web Front-End Programming",
-            "userset": [],
-        },
-    ]
-    for course_form in course_creation_data:
-        auth_client.post("v1/courses", json=course_form)
-
-    response = auth_client.get("v1/courses")
-    return response.json[0], response.json[1], response.json[2]
-
-
 @pytest.fixture
 def auth_headers(client):
     # NOTE: any fixture that returns from v1/users will have John Smith included
@@ -143,3 +84,81 @@ class AuthClient:
 @pytest.fixture
 def auth_client(client, auth_headers):
     return AuthClient(client, auth_headers)
+
+
+# TODO: The logic behind these setup fixtures is to provide convenience
+# for the next tier of tests. For example:
+# - users_setup → courses_tests
+# - courses_setup → tutorials_tests
+# - tutorials_setup → groups_tests
+# - groups_setup → projects_tests
+# etc...
+
+
+@pytest.fixture()
+def users_setup(client):
+    user_registration_data = [
+        {
+            "first_name": "Alex",
+            "last_name": "Xu",
+            "email": "alex@email.com",
+            "password": "AlexXu123!",
+        },
+        {
+            "first_name": "Sam",
+            "last_name": "Yu",
+            "email": "sam@email.com",
+            "password": "SamYu123!",
+        },
+        {
+            "first_name": "Philip",
+            "last_name": "Tran",
+            "email": "philip@email.com",
+            "password": "PhilipTran123!",
+        },
+    ]
+    for user_form in user_registration_data:
+        client.post("v1/auth/register", json=user_form)
+    response = client.post(
+        "v1/auth/login",
+        json={"email": "alex@email.com", "password": "AlexXu123!"},
+    )
+    headers = {"Authorization": f"Bearer {response.json['access_token']}"}
+    response = client.get("v1/users", headers=headers)
+    return response.json
+
+
+@pytest.fixture()
+def courses_setup(auth_client, users_setup):
+    course_creation_data = [
+        {
+            "code": "COMP1511",
+            "name": "Programming Fundamentals",
+            "userset": [],
+        },
+        {
+            "code": "COMP2511",
+            "name": "Object-Oriented Design & Programming",
+            "userset": [],
+        },
+        {
+            "code": "COMP6080",
+            "name": "Web Front-End Programming",
+            "userset": [],
+        },
+    ]
+    for course_form in course_creation_data:
+        auth_client.post("v1/courses", json=course_form)
+
+    response = auth_client.get("v1/courses")
+    return response.json
+
+
+@pytest.fixture()
+def tutorials_setup(auth_client, courses_setup):
+    pass
+
+
+@pytest.fixture()
+def groups_setup(auth_client, tutorial_setup):
+    pass
