@@ -52,7 +52,7 @@ class CourseEnroll(Resource):
         course.enroll_users(
             [
                 fetch_one(User, {"handle": handle})
-                for handle in courses_ns.payload["members"]
+                for handle in courses_ns.payload["userset"]
             ]
         )
         return update_db_object(Course, course.code)
