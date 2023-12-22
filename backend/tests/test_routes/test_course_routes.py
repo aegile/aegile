@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_valid_course_creation(auth_client, courses_setup):
+def test_valid_course_creation(auth_client):
     response = auth_client.post(
         "v1/courses",
         json={
@@ -13,17 +13,15 @@ def test_valid_course_creation(auth_client, courses_setup):
     assert response.status_code == 201
 
 
-def test_invalid_missing_fields_course_creation(auth_client, courses_setup):
+def test_invalid_missing_fields_course_creation(auth_client):
     response = auth_client.post(
         "v1/courses",
-        json={
-            "code": "COMP1512",
-        },
+        json={"code": "COMP1512"},
     )
     assert response.status_code == 400
 
 
-def test_invalid_extra_fields_course_creation(auth_client, courses_setup):
+def test_invalid_extra_fields_course_creation(auth_client):
     response = auth_client.post(
         "v1/courses",
         json={
@@ -36,7 +34,7 @@ def test_invalid_extra_fields_course_creation(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-def test_invalid_empty_code_course_creation(auth_client, courses_setup):
+def test_invalid_empty_code_course_creation(auth_client):
     response = auth_client.post(
         "v1/courses",
         json={
@@ -60,7 +58,7 @@ def test_invalid_existing_course_creation(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-def test_invalid_no_data_course_creation(auth_client, courses_setup):
+def test_invalid_no_data_course_creation(auth_client):
     response = auth_client.post("v1/courses", json={})
     assert response.status_code == 400
 
@@ -97,7 +95,7 @@ def test_valid_course_update(auth_client, courses_setup):
     assert response.json["name"] == "Advanced Programming"
 
 
-def test_invalid_missing_fields_course_update(auth_client, courses_setup):
+def test_invalid_missing_fields_course_update(auth_client):
     response = auth_client.put(
         "v1/courses/COMP1511",
         json={"code": "COMP1512"},
@@ -105,7 +103,7 @@ def test_invalid_missing_fields_course_update(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-def test_invalid_extra_fields_course_update(auth_client, courses_setup):
+def test_invalid_extra_fields_course_update(auth_client):
     response = auth_client.put(
         "v1/courses/COMP1511",
         json={
@@ -132,12 +130,12 @@ def test_invalid_empty_fields_course_update(auth_client, courses_setup):
     assert response.status_code == 200
 
 
-def test_invalid_no_data_course_update(auth_client, courses_setup):
+def test_invalid_no_data_course_update(auth_client):
     response = auth_client.put("v1/courses/COMP1511", json={})
     assert response.status_code == 400
 
 
-def test_invalid_nonexistent_course_update(auth_client, courses_setup):
+def test_invalid_nonexistent_course_update(auth_client):
     response = auth_client.put(
         "v1/courses/FINS1234",
         json={
@@ -149,7 +147,7 @@ def test_invalid_nonexistent_course_update(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-def test_invalid_to_existing_code_course_update(auth_client, courses_setup):
+def test_invalid_to_existing_code_course_update(auth_client):
     response = auth_client.put(
         "v1/courses/COMP1511",
         json={
@@ -169,7 +167,7 @@ def test_valid_course_delete(auth_client, courses_setup):
     assert len(response.json) == 2
 
 
-def test_invalid_course_code_delete(auth_client, courses_setup):
+def test_invalid_course_code_delete(auth_client):
     response = auth_client.delete("v1/courses/COMP1234")
     assert response.status_code == 400
 
