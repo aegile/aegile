@@ -130,16 +130,17 @@ def users_setup(client):
 
 @pytest.fixture()
 def courses_setup(auth_client, users_setup):
+    users = [user["handle"] for user in users_setup]
     course_creation_data = [
         {
             "code": "COMP1511",
             "name": "Programming Fundamentals",
-            "userset": [],
+            "userset": users,
         },
         {
             "code": "COMP2511",
             "name": "Object-Oriented Design & Programming",
-            "userset": [],
+            "userset": users,
         },
         {
             "code": "COMP6080",
@@ -156,7 +157,21 @@ def courses_setup(auth_client, users_setup):
 
 @pytest.fixture()
 def tutorials_setup(auth_client, courses_setup):
-    pass
+    # Creates a default tutorial H14A for all courses
+    # all users have joined the H14A tutorial for COMP1511 and COMP2511
+    tutorial_creation_data = [
+        {
+            "name": "H14A",
+            "course_code": course["code"],
+            "userset": [user["handle"] for user in course["userset"]],
+        }
+        for course in courses_setup
+    ]
+    for tutorial_form in tutorial_creation_data:
+        auth_client.post("v1/tutorials", json=tutorial_form)
+
+    response = auth_client.get("v1/tutorials")
+    return response.json
 
 
 @pytest.fixture()
