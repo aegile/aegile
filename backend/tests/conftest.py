@@ -96,7 +96,13 @@ def auth_client(client, auth_headers):
 
 
 @pytest.fixture()
-def users_setup(client):
+def handles(auth_client):
+    response = auth_client.get("v1/users")
+    return {user["email"]: user["handle"] for user in response.json}
+
+
+@pytest.fixture()
+def users_setup(auth_client):
     user_registration_data = [
         {
             "first_name": "Alex",
@@ -118,23 +124,17 @@ def users_setup(client):
         },
     ]
     for user_form in user_registration_data:
-        client.post("v1/auth/register", json=user_form)
-    response = client.post(
-        "v1/auth/login",
-        json={"email": "alex@email.com", "password": "AlexXu123!"},
-    )
-    headers = {"Authorization": f"Bearer {response.json['access_token']}"}
-    response = client.get("v1/users", headers=headers)
-    return response.json
+        auth_client.post("v1/auth/register", json=user_form)
+    return auth_client.get("v1/users").json
 
 
 @pytest.fixture()
-def courses_setup(auth_client, users_setup):
+def courses_setup(auth_client, users_setup, handles):
     course_creation_data = [
         {
             "code": "COMP1511",
             "name": "Programming Fundamentals",
-            "userset": [],
+            "userset": list(handles.values()),
         },
         {
             "code": "COMP2511",
@@ -151,12 +151,39 @@ def courses_setup(auth_client, users_setup):
         auth_client.post("v1/courses", json=course_form)
 
     response = auth_client.get("v1/courses")
-    return response.json
+    return {course["code"]: course for course in response.json}
 
 
 @pytest.fixture()
 def tutorials_setup(auth_client, courses_setup):
-    pass
+    tutorial_creation_data = [
+        {
+            "course_code": "COMP1511",
+            "name": "H11A",
+            "userset": [
+                courses_setup["COMP1511"]["userset"][0],
+                courses_setup["COMP1511"]["userset"][1],
+            ],
+        },
+        {
+            "course_code": "COMP1511",
+            "name": "H14A",
+            "userset": [
+                courses_setup["COMP1511"]["userset"][2],
+                courses_setup["COMP1511"]["userset"][3],
+            ],
+        },
+        {
+            "course_code": "COMP6080",
+            "name": "T18B",
+            "userset": [],
+        },
+    ]
+    for tut_form in tutorial_creation_data:
+        auth_client.post("v1/tutorials", json=tut_form)
+
+    response = auth_client.get("v1/tutorials")
+    return [tutorial for course in response.json for tutorial in course["tutorials"]]
 
 
 @pytest.fixture()
