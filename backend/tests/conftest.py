@@ -183,7 +183,7 @@ def tutorials_setup(auth_client, courses_setup):
         auth_client.post("v1/tutorials", json=tut_form)
 
     response = auth_client.get("v1/tutorials")
-    return [tutorial for course in response.json for tutorial in course["tutorials"]]
+    return response.json
 
 
 @pytest.fixture()
