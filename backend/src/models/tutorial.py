@@ -15,10 +15,11 @@ class Tutorial(db.Model):
         db.UniqueConstraint("course_code", "name", name="uix_course_name"),
     )
 
-    def __init__(self, course_code: str, name: str):
+    def __init__(self, course_code: str, name: str, userset: list[User] = []):
         self.course_code = course_code
         self.name = name
         self.userset = UserSet()
+        self.userset.members = userset
 
     def update(self, course_data: dict):
         self.course_code = get_with_default(
@@ -28,3 +29,6 @@ class Tutorial(db.Model):
 
     def enroll_users(self, users: list[User]):
         self.userset.members = users
+
+    def __repr__(self):
+        return f"<Tutorial {self.id} {self.course_code}→{self.name}>"

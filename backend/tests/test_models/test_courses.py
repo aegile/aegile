@@ -1,5 +1,6 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
+from src.error import InputError
 from src.models.course import Course
 from src.models.user import User, UserSet
 
@@ -61,10 +62,8 @@ def test_duplicate_course_code(test_db):
 
 
 def test_null_course_code(test_db):
-    new_course = Course(code=None, name="Programming Fundamentals")
-    with pytest.raises(IntegrityError):
-        test_db.session.add(new_course)
-        test_db.session.commit()
+    with pytest.raises(InputError):
+        Course(code=None, name="Programming Fundamentals")
 
 
 def test_enroll_users(test_db):

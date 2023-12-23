@@ -13,5 +13,11 @@ course_fetch_output = api.model(
 )
 
 course_creation_input = api.model(
-    "CourseCreationInput", {"code": fields.String, "name": fields.String}
+    "CourseCreationInput",
+    {
+        "code": fields.String(required=True),
+        "name": fields.String(required=True),
+        "userset": fields.List(fields.String, required=True),
+    },
+    strict=True,
 )

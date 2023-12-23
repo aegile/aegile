@@ -6,6 +6,7 @@ from json import dumps, load
 from flask import Flask
 from flask_cors import CORS
 from .extensions import api, db, jwt
+from .models.user import User
 from .routes.auth import auth_ns
 from .routes.courses import courses_ns
 from .routes.roles import roles_ns
@@ -51,7 +52,7 @@ def create_app():
     setup_log_handlers()
 
     app = Flask(__name__)
-
+    app.logger.handlers.clear()
     # app = Flask(__name__, static_url_path="/static/")
     CORS(app)
 
@@ -76,5 +77,14 @@ def create_app():
     api.add_namespace(tuts_ns)
     api.add_namespace(groups_ns)
     api.add_namespace(projects_ns)
+
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return user.id
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return User.query.filter_by(id=identity).first()
 
     return app

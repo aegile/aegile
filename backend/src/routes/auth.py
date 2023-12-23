@@ -2,7 +2,7 @@ from flask_restx import Resource, Namespace
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 
-from ..error import InputError
+from ..error import AuthError
 
 from ..models.user import User
 from ..api_models.user_models import user_creation_input, user_login_input
@@ -33,6 +33,6 @@ class Login(Resource):
         user: User = fetch_one(User, {"email": auth_ns.payload["email"]})
         if not check_password_hash(user.password, auth_ns.payload["password"]):
             trigger_event("event_user_login_fail", user)
-            raise InputError("Incorrect password.")
+            raise AuthError("Incorrect password.")
         trigger_event("event_user_login_success", user)
-        return {"access_token": create_access_token(user.handle)}
+        return {"access_token": create_access_token(user)}
