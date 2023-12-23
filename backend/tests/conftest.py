@@ -163,7 +163,7 @@ def tutorials_setup(auth_client, courses_setup):
         {
             "name": "H14A",
             "course_code": course["code"],
-            "userset": [user["handle"] for user in course["userset"]],
+            "userset": [user["handle"] for user in course["userset"]["members"]],
         }
         for course in courses_setup
     ]
@@ -183,7 +183,7 @@ def groups_setup(auth_client, tutorial_setup):
             "name": "Group 1",
             "tutorial_id": tutorial["id"],
             "course_code": tutorial["course_code"],
-            "userset": [user["handle"] for user in tutorial["userset"]],
+            "userset": [user["handle"] for user in tutorial["userset"]["members"]],
         }
         for tutorial in tutorial_setup
     ]
