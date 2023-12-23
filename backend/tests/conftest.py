@@ -176,4 +176,18 @@ def tutorials_setup(auth_client, courses_setup):
 
 @pytest.fixture()
 def groups_setup(auth_client, tutorial_setup):
-    pass
+    # Creates a default Group 1 for all tutorials
+    # The group for COMP6080's H14A tutorial has no members
+    group_creation_data = [
+        {
+            "name": "Group 1",
+            "tutorial_id": tutorial["id"],
+            "course_code": tutorial["course_code"],
+            "userset": [user["handle"] for user in tutorial["userset"]],
+        }
+        for tutorial in tutorial_setup
+    ]
+    for group_form in group_creation_data:
+        auth_client.post("v1/groups", json=group_form)
+    response = auth_client.get("v1/groups")
+    return response.json
