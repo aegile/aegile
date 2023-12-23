@@ -41,7 +41,7 @@ class TutorialCore(Resource):
 
 @tuts_ns.route("/<string:tutorial_id>")
 class TutorialSpecific(Resource):
-    # method_decorators = [jwt_required()]
+    method_decorators = [jwt_required()]
 
     @tuts_ns.marshal_with(tutorial_fetch_output)
     def get(self, tutorial_id: str):

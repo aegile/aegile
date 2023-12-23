@@ -1,9 +1,15 @@
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from ..extensions import db
-from ..error import InputError
+from ..error import InputError, AccessError
 from ..models.user import User
 from ..handlers.events import trigger_event
+
+
+def query_in_userset(model, object, user):
+    if user not in object.userset.members:
+        raise AccessError(f"You are not a member of this {(model.__name__).lower()}")
+    return object
 
 
 def fetch_one(model, filter):

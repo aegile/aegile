@@ -6,7 +6,13 @@ from ..models.user import User
 from ..api_models.course_models import course_fetch_output, course_creation_input
 from ..api_models.user_models import userset_list_input
 
-from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
+from .helpers import (
+    fetch_one,
+    fetch_all,
+    add_db_object,
+    update_db_object,
+    query_in_userset,
+)
 
 courses_ns = Namespace("v1/courses", description="Courses related operations")
 
@@ -39,16 +45,19 @@ class CourseSpecific(Resource):
 
     @courses_ns.marshal_with(course_fetch_output)
     def get(self, course_code: str):
-        return fetch_one(Course, {"code": course_code})
+        course: Course = fetch_one(Course, {"code": course_code})
+        return query_in_userset(Course, course, current_user)
 
     @courses_ns.expect(course_creation_input)
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
+        query_in_userset(Course, course, current_user)
         course.update(course_data=courses_ns.payload)
         return update_db_object(Course, course.code)
 
     def delete(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
+        query_in_userset(Course, course, current_user)
         db.session.delete(course)
         db.session.commit()
         return {}, 200
@@ -61,6 +70,7 @@ class CourseEnroll(Resource):
     @courses_ns.expect(userset_list_input)
     def put(self, course_code: str):
         course: Course = fetch_one(Course, {"code": course_code})
+        query_in_userset(Course, course, current_user)
         course.enroll_users(
             [
                 fetch_one(User, {"handle": handle})
