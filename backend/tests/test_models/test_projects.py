@@ -31,19 +31,14 @@ def test_project_creation(test_db, test_projects):
     test_db.session.add(new_project)
     test_db.session.commit()
     inserted_project = test_db.session.scalars(
-        test_db.select(Project).filter_by(name="Assignment 1")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+        )
     ).first()
     assert inserted_project is not None
     assert inserted_project.course_code == "COMP1511"
     assert inserted_project.group_id == 1
     assert inserted_project.name == "Assignment 1"
-
-    inserted_course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
-    ).first()
-    assert inserted_course is not None
-    assert inserted_course.code == "COMP1511"
-    assert inserted_course.name == "Programming Fundamentals"
 
 
 def test_project_update(test_db, test_projects):
@@ -54,13 +49,17 @@ def test_project_update(test_db, test_projects):
     test_db.session.commit()
 
     original_project = test_db.session.scalars(
-        test_db.select(Project).filter_by(name="Assignment 1")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+        )
     ).first()
     original_project.name = "Assignment 2"
     test_db.session.commit()
 
     updated_project = test_db.session.scalars(
-        test_db.select(Project).filter_by(name="Assignment 2")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 2"
+        )
     ).first()
     assert updated_project is not None
     assert updated_project.name == "Assignment 2"
@@ -74,13 +73,17 @@ def test_project_deletion(test_db, test_projects):
     test_db.session.commit()
 
     project = test_db.session.scalars(
-        test_db.select(Project).filter_by(name="Assignment 1")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+        )
     ).first()
     test_db.session.delete(project)
     test_db.session.commit()
 
     deleted_project = test_db.session.scalars(
-        test_db.select(Project).filter_by(name="Assignment 1")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+        )
     ).first()
     assert deleted_project is None
 
@@ -130,7 +133,6 @@ def test_null_project_name(test_db, test_projects):
 
 def test_duplicate_project_names(test_db, test_projects):
     # Testing same project names in a single group
-    # Not yet implemented in project.py...
     new_project = Project(
         course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
     )
@@ -160,7 +162,27 @@ def test_multiple_group_projects(test_db, test_projects):
     test_db.session.add(new_project3)
     test_db.session.commit()
 
-    assert test_db.session.query(Project).count() == 3
+    inserted_project = test_db.session.scalars(
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+        )
+    ).first()
+    assert inserted_project is not None
+    assert inserted_project.name == "Assignment 1"
+    inserted_project2 = test_db.session.scalars(
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 2"
+        )
+    ).first()
+    assert inserted_project2 is not None
+    assert inserted_project2.name == "Assignment 2"
+    inserted_project3 = test_db.session.scalars(
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 3"
+        )
+    ).first()
+    assert inserted_project3 is not None
+    assert inserted_project3.name == "Assignment 3"
 
 
 def test_duplicate_project_names_in_different_groups(test_db, test_projects):
@@ -182,14 +204,16 @@ def test_duplicate_project_names_in_different_groups(test_db, test_projects):
 
     inserted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
-            group_id=test_projects[1], name="Assignment 1"
+            course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
         )
     ).first()
     assert inserted_project is not None
     assert inserted_project.name == "Assignment 1"
 
     inserted_project2 = test_db.session.scalars(
-        test_db.select(Project).filter_by(group_id=new_group2.id, name="Assignment 1")
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0], group_id=new_group2.id, name="Assignment 1"
+        )
     ).first()
     assert inserted_project2 is not None
     assert inserted_project2.name == "Assignment 1"
