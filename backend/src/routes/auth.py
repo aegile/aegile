@@ -35,4 +35,4 @@ class Login(Resource):
             trigger_event("event_user_login_fail", user)
             raise AuthError("Incorrect password.")
         trigger_event("event_user_login_success", user)
-        return {"access_token": create_access_token(user.handle)}
+        return {"access_token": create_access_token(user)}
