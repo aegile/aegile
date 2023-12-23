@@ -5,6 +5,7 @@ from src.models.tutorial import Tutorial
 from src.models.group import Group
 from src.models.project import Project
 from src.models.user import User, UserSet
+from src.error import AccessError
 
 
 @pytest.fixture(scope="function")
@@ -217,3 +218,30 @@ def test_duplicate_project_names_in_different_groups(test_db, test_projects):
     ).first()
     assert inserted_project2 is not None
     assert inserted_project2.name == "Assignment 1"
+
+
+@pytest.mark.xfail(reason="Checking for membership in group not yet implemented")
+def test_join_project_in_nonmember_group(test_db, test_projects):
+    """
+    # Case when user is in a corresponding course and tutorial, but not in the
+    # correct group of the project
+    new_project = Project(
+        course_code=test_projects[0], group_id=test_projects[1], name="Assignment 1"
+    )
+    new_user = User(
+        first_name="Philip",
+        last_name="Tran",
+        email="philip@email.com",
+        password="PhilipTran123!",
+    )
+    test_db.session.add(new_project)
+    test_db.session.add(new_user)
+    test_db.session.commit()
+
+    # Add the user to the course and tut here... but NOT the group
+
+    # Should throw AccessError since user is not in the correct group
+    with pytest.raises(AccessError):
+        new_project.add_members([new_user])
+    """
+    pass
