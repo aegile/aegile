@@ -1,5 +1,5 @@
 from flask_restx import Resource, Namespace
-from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
+from flask_jwt_extended import jwt_required, current_user
 from ..extensions import db
 from ..models.course import Course
 from ..models.user import User
