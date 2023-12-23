@@ -30,7 +30,7 @@ class User(db.Model):
         self.image = get_with_default(profile_data, "image", self.image)
 
     def __repr__(self):
-        return f"<Course {self.id} {self.first_name} {self.last_name}>"
+        return f"<User {self.id} {self.handle} {self.email}>"
 
 
 class UserSet(db.Model):
