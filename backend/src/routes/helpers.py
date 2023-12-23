@@ -5,22 +5,13 @@ from ..error import InputError
 from ..models.user import User
 from ..handlers.events import trigger_event
 
-AUTH_NAME = "jsonWebToken"
-
-authorizations = {
-    AUTH_NAME: {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-    }
-}
-
 
 def fetch_one(model, filter):
     try:
         return db.session.scalars(db.select(model).filter_by(**filter)).one()
     except NoResultFound as exc:
-        msg = f"{model.__name__} {filter} was not found."
+        filter_str = ", ".join(f"{k}:'{v}'" for k, v in filter.items())
+        msg = f"{model.__name__} {filter_str} was not found."
         trigger_event("event_db_query_not_found", msg)
         raise InputError(f"ERROR: {msg}") from exc
 

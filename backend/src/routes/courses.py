@@ -1,26 +1,14 @@
 from flask_restx import Resource, Namespace
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 from ..extensions import db
 from ..models.course import Course
 from ..models.user import User
 from ..api_models.course_models import course_fetch_output, course_creation_input
 from ..api_models.user_models import userset_list_input
 
-from .helpers import (
-    authorizations,
-    AUTH_NAME,
-    fetch_one,
-    fetch_all,
-    add_db_object,
-    update_db_object,
-)
+from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 
-courses_ns = Namespace(
-    "v1/courses",
-    description="Courses related operations",
-    authorizations=authorizations,
-    security=AUTH_NAME,
-)
+courses_ns = Namespace("v1/courses", description="Courses related operations")
 
 
 @courses_ns.route("")
@@ -29,12 +17,18 @@ class CourseCore(Resource):
 
     @courses_ns.marshal_list_with(course_fetch_output)
     def get(self):
-        return fetch_all(Course)
+        courses: list(Course) = fetch_all(Course)
+        return [crs for crs in courses if current_user in crs.userset.members]
 
     @courses_ns.expect(course_creation_input)
     def post(self):
         new_course = Course(
-            code=courses_ns.payload["code"], name=courses_ns.payload["name"]
+            code=courses_ns.payload["code"],
+            name=courses_ns.payload["name"],
+            userset=[
+                fetch_one(User, {"handle": handle})
+                for handle in courses_ns.payload["userset"]
+            ],
         )
         return add_db_object(Course, new_course, new_course.code)
 

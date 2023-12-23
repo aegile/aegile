@@ -10,21 +10,10 @@ from ..api_models.user_models import (
     user_update_input,
 )
 
-from .helpers import (
-    fetch_one,
-    add_db_object,
-    update_db_object,
-    authorizations,
-    AUTH_NAME,
-)
+from .helpers import fetch_one, add_db_object, update_db_object
 
 
-users_ns = Namespace(
-    "v1/users",
-    description="User related operations",
-    authorizations=authorizations,
-    security=AUTH_NAME,
-)
+users_ns = Namespace("v1/users", description="User related operations")
 
 
 @users_ns.route("")
