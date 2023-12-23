@@ -15,8 +15,9 @@ tutorial_fetch_output = api.model(
 tutorial_creation_input = api.model(
     "TutorialCreationInput",
     {
-        "course_code": fields.String,
-        "name": fields.String,
-        "members": fields.List(fields.String),
+        "course_code": fields.String(required=True),
+        "name": fields.String(required=True),
+        "userset": fields.List(fields.String, required=True),
     },
+    strict=True,
 )

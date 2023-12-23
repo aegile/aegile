@@ -1,4 +1,5 @@
 from src.extensions import db
+from src.error import InputError
 from .helpers import get_with_default
 
 
@@ -13,6 +14,8 @@ class User(db.Model):
     image = db.Column(db.String)
 
     def __init__(self, first_name: str, last_name: str, email: str, password: str):
+        if not first_name or not last_name or not email or not password:
+            raise InputError("Names, email, and password cannot be empty")
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -27,7 +30,7 @@ class User(db.Model):
         self.image = get_with_default(profile_data, "image", self.image)
 
     def __repr__(self):
-        return f"<Course {self.id} {self.first_name} {self.last_name}>"
+        return f"<User {self.id} {self.handle} {self.email}>"
 
 
 class UserSet(db.Model):

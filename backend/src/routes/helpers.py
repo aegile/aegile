@@ -1,26 +1,23 @@
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from ..extensions import db
-from ..error import InputError
+from ..error import InputError, AccessError
 from ..models.user import User
 from ..handlers.events import trigger_event
 
-AUTH_NAME = "jsonWebToken"
 
-authorizations = {
-    AUTH_NAME: {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-    }
-}
+def query_in_userset(model, object, user):
+    if user not in object.userset.members:
+        raise AccessError(f"You are not a member of this {(model.__name__).lower()}")
+    return object
 
 
 def fetch_one(model, filter):
     try:
         return db.session.scalars(db.select(model).filter_by(**filter)).one()
     except NoResultFound as exc:
-        msg = f"{model.__name__} {filter} was not found."
+        filter_str = ", ".join(f"{k}:'{v}'" for k, v in filter.items())
+        msg = f"{model.__name__} {filter_str} was not found."
         trigger_event("event_db_query_not_found", msg)
         raise InputError(f"ERROR: {msg}") from exc
 

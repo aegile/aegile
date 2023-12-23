@@ -15,11 +15,12 @@ user_fetch_output = api.model(
 user_creation_input = api.model(
     "UserCreationInput",
     {
-        "first_name": fields.String,
-        "last_name": fields.String,
-        "email": fields.String,
-        "password": fields.String,
+        "first_name": fields.String(required=True),
+        "last_name": fields.String(required=True),
+        "email": fields.String(required=True),
+        "password": fields.String(required=True),
     },
+    strict=True,
 )
 
 user_login_input = api.model(
@@ -44,7 +45,7 @@ user_update_input = api.model(
 userset_list_input = api.model(
     "UserSetListInput",
     {
-        "members": fields.List(fields.String),
+        "userset": fields.List(fields.String, required=True),
     },
 )
 

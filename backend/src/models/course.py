@@ -1,6 +1,7 @@
 from ..extensions import db
 from .user import User, UserSet
 from .helpers import get_with_default
+from ..error import InputError
 
 
 class Course(db.Model):
@@ -13,10 +14,13 @@ class Course(db.Model):
         "Tutorial", backref="course", cascade="all, delete-orphan"
     )
 
-    def __init__(self, code: str, name: str):
+    def __init__(self, code: str, name: str, userset: list[User] = []):
+        if not code or not name:
+            raise InputError("Course code and course name must be given.")
         self.code = code
         self.name = name
         self.userset = UserSet()
+        self.userset.members = userset
 
     def update(self, course_data: dict):
         self.code = get_with_default(course_data, "code", self.code)
@@ -26,7 +30,7 @@ class Course(db.Model):
         self.userset.members = users
 
     def __repr__(self):
-        return f"<Course {self.code=} {self.name=}>"
+        return f"<Course {self.id} {self.code} {self.name}>"
 
 
 class CourseOffering(db.Model):

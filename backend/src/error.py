@@ -9,3 +9,8 @@ class AccessError(HTTPException):
 class InputError(HTTPException):
     code = 400
     message = "Bad Request"
+
+
+class AuthError(HTTPException):
+    code = 401
+    message = "Unauthorized"

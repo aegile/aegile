@@ -10,32 +10,20 @@ from ..api_models.user_models import (
     user_update_input,
 )
 
-from .helpers import (
-    fetch_one,
-    add_db_object,
-    update_db_object,
-    authorizations,
-    AUTH_NAME,
-)
+from .helpers import fetch_one, add_db_object, update_db_object
 
 
-users_ns = Namespace(
-    "v1/users",
-    description="User related operations",
-    authorizations=authorizations,
-)
+users_ns = Namespace("v1/users", description="User related operations")
 
 
 @users_ns.route("")
 class UserCoreAPI(Resource):
     method_decorators = [jwt_required()]
 
-    @users_ns.doc(security=AUTH_NAME)
     @users_ns.marshal_list_with(user_fetch_output)
     def get(self):
         return User.query.all()
 
-    @users_ns.doc(security=AUTH_NAME)
     @users_ns.expect(user_creation_input)
     def post(self):
         new_user = User(
@@ -49,6 +37,8 @@ class UserCoreAPI(Resource):
 
 @users_ns.route("/<string:user_handle>")
 class CourseWithCodeAPI(Resource):
+    method_decorators = [jwt_required()]
+
     @users_ns.marshal_with(user_fetch_output)
     def get(self, user_handle: str):
         return fetch_one(User, {"handle": user_handle})
