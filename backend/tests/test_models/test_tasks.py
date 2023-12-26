@@ -10,8 +10,15 @@ from src.models.user import User, UserSet
 
 @pytest.fixture(scope="function")
 def test_tasks(test_db):
+    new_user = User(
+        first_name="Philip",
+        last_name="Tran",
+        email="philip@email.com",
+        password="PhilipTran123!",
+    )
     new_course = Course(code="COMP1511", name="Programming Fundamentals")
     new_tut = Tutorial(course_code=new_course.code, name="H11A")
+    test_db.session.add(new_user)
     test_db.session.add(new_course)
     test_db.session.add(new_tut)
     test_db.session.flush()
@@ -21,11 +28,14 @@ def test_tasks(test_db):
     test_db.session.add(new_group)
     test_db.session.flush()
     new_project = Project(
-        course_code=new_course.code, group_id=new_group.id, name="Assignment 1"
+        course_code=new_course.code,
+        group_id=new_group.id,
+        name="Assignment 1",
+        creator=new_user.handle,
     )
     test_db.session.add(new_project)
     test_db.session.flush()
-    return new_project.id, new_course.code, new_group.id
+    return new_project.id, new_course.code, new_group.id, new_user.handle
 
 
 def test_task_creation(test_db, test_tasks):
@@ -137,7 +147,10 @@ def test_multiple_project_tasks(test_db, test_tasks):
 
 def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
     new_project2 = Project(
-        course_code=test_tasks[1], group_id=test_tasks[2], name="Assignment 2"
+        course_code=test_tasks[1],
+        group_id=test_tasks[2],
+        name="Assignment 2",
+        creator=test_tasks[3],
     )
     test_db.session.add(new_project2)
     test_db.session.flush()
