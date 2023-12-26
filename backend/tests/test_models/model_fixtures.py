@@ -18,16 +18,20 @@ def init_users(test_db):
 def init_courses(test_db, init_users):
     user, _, _ = init_users
 
-    course1 = Course("23T2", "COMP1511", "Programming Fundamentals", user)
-    course2 = Course("23T2", "COMP2511", "Object-Oriented Design", user)
-    course3 = Course("23T2", "COMP6080", "Web Front-End Programming", user)
+    course1 = Course(
+        term="23T2", code="COMP1511", name="Programming Fundamentals", creator=user
+    )
+    course2 = Course(
+        term="23T2", code="COMP2511", name="Object-Oriented Design", creator=user
+    )
+    course3 = Course(
+        term="23T2", code="COMP6080", name="Web Front-End Programming", creator=user
+    )
     test_db.session.add_all([course1, course2, course3])
     test_db.session.commit()
-    ucs1 = UserCourseStatus(user_handle=user.handle, course_id=course1.id, role_id=None)
-    ucs2 = UserCourseStatus(user_handle=user.handle, course_id=course2.id, role_id=None)
-    ucs3 = UserCourseStatus(user_handle=user.handle, course_id=course3.id, role_id=None)
-    test_db.session.add_all([ucs1, ucs2, ucs3])
-    test_db.session.commit()
+    course1.enroll([user])
+    course2.enroll([user])
+    course3.enroll([user])
     return course1, course2, course3
 
 
