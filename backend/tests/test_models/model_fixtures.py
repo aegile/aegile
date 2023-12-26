@@ -31,21 +31,18 @@ def init_courses(test_db, init_users):
     return course1, course2, course3
 
 
-# @pytest.fixture
-# def init_roles(test_db, init_users, init_courses):
-#     course1, course2, course3 = init_courses
-#     user1, user2, user3 = init_users
-#     student_role = Role(name="Student", course_code=course1.code)
-#     tutor_role = Role(name="Tutor", course_code=course1.code)
-#     test_db.session.add_all([student_role, tutor_role])
-#     test_db.session.commit()
+@pytest.fixture
+def init_roles(test_db, init_users, init_courses):
+    user1, user2, user3 = init_users
+    course, _, _ = init_courses
+    student_role = Role(name="Student", course_code=course.code)
+    tutor_role = Role(name="Tutor", course_code=course.code)
+    test_db.session.add_all([student_role, tutor_role])
+    test_db.session.commit()
 
-#     ucs1 = UserCourseStatus(user1.handle, course1.id, student_role.id)
-#     ucs2 = UserCourseStatus(user2.handle, course1.id, student_role.id)
-#     ucs3 = UserCourseStatus(user3.handle, course1.id, tutor_role.id)
-#     # The following line should not be possible
-#     # ucs4 = UserCourseStatus(user3.handle, course2.code, tutor_role.id)
-#     test_db.session.add_all([ucs1, ucs2, ucs3])
-#     test_db.session.commit()
+    ucs1 = course.get_user_status(user1)
 
-#     return student_role, tutor_role
+    ucs1.role_id = student_role.id
+    test_db.session.commit()
+
+    return student_role, tutor_role

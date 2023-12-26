@@ -8,7 +8,9 @@ from ..error import InputError
 class UserCourseStatus(db.Model):
     user_handle = db.Column(db.String, db.ForeignKey("user.handle"), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey("role.id"), nullable=True)
+    role_id = db.Column(
+        db.Integer, db.ForeignKey("role.id", ondelete="SET NULL"), nullable=True
+    )
 
     user = db.relationship("User", backref="ucs")
     # role = db.relationship("Role", backref="course_progression_statuses")
@@ -22,7 +24,7 @@ class UserCourseStatus(db.Model):
         self.role_id = role_id
 
     def __repr__(self) -> str:
-        return f"<UserCourseStatus {self.user_handle} {self.course_code}>"
+        return f"<UserCourseStatus {self.user_handle} cousre_id={self.course_id}>"
 
 
 class Course(db.Model):
@@ -75,8 +77,15 @@ class Course(db.Model):
     #         f"User {user.handle} is already enrolled in course {self.code}."
     #     ) from exc
 
-    def enroll_users(self, users: list[User]):
-        self.userset.members = users
+    def get_user_status(self, user: User):
+        return next(
+            (
+                ucs
+                for ucs in self.user_course_statuses
+                if ucs.user_handle == user.handle
+            ),
+            None,
+        )
 
     def __repr__(self):
         return f"<Course {self.id} {self.code} {self.name}>"

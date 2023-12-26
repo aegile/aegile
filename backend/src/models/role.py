@@ -16,7 +16,7 @@ class Role(db.Model):
     can_manage_roles = db.Column(db.Integer, nullable=False, default=0)
     can_access_tutorials = db.Column(db.Integer, nullable=False, default=0)
     user_course_statuses = db.relationship(
-        "UserCourseStatus", backref="role", lazy=True, cascade="all, delete-orphan"
+        "UserCourseStatus", backref="role", lazy=True
     )
 
     def __init__(self, name: str, course_code: str):
@@ -33,6 +33,13 @@ class Role(db.Model):
     def members(self):
         return [ucs.user for ucs in self.user_course_statuses]
 
+    @property
+    def permissions(self):
+        return {
+            "can_access_tutorials": self.can_access_tutorials,
+            "can_manage_roles": self.can_manage_roles,
+        }
+
     # def enable_permission(self, permission: str, value: str) -> bool:
     #     return setattr(self, permission, True)
 
@@ -41,18 +48,6 @@ class Role(db.Model):
 
     def has_permission(self, permission: str) -> bool:
         return getattr(self, permission, 0) == 1
-
-    @property
-    def permissions(self):
-        return {
-            "can_access_tutorials": self.can_access_tutorials,
-            "can_manage_roles": self.can_manage_roles,
-        }
-
-    def remove_permission(self, permission_type: str):
-        self.permissions = [
-            perm for perm in self.permissions if perm.name != permission_type
-        ]
 
     def __repr__(self):
         return f"<Role {self.name=} {self.course=}>"
