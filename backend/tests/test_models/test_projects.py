@@ -29,7 +29,7 @@ def test_projects(test_db):
     )
     test_db.session.add(new_group)
     test_db.session.flush()
-    return new_course.code, new_group.id, new_tut.id, new_user.handle
+    return new_course.code, new_group.id, new_tut.id, new_user.handle, new_group
 
 
 def test_project_creation(test_db, test_projects):
@@ -236,6 +236,30 @@ def test_duplicate_project_names(test_db, test_projects):
         test_db.session.commit()
 
 
+def test_null_project_creator_handle(test_db, test_projects):
+    new_project = Project(
+        course_code=test_projects[0],
+        group_id=test_projects[1],
+        name="Assignment 1",
+        creator=None,
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_project)
+        test_db.session.commit()
+
+
+def test_invalid_creator_handle(test_db, test_projects):
+    new_project = Project(
+        course_code=test_projects[0],
+        group_id=test_projects[1],
+        name="Assignment 1",
+        creator="PhilipTran1234",
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_project)
+        test_db.session.commit()
+
+
 def test_multiple_group_projects(test_db, test_projects):
     new_project = Project(
         course_code=test_projects[0],
@@ -336,3 +360,30 @@ def test_duplicate_project_names_in_different_groups(test_db, test_projects):
     ).first()
     assert inserted_project2 is not None
     assert inserted_project2.name == "Assignment 1"
+
+
+def test_add_members(test_db, test_projects):
+    new_user = User(
+        first_name="Alex", last_name="Xu", email="alex@email.com", password="AlexXu123!"
+    )
+    new_project = Project(
+        course_code=test_projects[0],
+        group_id=test_projects[1],
+        name="Assignment 1",
+        creator=new_user.handle,
+    )
+    test_db.session.add(new_user)
+    test_db.session.add(new_project)
+    test_db.session.commit()
+
+    new_project.add_members([new_user])
+    test_db.session.commit()
+    project = test_db.session.scalars(
+        test_db.select(Project).filter_by(
+            course_code=test_projects[0],
+            group_id=test_projects[1],
+            name="Assignment 1",
+            creator=new_user.handle,
+        )
+    ).first()
+    assert new_user in project.get_members()
