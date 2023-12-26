@@ -11,7 +11,7 @@ from ..api_models.tutorial_models import tutorial_fetch_output, tutorial_creatio
 from ..api_models.user_models import userset_list_input
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
-from .access_checks import query_in_userset, query_course_creator, check_role_permission
+from .access_checks import check_in_userset, check_course_creator, check_role_permission
 
 tuts_ns = Namespace("v1/tutorials", description="Tutorial related operations")
 
@@ -24,7 +24,7 @@ class TutorialAuth(Resource):
         fetch_one(Course, {"code": course_code})
         ucs: UserCourseStatus = fetch_one(
             UserCourseStatus,
-            {"user_handle": current_user.handle, "course_code": course_code},
+            {"user_id": current_user.id, "course_code": course_code},
         )
         check_role_permission(ucs.role, "view_tutorials")
         return fetch_all(Tutorial)
