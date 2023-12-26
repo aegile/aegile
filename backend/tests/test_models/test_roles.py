@@ -95,8 +95,8 @@ def test_user_assigned_duplicate_course_role(test_db, init_users, init_courses):
     test_db.session.add(student_role)
     test_db.session.commit()
 
-    ucs1 = UserCourseStatus(user1.handle, course1.code, student_role.id)
-    ucs2 = UserCourseStatus(user1.handle, course1.code, student_role.id)
+    ucs1 = UserCourseStatus(user1.id, course1.code, student_role.id)
+    ucs2 = UserCourseStatus(user1.id, course1.code, student_role.id)
     with pytest.raises(IntegrityError):
         test_db.session.add_all([ucs1, ucs2])
         test_db.session.commit()
@@ -110,8 +110,8 @@ def test_user_assigned_duplicate_course_role(test_db, init_users, init_courses):
     test_db.session.add_all([student_role, tutor_role])
     test_db.session.commit()
 
-    ucs1 = UserCourseStatus(user1.handle, course1.code, student_role.id)
-    ucs2 = UserCourseStatus(user1.handle, course1.code, tutor_role.id)
+    ucs1 = UserCourseStatus(user1.id, course1.code, student_role.id)
+    ucs2 = UserCourseStatus(user1.id, course1.code, tutor_role.id)
     with pytest.raises(IntegrityError):
         test_db.session.add_all([ucs1, ucs2])
         test_db.session.commit()
@@ -129,8 +129,6 @@ def test_delete_role(test_db, init_users, init_courses, init_roles):
     ).first()
     assert deleted_role is None
     ucs_with_deleted_role: UserCourseStatus = test_db.session.scalars(
-        test_db.select(UserCourseStatus).filter_by(
-            user_handle=user.handle, course_id=course.id
-        )
+        test_db.select(UserCourseStatus).filter_by(user_id=user.id, course_id=course.id)
     ).first()
     assert ucs_with_deleted_role.role is None

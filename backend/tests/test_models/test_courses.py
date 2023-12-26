@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from tests.test_models.model_fixtures import init_users, init_courses
 from src.error import InputError
+from src.models.user import User
 from src.models.course import Course, UserCourseStatus
 
 
@@ -16,7 +17,7 @@ def test_create_course_with_valid_inputs(test_db, init_users):
     test_db.session.add(new_course)
     test_db.session.commit()
     new_ucs: UserCourseStatus = UserCourseStatus(
-        user_handle=user.handle,
+        user_id=user.id,
         course_id=new_course.id,
         role_id=None,
     )
@@ -63,11 +64,40 @@ def test_enroll_already_enrolled_users(test_db, init_users, init_courses):
     course, _, _ = init_courses
 
     course.enroll([user2, user3])
-    test_db.session.commit()
 
     # the course_id and user_handle are unique together
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
         course.enroll([user2, user3])
+
+
+def test_enroll_with_invalid_user(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+    fake_user = User("Frodo", "Baggins", "frodo@shire.com", "mrUnderHill!")
+
+    # in routes, check if user exists
+    with pytest.raises(IntegrityError):
+        course.enroll([user2, user3, fake_user])
+
+
+def test_course_kick_with_valid_user(test_db, init_users, init_courses):
+    user1, user2, user3 = init_users
+    course, _, _ = init_courses
+    course.enroll([user2, user3])
+
+    # note user1 is enrolled via the init_courses fixture
+    assert len(course.members) == 3
+    course.kick([user1, user2])
+    assert len(course.members) == 1
+
+
+def test_course_kick_with_unenrolled_user(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+    fake_user = User("Frodo", "Baggins", "frodo@shire.com", "mrUnderHill!")
+
+    # invalid details will just not result in a delete
+    course.kick([user2, fake_user])
 
 
 def test_course_update_with_valid_input(test_db, init_courses):
