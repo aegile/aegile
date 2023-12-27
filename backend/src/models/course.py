@@ -64,7 +64,9 @@ class Course(db.Model):
         self.term = get_with_default(course_data, "term", self.code)
         self.code = get_with_default(course_data, "code", self.code)
         self.name = get_with_default(course_data, "name", self.name)
-        self.description = get_with_default(course_data, "description", self.name)
+        self.description = get_with_default(
+            course_data, "description", self.description
+        )
 
     @property
     def members(self):
@@ -75,23 +77,25 @@ class Course(db.Model):
         return len(self.user_course_statuses)
 
     def enroll(self, users: list[User]):
-        for user in users:
-            try:
+        try:
+            for user in users:
                 ucs = UserCourseStatus(
                     user_id=user.id,
                     course_id=self.id,
                     role_id=None,
                 )
                 db.session.add(ucs)
-            except IntegrityError:
-                db.session.rollback()
-                raise InputError(
-                    f"User {user.handle} is already enrolled in course {self.code}."
-                )
-        db.session.commit()
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            raise InputError(
+                f"User {user.handle} is already enrolled in course {self.code}."
+            )
 
     def kick(self, users: list[User]):
         for user in users:
+            if user.id == self.creator:
+                raise InputError("Creator cannot be kicked from course.")
             db.session.execute(
                 db.delete(UserCourseStatus)
                 .where(UserCourseStatus.user_id == user.id)
