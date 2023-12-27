@@ -39,27 +39,83 @@ def test_tasks(test_db):
 
 
 def test_task_creation(test_db, test_tasks):
-    new_task = Task(name="Task 1", project_id=test_tasks[0])
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
     test_db.session.add(new_task)
     test_db.session.commit()
     inserted_task = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task is not None
     assert inserted_task.name == "Task 1"
     assert inserted_task.project_id == test_tasks[0]
+    assert inserted_task.creator == test_tasks[3]
+    assert inserted_task.status == "Not Started"
 
 
-# Also add other fields to change such as description, weighting, deadline...
-def test_task_update(test_db, test_tasks):
-    new_test = Task(name="Task 1", project_id=test_tasks[0])
-    test_db.session.add(new_test)
+def test_task_creation_with_nullable_fields(test_db, test_tasks):
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+        description="Write unit tests for auth implementation",
+        deadline="31/12/2023",
+        weighting=3,
+        priority="Medium",
+        attachment="test_image.jpeg",
+    )
+    test_db.session.add(new_task)
+    test_db.session.commit()
+    inserted_task = test_db.session.scalars(
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
+    ).first()
+    assert inserted_task is not None
+    assert inserted_task.description == "Write unit tests for auth implementation"
+    assert inserted_task.deadline == "31/12/2023"
+    assert inserted_task.weighting == 3
+    assert inserted_task.priority == "Medium"
+    assert inserted_task.attachment == "test_image.jpeg"
+
+
+def test_task_update_fields(test_db, test_tasks):
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
+    test_db.session.add(new_task)
     test_db.session.commit()
 
     original_task = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     original_task.name = "Task 2"
+    original_task.status = "In Progress"
+    original_task.description = "Implement backend for auth"
+    original_task.deadline = "10/01/2024"
+    original_task.weighting = 4
+    original_task.priority = "High"
     test_db.session.commit()
 
     updated_task = test_db.session.scalars(
@@ -67,15 +123,31 @@ def test_task_update(test_db, test_tasks):
     ).first()
     assert updated_task is not None
     assert updated_task.name == "Task 2"
+    assert updated_task.status == "In Progress"
+    assert updated_task.description == "Implement backend for auth"
+    assert updated_task.deadline == "10/01/2024"
+    assert updated_task.weighting == 4
+    assert updated_task.priority == "High"
+    assert updated_task.attachment is None
 
 
 def test_task_deletion(test_db, test_tasks):
-    new_task = Task(name="Task 1", project_id=test_tasks[0])
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
     test_db.session.add(new_task)
     test_db.session.commit()
 
     task = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     test_db.session.delete(task)
     test_db.session.commit()
@@ -87,21 +159,76 @@ def test_task_deletion(test_db, test_tasks):
 
 
 def test_null_task_name(test_db, test_tasks):
-    new_task = Task(name=None, project_id=test_tasks[0])
+    new_task = Task(
+        name=None, project_id=test_tasks[0], creator=test_tasks[3], status="Not Started"
+    )
     with pytest.raises(IntegrityError):
         test_db.session.add(new_task)
         test_db.session.commit()
 
 
 def test_null_project_id(test_db, test_tasks):
-    new_task = Task(name="Task 1", project_id=None)
+    new_task = Task(
+        name="Task 1", project_id=None, creator=test_tasks[3], status="Not Started"
+    )
     with pytest.raises(IntegrityError):
         test_db.session.add(new_task)
         test_db.session.commit()
 
 
 def test_invalid_project_id(test_db, test_tasks):
-    new_task = Task(name="Task 1", project_id=0)
+    new_task = Task(
+        name="Task 1", project_id=0, creator=test_tasks[3], status="Not Started"
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_task)
+        test_db.session.commit()
+
+
+def test_null_creator_handle(test_db, test_tasks):
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=None,
+        status="Not Started",
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_task)
+        test_db.session.commit()
+
+
+def test_invalid_creator_handle(test_db, test_tasks):
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator="PhilipTran1234",
+        status="Not Started",
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_task)
+        test_db.session.commit()
+
+
+def test_null_task_status(test_db, test_tasks):
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status=None,
+    )
+    with pytest.raises(IntegrityError):
+        test_db.session.add(new_task)
+        test_db.session.commit()
+
+
+def test_invalid_task_status(test_db, test_tasks):
+    # Status must be one of "Not Started", "Backlog", "In Progress" or "Completed"
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Blocked",
+    )
     with pytest.raises(IntegrityError):
         test_db.session.add(new_task)
         test_db.session.commit()
@@ -109,8 +236,18 @@ def test_invalid_project_id(test_db, test_tasks):
 
 def test_duplicate_project_names(test_db, test_tasks):
     # Testing same task names in a single project
-    new_task = Task(name="Task 1", project_id=test_tasks[0])
-    new_task2 = Task(name="Task 1", project_id=test_tasks[0])
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
+    new_task2 = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
     test_db.session.add(new_task)
     test_db.session.commit()
 
@@ -120,26 +257,56 @@ def test_duplicate_project_names(test_db, test_tasks):
 
 
 def test_multiple_project_tasks(test_db, test_tasks):
-    new_task = Task(name="Task 1", project_id=test_tasks[0])
-    new_task2 = Task(name="Task 2", project_id=test_tasks[0])
-    new_task3 = Task(name="Task 3", project_id=test_tasks[0])
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
+    new_task2 = Task(
+        name="Task 2",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
+    new_task3 = Task(
+        name="Task 3",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
     test_db.session.add(new_task)
     test_db.session.add(new_task2)
     test_db.session.add(new_task3)
     test_db.session.commit()
 
     inserted_task = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task is not None
     assert inserted_task.name == "Task 1"
     inserted_task2 = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 2", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 2",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task2 is not None
     assert inserted_task2.name == "Task 2"
     inserted_task3 = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 3", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 3",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task3 is not None
     assert inserted_task3.name == "Task 3"
@@ -155,20 +322,67 @@ def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
     test_db.session.add(new_project2)
     test_db.session.flush()
 
-    new_task = Task(name="Task 1", project_id=test_tasks[0])
-    new_task2 = Task(name="Task 1", project_id=new_project2.id)
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=test_tasks[3],
+        status="Not Started",
+    )
+    new_task2 = Task(
+        name="Task 1",
+        project_id=new_project2.id,
+        creator=test_tasks[3],
+        status="Not Started",
+    )
     test_db.session.add(new_task)
     test_db.session.add(new_task2)
     test_db.session.commit()
 
     inserted_task = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=test_tasks[0])
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task is not None
     assert inserted_task.name == "Task 1"
 
     inserted_task2 = test_db.session.scalars(
-        test_db.select(Task).filter_by(name="Task 1", project_id=new_project2.id)
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=new_project2.id,
+            creator=test_tasks[3],
+            status="Not Started",
+        )
     ).first()
     assert inserted_task2 is not None
     assert inserted_task2.name == "Task 1"
+
+
+def test_add_members(test_db, test_tasks):
+    new_user = User(
+        first_name="Alex", last_name="Xu", email="alex@email.com", password="AlexXu123!"
+    )
+    new_task = Task(
+        name="Task 1",
+        project_id=test_tasks[0],
+        creator=new_user.handle,
+        status="Not Started",
+    )
+    test_db.session.add(new_user)
+    test_db.session.add(new_task)
+    test_db.session.commit()
+
+    new_task.add_assignees([new_user])
+    test_db.session.commit()
+    task = test_db.session.scalars(
+        test_db.select(Task).filter_by(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=new_user.handle,
+            status="Not Started",
+        )
+    ).first()
+    assert new_user in task.get_assignees()
