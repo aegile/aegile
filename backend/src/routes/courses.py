@@ -8,6 +8,7 @@ from ..api_models.course_models import (
     course_fetch_one_output,
     course_creation_input,
     course_members_input,
+    course_members_fetch_output,
 )
 from ..api_models.user_models import userset_list_input
 
@@ -74,6 +75,7 @@ class CourseSpecific(Resource):
 class CourseMembers(Resource):
     method_decorators = [jwt_required()]
 
+    @courses_ns.marshal_with(course_members_fetch_output)
     def get(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
         check_is_member(Course, course, current_user)
