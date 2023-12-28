@@ -30,7 +30,7 @@ class UserCourseStatus(db.Model):
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     term = db.Column(db.String(4), nullable=False)
-    code = db.Column(db.String(8), nullable=False, unique=True)
+    code = db.Column(db.String(8), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String)
     creator = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
