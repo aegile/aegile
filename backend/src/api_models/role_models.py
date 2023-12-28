@@ -2,42 +2,60 @@ from flask_restx import fields
 from src.extensions import api
 from .user_models import user_fetch_output
 
-role_fetch_output = api.model(
-    "RoleFetchInput",
+permission_mapping = api.model(
+    "PermissionMapping",
+    {
+        "can_manage_roles": fields.Integer,
+        "can_manage_course": fields.Integer,
+        "can_access_tutorials": fields.Integer,
+    },
+)
+
+role_fetch_all_output = api.model(
+    "RoleFetchAllOutput",
     {
         "id": fields.String,
         "name": fields.String,
         "color": fields.String,
-        "permissions": fields.List(fields.String),
+        "member_count": fields.Integer,
+    },
+)
+
+role_fetch_one_output = api.model(
+    "RoleFetchOneOutput",
+    {
+        "id": fields.String,
+        "name": fields.String,
+        "color": fields.String,
+        "permissions": fields.Nested(permission_mapping),
         "members": fields.List(fields.Nested(user_fetch_output)),
     },
 )
 
 role_creation_input = api.model(
     "RoleCreationInput",
-    {"course_code": fields.String, "name": fields.String},
+    {"name": fields.String(required=True)},
+    strict=True,
 )
+
+
+role_members_input = api.model(
+    "RoleMembersInput",
+    {"member": fields.String(required=True)},
+    strict=True,
+)
+
 
 role_update_input = api.model(
     "RoleUpdateInput",
     {
-        "course_code": fields.String,
-        "name": fields.String,
-        "color": fields.String,
+        "name": fields.String(required=True),
+        "color": fields.String(required=True),
         "permissions": fields.List(fields.String),
-        "members": fields.List(fields.String),
     },
+    strict=True,
 )
 
-roles_fetch_input = api.model(
-    "RolesFetchInput",
-    {"course_code": fields.String},
-)
-
-roles_fetch_output = api.model(
-    "RolesFetchOutput",
-    {"roles": fields.List(fields.Nested(role_fetch_output))},
-)
 
 user_role_fetch_input = api.model(
     "UserRoleFetchInput",
