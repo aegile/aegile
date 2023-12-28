@@ -123,19 +123,51 @@ def roles_setup(auth_client, courses_setup):
     # Creates a default role Student for all courses
     for course in courses_setup:
         auth_client.post(
-            f"v1/roles/course/{course['code']}",
+            f"v1/roles/course/{course['id']}",
             json={"name": "Student"},
         )
         auth_client.post(
-            f"v1/roles/course/{course['code']}",
+            f"v1/roles/course/{course['id']}",
             json={"name": "Tutor"},
         )
         auth_client.post(
-            f"v1/roles/course/{course['code']}",
+            f"v1/roles/course/{course['id']}",
             json={"name": "Admin"},
         )
 
     return courses_setup
+
+
+@pytest.fixture()
+def roles_assignment(auth_client, users_setup, roles_setup):
+    comp1511 = next(crs for crs in roles_setup if crs["code"] == "COMP1511")
+    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
+    auth_client.post(
+        f"v1/courses/{comp1511['id']}/enroll",
+        json={
+            "members": [userAlex["handle"]],
+        },
+    )
+
+    response = auth_client.get(f"v1/roles/course/{comp1511['id']}")
+    tutor_role = next(
+        (role for role in response.json if role["name"] == "Tutor"),
+        None,
+    )
+    auth_client.put(
+        f"v1/roles/{tutor_role['id']}",
+        json={
+            "name": "",
+            "color": "#ffffff",
+            "permissions": ["can_manage_roles"],
+        },
+    )
+
+    response = auth_client.put(
+        f"v1/roles/{tutor_role['id']}/user/{userAlex['id']}/assign"
+    )
+
+    return roles_setup
 
 
 @pytest.fixture()
