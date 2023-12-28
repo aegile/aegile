@@ -13,7 +13,7 @@ from ..api_models.course_models import (
 from ..api_models.user_models import userset_list_input
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
-from .access_checks import check_is_member, check_course_creator, check_role_permission
+from .access_checks import check_is_member, check_course_creator, check_authorization
 
 courses_ns = Namespace("v1/courses", description="Courses related operations")
 
@@ -57,15 +57,14 @@ class CourseSpecific(Resource):
     @courses_ns.expect(course_creation_input)
     def put(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
-        check_course_creator(course, current_user)
+        check_authorization(course, current_user, "can_manage_course")
         # todo: check if user has manage course permission
         course.update(course_data=courses_ns.payload)
         return update_db_object(Course, course.code)
 
     def delete(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
-        check_course_creator(course, current_user)
-        # maybe? check if user has permission to delete course
+        check_authorization(course, current_user, "can_manage_course")
         db.session.delete(course)
         db.session.commit()
         return {}, 200
@@ -89,8 +88,7 @@ class CourseEnroll(Resource):
     @courses_ns.expect(course_members_input)
     def post(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
-        check_course_creator(course, current_user)
-        # todo: check if user has manage course permission
+        check_authorization(course, current_user, "can_manage_course")
         course.enroll(
             users=[
                 fetch_one(User, {"handle": handle})
@@ -107,8 +105,7 @@ class CourseInvite(Resource):
     @courses_ns.expect(course_members_input)
     def post(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
-        check_course_creator(course, current_user)
-        # todo: check if user has manage course permission
+        check_authorization(course, current_user, "can_manage_course")
 
 
 @courses_ns.route("/<string:course_id>/kick")
@@ -118,8 +115,7 @@ class CourseKick(Resource):
     @courses_ns.expect(course_members_input)
     def delete(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
-        check_course_creator(course, current_user)
-        # todo: check if user has manage course permission
+        check_authorization(course, current_user, "can_manage_course")
         course.kick(
             users=[
                 fetch_one(User, {"handle": handle})

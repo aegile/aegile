@@ -1,7 +1,23 @@
+from sqlalchemy.exc import NoResultFound
 from ..error import InputError, AccessError, NotFoundError
-from ..models.course import Course
+from ..models.course import Course, UserCourseStatus
 from ..models.user import User
 from ..models.role import Role
+from ..extensions import db
+
+
+def check_authorization(course: Course, user: User, permission: str):
+    if user.id == course.creator:
+        return
+    try:
+        ucs: UserCourseStatus = db.session.scalars(
+            db.select(UserCourseStatus).filter_by(course_id=course.id, user_id=user.id)
+        ).one()
+    except NoResultFound as exc:
+        raise AccessError("You are not a member of this course")
+
+    if not ucs.role or not ucs.role.has_permission(permission):
+        raise AccessError("You are not authorized to access this resource.")
 
 
 def check_course_creator(course: Course, user: User):
