@@ -15,6 +15,7 @@ project_fetch_all_output = api.model(
         "member_count": fields.Integer,
     },
 )
+
 project_fetch_one_output = api.model(
     "ProjectFetchOneOutput",
     {
@@ -28,6 +29,7 @@ project_fetch_one_output = api.model(
         "end_date": fields.String,
     },
 )
+
 project_creation_input = api.model(
     "ProjectCreationInput",
     {

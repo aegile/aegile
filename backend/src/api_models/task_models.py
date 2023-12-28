@@ -18,6 +18,7 @@ task_fetch_all_output = api.model(
         "assignee_count": fields.Integer,
     },
 )
+
 task_fetch_one_output = api.model(
     "TaskFetchOneOutput",
     {
@@ -33,6 +34,7 @@ task_fetch_one_output = api.model(
         "attachment": fields.String,
     },
 )
+
 task_assignees_fetch_output = api.model(
     "TaskAssigneesFetchOutput",
     {
@@ -47,6 +49,7 @@ task_assignees_input = api.model(
     },
     strict=True,
 )
+
 task_creation_input = api.model(
     "TaskCreationInput",
     {
