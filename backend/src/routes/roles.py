@@ -10,7 +10,7 @@ from ..api_models.role_models import (
     role_fetch_one_output,
     role_creation_input,
     role_update_input,
-    role_members_input,
+    role_members_fetch_output,
 )
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
@@ -89,3 +89,14 @@ class RoleMemberAssign(Resource):
             ucs.role_id = None
 
         return update_db_object(ucs, ucs.__repr__())
+
+
+@roles_ns.route("/<string:role_id>/members")
+class RoleMembers(Resource):
+    method_decorators = [jwt_required()]
+
+    @roles_ns.marshal_with(role_members_fetch_output)
+    def get(self, role_id: str):
+        role: Role = fetch_one(Role, {"id": role_id})
+        check_authorization(role.course, current_user, "can_manage_roles")
+        return role

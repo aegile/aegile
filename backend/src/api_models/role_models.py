@@ -61,3 +61,11 @@ user_role_fetch_input = api.model(
     "UserRoleFetchInput",
     {"course_code": fields.String, "user_handle": fields.String},
 )
+
+
+role_members_fetch_output = api.model(
+    "RoleMembersFetchOutput",
+    {
+        "members": fields.List(fields.Nested(user_fetch_output)),
+    },
+)
