@@ -61,7 +61,7 @@ class Course(db.Model):
         super(Course, self).__init__(**kwargs)
 
     def update(self, course_data: dict):
-        self.term = get_with_default(course_data, "term", self.code)
+        self.term = get_with_default(course_data, "term", self.term)
         self.code = get_with_default(course_data, "code", self.code)
         self.name = get_with_default(course_data, "name", self.name)
         self.description = get_with_default(
