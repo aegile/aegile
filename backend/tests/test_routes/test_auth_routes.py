@@ -62,13 +62,12 @@ def test_invalid_null_password_registration(client):
 
 def test_valid_registration(client):
     form_data = {
-        "first_name": "Alex",
-        "last_name": "Xu",
-        "email": "alex@email.com",
-        "password": "AlexXu123!",
+        "first_name": "ValidFirstName",
+        "last_name": "ValidLastName",
+        "email": "vaid@email.com",
+        "password": "ValidUser123!",
     }
     response = client.post("v1/auth/register", json=form_data)
-    print(response.json)
     assert response.status_code == 201
 
 

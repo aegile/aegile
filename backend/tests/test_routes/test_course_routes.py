@@ -2,8 +2,8 @@ import pytest
 
 
 # GET Requests - course specific
-def test_get_course_with_valid_course_id(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_get_course_with_valid_course_id(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
     response = auth_client.get(f"v1/courses/{comp1511['id']}")
     assert response.status_code == 200
     assert response.json["term"] == "23T2"
@@ -12,32 +12,32 @@ def test_get_course_with_valid_course_id(auth_client, courses_setup):
     assert response.json["description"] == "The intro course for Computer Science"
 
 
-def test_get_course_with_invalid_course_id(auth_client, courses_setup):
+def test_get_course_with_invalid_course_id(auth_client):
     response = auth_client.get("v1/courses/3hg4nb5j67")
     assert response.status_code == 400
 
 
-def test_get_course_without_authentication(client, courses_setup):
+def test_get_course_without_authentication(client, courses_fetch):
     # user not logged in
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+    comp1511 = courses_fetch["23T2COMP1511"]
     response = client.get(f"v1/courses/{comp1511['id']}")
     assert response.status_code == 401
 
 
-def test_get_course_with_unauthorized_user(non_creator_client, courses_setup):
+def test_get_course_with_unauthorized_user(non_creator_client, courses_fetch):
     # user not in course
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+    comp1511 = courses_fetch["23T2COMP1511"]
     response = non_creator_client.get(f"v1/courses/{comp1511['id']}")
     assert response.status_code == 403
 
 
-def test_get_course_with_empty_course_id(auth_client, courses_setup):
+def test_get_course_with_empty_course_id(auth_client):
     response = auth_client.get("v1/courses/")
     assert response.status_code == 404
 
 
 # GET Requests - course all
-def test_get_all_courses_with_valid_request(auth_client, courses_setup):
+def test_get_all_courses_with_valid_request(auth_client):
     response = auth_client.get("v1/courses")
     assert response.status_code == 200
     # John Smith is the creator of all 3 courses
@@ -47,14 +47,14 @@ def test_get_all_courses_with_valid_request(auth_client, courses_setup):
     assert any(course["code"] == "COMP6080" for course in response.json)
 
 
-def test_get_all_courses_with_unenrolled_user(non_creator_client, courses_setup):
+def test_get_all_courses_with_unenrolled_user(non_creator_client):
     response = non_creator_client.get("v1/courses")
     assert response.status_code == 200
     # John Smith is the creator of all 3 courses
     assert len(response.json) == 0
 
 
-def test_get_all_courses_without_authentication(client, courses_setup):
+def test_get_all_courses_without_authentication(client):
     response = client.get("v1/courses")
     assert response.status_code == 401
 
@@ -67,9 +67,10 @@ def test_create_course_with_valid_request(auth_client):
             "term": "23T3",
             "code": "COMP1511",
             "name": "Advanced Programming",
-            "description": "",
+            "description": "For advanced programmers",
         },
     )
+    print(response.json)
     assert response.status_code == 201
 
 
@@ -91,7 +92,7 @@ def test_create_course_without_authentication(client):
     assert response.status_code == 401
 
 
-def test_create_course_with_existing_course_offering(auth_client, courses_setup):
+def test_create_course_with_existing_course_offering(auth_client):
     # Creation of course with a duplicate term and code
     response = auth_client.post(
         "v1/courses",
@@ -163,16 +164,61 @@ def test_create_course_with_missing_payload_fields(auth_client):
 
 
 # POST Requests - course enrollments and unenrollments
-def test_course_enroll_users_to_course_with_valid_input(
-    auth_client, users_setup, courses_setup
+def test_course_enroll_users_to_course_with_unauthenticated_user(
+    client, users_fetch, courses_fetch
 ):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
+    comp1511 = courses_fetch["23T2COMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+    response = client.post(
+        f"v1/courses/{comp1511['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 401
+
+
+def test_course_enroll_users_to_course_with_unauthorized_user(
+    non_creator_client, users_fetch, courses_fetch
+):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+    response = non_creator_client.post(
+        f"v1/courses/{comp1511['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 403
+
+
+def test_course_enroll_users_to_course_with_nonexistent_user(
+    auth_client, courses_fetch
+):
+    comp1511 = courses_fetch["23T2COMP1511"]
     response = auth_client.post(
         f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [userAlex["handle"]],
-        },
+        json={"members": ["Non Such User"]},
+    )
+    assert response.status_code == 400
+
+
+def test_course_enroll_already_enrolled_users_to_course(
+    auth_client, users_fetch, courses_fetch
+):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    # John Smith is the coruse creator and hence already enrolled
+    response = auth_client.post(
+        f"v1/courses/{comp1511['id']}/enroll",
+        json={"members": [users_fetch["john@email.com"]]},
+    )
+    assert response.status_code == 400
+
+
+def test_course_enroll_users_to_course_with_valid_input(
+    auth_client, users_fetch, courses_fetch
+):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+    response = auth_client.post(
+        f"v1/courses/{comp1511['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
     )
     assert response.status_code == 201
     updated_course = auth_client.get(f"v1/courses/{comp1511['id']}/members")
@@ -180,85 +226,29 @@ def test_course_enroll_users_to_course_with_valid_input(
     assert len(updated_course.json["members"]) == 2
 
 
-def test_course_enroll_users_to_course_with_unauthenticated_user(
-    client, users_setup, courses_setup
-):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
-    response = client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [userAlex["handle"]],
-        },
-    )
-    assert response.status_code == 401
-
-
-def test_course_enroll_users_to_course_with_unauthorized_user(
-    non_creator_client, users_setup, courses_setup
-):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
-    response = non_creator_client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [userAlex["handle"]],
-        },
-    )
-    assert response.status_code == 403
-
-
-def test_course_enroll_users_to_course_with_nonexistent_user(
-    auth_client, courses_setup
-):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    response = auth_client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": ["Non Such User"],
-        },
-    )
-    assert response.status_code == 400
-
-
-def test_course_enroll_already_enrolled_users_to_course(
-    auth_client, users_setup, courses_setup
-):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    response = auth_client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [user["handle"] for user in users_setup],
-        },
-    )
-    assert response.status_code == 400
-
-
-def test_course_kick_with_valid_input(auth_client, users_setup, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
-    response = auth_client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [userAlex["handle"]],
-        },
-    )
-    assert response.status_code == 201
+def test_course_kick_with_valid_input(auth_client, users_fetch, courses_fetch):
+    # user Alex is enrolled via the previous test
+    comp1511 = courses_fetch["23T2COMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+    creator = users_fetch["john@email.com"]
     response = auth_client.delete(
         f"v1/courses/{comp1511['id']}/kick",
-        json={
-            "members": [userAlex["handle"]],
-        },
+        json={"members": [userAlex["handle"]]},
     )
     assert response.status_code == 200
+
     updated_course = auth_client.get(f"v1/courses/{comp1511['id']}/members")
     assert updated_course.status_code == 200
-    assert len(updated_course.json["members"]) == 1
+
+    members = updated_course.json["members"]
+    assert len(members) == 1
+    assert any(user["handle"] != userAlex["handle"] for user in members)
+    assert any(user["handle"] == creator["handle"] for user in members)
 
 
-def test_course_kick_unenrolled_user(auth_client, users_setup, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
+def test_course_kick_unenrolled_user(auth_client, users_fetch, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    userAlex = users_fetch["alex@email.com"]
     response = auth_client.delete(
         f"v1/courses/{comp1511['id']}/kick",
         json={
@@ -269,9 +259,9 @@ def test_course_kick_unenrolled_user(auth_client, users_setup, courses_setup):
     assert response.status_code == 200
 
 
-def test_course_kick_creator(auth_client, users_setup, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    creator = next(user for user in users_setup if user["email"] == "john@email.com")
+def test_course_kick_creator(auth_client, users_fetch, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    creator = users_fetch["john@email.com"]
     response = auth_client.post(
         f"v1/courses/{comp1511['id']}/enroll",
         json={
@@ -282,12 +272,13 @@ def test_course_kick_creator(auth_client, users_setup, courses_setup):
 
 
 # PUT Requests - course update
-def test_update_course_with_valid_request(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_with_valid_request(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    print(comp1511)
     response = auth_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
-            "term": "23T3",
+            "term": "24T1",  # We created a 23T3 COMP1511 above
             "code": "COMP1511",
             "name": "Programming Fundamentals",
             "description": "",
@@ -296,29 +287,29 @@ def test_update_course_with_valid_request(auth_client, courses_setup):
     assert response.status_code == 200
     updated_course = auth_client.get(f"v1/courses/{comp1511['id']}")
     assert updated_course.status_code == 200
-    assert updated_course.json["term"] == "23T3"
+    assert updated_course.json["term"] == "24T1"
     assert updated_course.json["code"] == "COMP1511"
     assert updated_course.json["name"] == "Programming Fundamentals"
     # because the update is an empty string, the description should not be updated
     assert updated_course.json["description"] == "The intro course for Computer Science"
 
 
-def test_update_course_without_authentication(client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_without_authentication(client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = client.put(
         f"v1/courses/{comp1511['id']}",
         json={
             "term": "23T3",
             "code": "COMP1511",
-            "name": "Programming Fundamentals",
+            "name": "Programming Fundamentals Plus",
             "description": "",
         },
     )
     assert response.status_code == 401
 
 
-def test_update_course_with_unauthorized_user(non_creator_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_with_unauthorized_user(non_creator_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = non_creator_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
@@ -344,9 +335,9 @@ def test_update_course_with_nonexistent_course_id(auth_client):
     assert response.status_code == 400
 
 
-@pytest.mark.xfail(reason="Roles and permissions not yet implemented")
-def test_update_course_to_existing_course_offering(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+# @pytest.mark.xfail(reason="Roles and permissions not yet implemented")
+def test_update_course_to_existing_course_offering(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = auth_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
@@ -359,21 +350,22 @@ def test_update_course_to_existing_course_offering(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-# @pytest.mark.xfail(reason="REGEX rules not yet implemented")
-# def test_update_course_with_invalid_course_code_pattern(auth_client, courses_setup):
-#     response = auth_client.put(
-#         "v1/courses/COMP1511",
-#         json={
-#             "code": "INVALID",
-#             "name": "Advanced Programming",
-#             "userset": [],
-#         },
-#     )
-#     assert response.status_code == 400
+@pytest.mark.xfail(reason="REGEX rules not yet implemented")
+def test_update_course_with_invalid_course_code_pattern(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
+    response = auth_client.put(
+        f"v1/courses/{comp1511['id']}",
+        json={
+            "code": "INVALID",
+            "name": "Advanced Programming",
+            "userset": [],
+        },
+    )
+    assert response.status_code == 400
 
 
-def test_update_course_with_missing_payload_fields(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_with_missing_payload_fields(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = auth_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
@@ -383,8 +375,8 @@ def test_update_course_with_missing_payload_fields(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-def test_update_course_with_extra_payload_fields(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_with_extra_payload_fields(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = auth_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
@@ -398,9 +390,8 @@ def test_update_course_with_extra_payload_fields(auth_client, courses_setup):
     assert response.status_code == 400
 
 
-@pytest.mark.xfail(reason="Roles and permissions not yet implemented")
-def test_update_course_with_empty_payload_fields(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_with_empty_payload_fields(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = auth_client.put(
         f"v1/courses/{comp1511['id']}",
         json={
@@ -415,27 +406,40 @@ def test_update_course_with_empty_payload_fields(auth_client, courses_setup):
 
     # We expect that empty or null values means the field is not to be updated
     assert updated_course.status_code == 200
-    assert updated_course.json["term"] == "23T2"
+    assert updated_course.json["term"] == "23T3"
     assert updated_course.json["code"] == "COMP1511"
-    assert updated_course.json["name"] == "Programming Fundamentals"
-    assert updated_course.json["description"] == "The intro course for Computer Science"
+    assert updated_course.json["name"] == "Advanced Programming"
+    assert updated_course.json["description"] == "For advanced programmers"
 
 
-def test_update_course_without_payload_data(auth_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
+def test_update_course_without_payload_data(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
     response = auth_client.put(f"v1/courses/{comp1511['id']}", json={})
     assert response.status_code == 400
 
 
 # DELETE Requests - course deletion
-def test_delete_course_with_valid_request(auth_client, courses_setup):
+def test_delete_course_with_valid_request(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T3COMP1511"]
+    assert len(courses_fetch) == 4  # including 24T1COMP1511
+
+    response = auth_client.delete(f"v1/courses/{comp1511['id']}")
+    assert response.status_code == 200
+
     response = auth_client.get("v1/courses")
     assert response.status_code == 200
     assert len(response.json) == 3
 
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    response = auth_client.delete(f"v1/courses/{comp1511['id']}")
+
+def test_delete_already_deleted_course(auth_client, courses_fetch):
+    # we have to delete it twice in the same test
+    comp2511 = courses_fetch["23T2COMP2511"]
+    assert len(courses_fetch) == 3
+
+    response = auth_client.delete(f"v1/courses/{comp2511['id']}")
     assert response.status_code == 200
+    response = auth_client.delete(f"v1/courses/{comp2511['id']}")
+    assert response.status_code == 400
 
     response = auth_client.get("v1/courses")
     assert response.status_code == 200
@@ -447,14 +451,13 @@ def test_delete_course_with_invalid_course_id(auth_client):
     assert response.status_code == 400
 
 
-def test_delete_course_without_authentication(client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    response = client.delete(f"v1/courses/{comp1511['id']}")
+def test_delete_course_without_authentication(client, courses_fetch):
+    comp6080 = courses_fetch["23T2COMP6080"]
+    response = client.delete(f"v1/courses/{comp6080['id']}")
     assert response.status_code == 401
 
 
-@pytest.mark.xfail(reason="Roles and permissions not yet implemented")
-def test_delete_course_with_unauthorized_user(non_creator_client, courses_setup):
-    comp1511 = next(crs for crs in courses_setup if crs["code"] == "COMP1511")
-    response = non_creator_client.delete(f"v1/courses/{comp1511['id']}")
+def test_delete_course_with_unauthorized_user(non_creator_client, courses_fetch):
+    comp6080 = courses_fetch["23T2COMP6080"]
+    response = non_creator_client.delete(f"v1/courses/{comp6080['id']}")
     assert response.status_code == 403
