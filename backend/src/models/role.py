@@ -10,73 +10,53 @@ class Permission(db.Model):
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    course_code = db.Column(db.String(8), db.ForeignKey("course.code"), nullable=False)
-    course = db.relationship("Course", backref="roles")
+    name = db.Column(db.String(50), nullable=False, default="new role")
+    course_id = db.Column(db.String, db.ForeignKey("course.id"), nullable=False)
     color = db.Column(db.String(7), nullable=False, default="#868686")
-    permissions = db.relationship(
-        "Permission",
-        secondary="role_permission_association",
-        backref="roles",
-        # primaryjoin="and_(Role.name == role_permission.c.role, Role.course == role_permission.c.course)",
-        # secondaryjoin="Permission.name == role_permission.c.permission",
+    user_course_statuses = db.relationship(
+        "UserCourseStatus", backref="role", lazy=True
     )
-    members = db.relationship(
-        "User",
-        secondary="course_role_user_association",
-        backref="roles",
-    )
+
+    can_manage_roles = db.Column(db.Integer, nullable=False, default=0)
+    can_manage_course = db.Column(db.Integer, nullable=False, default=0)
+    can_access_tutorials = db.Column(db.Integer, nullable=False, default=0)
+
+    def __init__(self, name: str, course_id: str):
+        self.name = name
+        self.course_id = course_id
+        # self.members = members
+        # self.permissions = permissions
 
     def update(self, role_data: dict):
         self.name = get_with_default(role_data, "name", self.name)
         self.color = get_with_default(role_data, "color", self.color)
+        for perm in role_data["permissions"]:
+            self.set_permission(perm, self.has_permission(perm) ^ 1)
 
-    def get_permissions(self):
-        print(f"{self.permissions=}")
+    @property
+    def member_count(self):
+        return len(self.user_course_statuses)
 
-    def remove_permission(self, permission_type: str):
-        self.permissions = [
-            perm for perm in self.permissions if perm.name != permission_type
-        ]
+    @property
+    def members(self):
+        return [ucs.user for ucs in self.user_course_statuses]
 
-    def assign_to_members(self, members: list[User]):
-        print(f"{members=}")
-        values_to_insert = [
-            {"course": self.course.id, "user": user.handle, "role": self.id}
-            for user in members
-        ]
-        try:
-            db.session.execute(
-                db.insert(course_role_user_association).values(values_to_insert)
-            )
-            db.session.commit()
-            print("Bulk insertion successful")
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error during bulk insertion: {e}")
+    @property
+    def permissions(self):
+        return {
+            "can_access_tutorials": self.can_access_tutorials,
+            "can_manage_course": self.can_manage_course,
+            "can_manage_roles": self.can_manage_roles,
+        }
 
-    def unassign_from_members(self, members: list[User]):
-        for user in members:
-            db.session.execute(
-                db.delete(course_role_user_association),
-                {"course": self.course.id, "user": user.handle, "role": self.id},
-            )
+    # def enable_permission(self, permission: str, value: str) -> bool:
+    #     return setattr(self, permission, True)
+
+    def set_permission(self, permission: str, value: int):
+        return setattr(self, permission, value)
+
+    def has_permission(self, permission: str) -> bool:
+        return getattr(self, permission, 0) == 1
 
     def __repr__(self):
         return f"<Role {self.name=} {self.course=}>"
-
-
-role_permission_association = db.Table(
-    "role_permission_association",
-    db.Column(
-        "permission", db.String, db.ForeignKey("permission.name"), primary_key=True
-    ),
-    db.Column("role", db.Integer, db.ForeignKey("role.id"), primary_key=True),
-)
-
-course_role_user_association = db.Table(
-    "course_role_user_association",
-    db.Column("course", db.Integer, db.ForeignKey("course.id"), primary_key=True),
-    db.Column("user", db.String, db.ForeignKey("user.handle"), primary_key=True),
-    db.Column("role", db.Integer, db.ForeignKey("role.id"), primary_key=True),
-)

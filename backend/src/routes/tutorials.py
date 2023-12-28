@@ -1,18 +1,33 @@
 from flask_restx import Resource, Namespace
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
 from sqlalchemy.exc import IntegrityError
 from ..error import InputError
 from ..extensions import db
 
-from ..models.course import Course
+from ..models.course import Course, UserCourseStatus
 from ..models.tutorial import Tutorial
 from ..models.user import User
 from ..api_models.tutorial_models import tutorial_fetch_output, tutorial_creation_input
 from ..api_models.user_models import userset_list_input
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
+from .access_checks import check_in_userset, check_course_creator, check_role_permission
 
 tuts_ns = Namespace("v1/tutorials", description="Tutorial related operations")
+
+
+@tuts_ns.route("/course/<string:course_code>")
+class TutorialAuth(Resource):
+    method_decorators = [jwt_required()]
+
+    def get(self, course_code: str):
+        fetch_one(Course, {"code": course_code})
+        ucs: UserCourseStatus = fetch_one(
+            UserCourseStatus,
+            {"user_id": current_user.id, "course_code": course_code},
+        )
+        check_role_permission(ucs.role, "view_tutorials")
+        return fetch_all(Tutorial)
 
 
 @tuts_ns.route("")
