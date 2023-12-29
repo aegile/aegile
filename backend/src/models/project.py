@@ -19,29 +19,31 @@ class Project(db.Model):
     )
 
     def __init__(
-        self,
-        course_id: str,
-        group_id: int,
-        name: str,
-        creator: str,
-        subheading: str = None,
-        description: str = None,
-        end_date: str = None,
+        self, course_id: str, group_id: int, name: str, creator: User, **kwargs
     ):
         self.course_id = course_id
         self.group_id = group_id
         self.name = name
         self.creator = creator
-        self.subheading = subheading
-        self.description = description
-        self.end_date = end_date
+        self.subheading = kwargs.get("subheading")
+        self.description = kwargs.get("description")
+        self.end_date = kwargs.get("end_date")
         self.userset = UserSet()
 
+    @property
+    def members(self):
+        return self.userset.members
+
+    @members.setter
     def add_members(self, members: list[User]):
         self.userset.members = members
 
-    def get_members(self):
-        return self.userset.members
+    # Assuming course_id, group_id and creator shouldn't be changed
+    def update(self, project_data: dict):
+        self.name = project_data.get("name", self.name)
+        self.subheading = project_data.get("subheading", self.subheading)
+        self.description = project_data.get("description", self.description)
+        self.end_date = project_data.get("end_date", self.end_date)
 
     def __repr__(self):
         return f"<Project {self.id=}>"

@@ -1,11 +1,12 @@
 from flask_restx import fields
 from src.extensions import api
+from user_models import user_fetch_output
 
 project_fetch_all_output = api.model(
     "ProjectFetchAllOutput",
     {
         "id": fields.Integer,
-        "course_code": fields.String,
+        "course_id": fields.String,
         "group_id": fields.Integer,
         "creator": fields.String,
         "name": fields.String,
@@ -20,7 +21,7 @@ project_fetch_one_output = api.model(
     "ProjectFetchOneOutput",
     {
         "id": fields.Integer,
-        "course_code": fields.String,
+        "course_id": fields.String,
         "group_id": fields.Integer,
         "creator": fields.String,
         "name": fields.String,
@@ -33,14 +34,30 @@ project_fetch_one_output = api.model(
 project_creation_input = api.model(
     "ProjectCreationInput",
     {
-        "code": fields.String(required=True),
+        "course_id": fields.String(required=True),
         "group_id": fields.Integer(required=True),
         "name": fields.String(required=True),
-        # maybe want to set this to User type
-        "creator": fields.String(required=True),
         "subheading": fields.String,
         "description": fields.String,
         "end_date": fields.String,
     },
     strict=True,
+)
+
+project_edit_input = api.model(
+    "ProjectEditInput",
+    {
+        "name": fields.String,
+        "subheading": fields.String,
+        "description": fields.String,
+        "end_date": fields.String,
+    },
+    strict=True,
+)
+
+project_members_fetch_output = api.model(
+    "ProjectMembersFetchOutput",
+    {
+        "members": fields.List(fields.Nested(user_fetch_output)),
+    },
 )

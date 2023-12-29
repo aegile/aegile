@@ -2,6 +2,7 @@ from sqlalchemy.exc import NoResultFound
 from ..error import InputError, AccessError, NotFoundError
 from ..models.course import Course, UserCourseStatus
 from ..models.user import User
+from ..models.project import Project
 from ..models.role import Role
 from ..extensions import db
 
@@ -24,6 +25,13 @@ def check_course_creator(course: Course, user: User):
     if user.id != course.creator:
         raise AccessError(
             f"You are not the creator of this {(Course.__name__).lower()}"
+        )
+
+
+def check_project_creator(project: Project, user: User):
+    if user.id != project.creator:
+        raise AccessError(
+            f"You are not the creator of this {(Project.__name__).lower()}"
         )
 
 

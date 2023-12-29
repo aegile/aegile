@@ -3,6 +3,7 @@ from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 
 from src.extensions import db
+from src.models.group import Group
 from src.models.project import Project, project_new_model
 from src.models.task import Task
 from src.models.user import User, UserSet
@@ -10,6 +11,8 @@ from ..api_models.project_models import (
     project_fetch_all_output,
     project_fetch_one_output,
     project_creation_input,
+    project_edit_input,
+    project_members_fetch_output,
 )
 from ..api_models.task_models import task_fetch_all_output
 
@@ -19,7 +22,7 @@ from .helpers import (
     update_db_object,
     add_db_object,
 )
-from .access_checks import check_is_member
+from .access_checks import check_is_member, check_project_creator
 
 # projects = Blueprint("projects", __name__)
 
@@ -71,22 +74,24 @@ class ProjectGeneral(Resource):
     @projects_ns.marshal_list_with(project_fetch_all_output)
     def get(self):
         projects: list[Project] = fetch_all(Project)
-        # Change get_members() to become an @property
-        return [prj for prj in projects if current_user in prj.get_members()]
+        return [prj for prj in projects if current_user in prj.members]
 
     @projects_ns.expect(project_creation_input)
     def post(self):
+        # Check user is a member of group or is the tutorial's tutor
+        group: Group = fetch_one(Group, {"id": projects_ns.payload["group_id"]})
+        check_is_member(Group, group, current_user)
         new_project = Project(
-            course_code=projects_ns.payload["code"],
+            course_id=projects_ns.payload["course_id"],
             group_id=projects_ns.payload["group_id"],
             name=projects_ns.payload["name"],
             creator=current_user,
-            subheading=projects_ns.payload["subheading"],
-            description=projects_ns.payload["description"],
-            end_date=projects_ns.payload["end_date"],
+            subheading=projects_ns.payload.get("subheading"),
+            description=projects_ns.payload.get("description"),
+            end_date=projects_ns.payload.get("end_date"),
         )
         add_db_object(Project, new_project, new_project.name)
-        new_project.add_members(members=[current_user])
+        new_project.add_members(members=group.members)
         return {}, 201
 
 
@@ -100,22 +105,41 @@ class ProjectSpecific(Resource):
         check_is_member(Project, project, current_user)
         return project
 
-    @projects_ns.expect(project_creation_input)
+    @projects_ns.expect(project_edit_input)
     def put(self, project_id: str):
         project: Project = fetch_one(Project, {"id": project_id})
-        # Or should be check_project_creator
-        check_is_member(Project, project, current_user)
-        # todo: check if user has manage course permission
+        # Check user is project creator or tutorial tutor
+        check_project_creator(project, current_user)
         project.update(project_data=projects_ns.payload)
         return update_db_object(Project, project)
 
     def delete(self, project_id: str):
         project: Project = fetch_one(Project, {"id": project_id})
-        check_is_member(Project, project, current_user)
-        # check if user has permission to delete project
+        # Check user is project creator or tutorial tutor
+        check_project_creator(project, current_user)
         db.session.delete(project)
         db.session.commit()
         return {}, 200
+
+
+@projects_ns.route("/<string:project_id>/members")
+class ProjectMembers(Resource):
+    method_decorators = [jwt_required()]
+
+    @projects_ns.expect(project_members_fetch_output)
+    def get(self, project_id: str):
+        project: Project = fetch_one(Project, {"id": project_id})
+        check_is_member(Project, project, current_user)
+        return project.members
+
+    # Leave this commented out for now in case a route is needed, but joining a
+    # group should automatically add the member into all the group's projects
+    # @projects_ns.marshal_list_with()
+    # def post(self, project_id: str):
+    #     project: Project = fetch_one(Project, {"id": project_id})
+    #     check_is_member(Project, project, current_user)
+    #     project.add_members(projects_ns.payload["members"])
+    #     return {}, 201
 
 
 @projects_ns.route("/<string:project_id>/tasks")
