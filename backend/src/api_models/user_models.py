@@ -4,7 +4,8 @@ from src.extensions import api
 user_fetch_output = api.model(
     "UserFetchOutput",
     {
-        # "email": fields.String,
+        "id": fields.String,
+        "email": fields.String,
         "first_name": fields.String,
         "last_name": fields.String,
         "handle": fields.String,

@@ -14,3 +14,8 @@ class InputError(HTTPException):
 class AuthError(HTTPException):
     code = 401
     message = "Unauthorized"
+
+
+class NotFoundError(HTTPException):
+    code = 404
+    message = "Not Found"

@@ -1,84 +1,141 @@
 import pytest
 from sqlalchemy.exc import IntegrityError
+from tests.test_models.model_fixtures import init_users, init_courses
 from src.error import InputError
-from src.models.course import Course
-from src.models.user import User, UserSet
+from src.models.user import User
+from src.models.course import Course, UserCourseStatus
 
 
-def test_course_creation(test_db):
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
+def test_create_course_with_valid_inputs(test_db, init_users):
+    user, _, _ = init_users
+    new_course = Course(
+        term="23T3",
+        code="COMP1511",
+        name="Programming Fundamentals",
+        creator=user,
+    )
     test_db.session.add(new_course)
     test_db.session.commit()
-    inserted_course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
+    new_ucs: UserCourseStatus = UserCourseStatus(
+        user_id=user.id,
+        course_id=new_course.id,
+        role_id=None,
+    )
+    test_db.session.add(new_ucs)
+    test_db.session.commit()
+
+    inserted_course: Course = test_db.session.scalars(
+        test_db.select(Course).filter_by(term="23T3", code="COMP1511")
     ).first()
+
     assert inserted_course is not None
     assert inserted_course.code == "COMP1511"
     assert inserted_course.name == "Programming Fundamentals"
+    assert len(inserted_course.members) == 1
 
 
-def test_course_update(test_db):
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
-    test_db.session.add(new_course)
+def test_create_course_with_duplicate_offering(test_db, init_users, init_courses):
+    user, _, _ = init_users
+    with pytest.raises(IntegrityError):
+        new_course = Course(
+            term="23T2",
+            code="COMP1511",
+            name="Programming Fundamentals",
+            creator=user,
+        )
+        test_db.session.add(new_course)
+        test_db.session.commit()
+
+
+def test_enroll_users_to_course(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+    course.enroll([user2, user3])
     test_db.session.commit()
 
-    course_data = {"code": "COMP1511", "name": "Programming Fundamentals Updated"}
-    new_course.update(course_data)
-    test_db.session.commit()
-
-    updated_course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
+    inserted_course: Course = test_db.session.scalars(
+        test_db.select(Course).filter_by(term="23T2", code="COMP1511")
     ).first()
+    assert len(inserted_course.members) == 3
+
+
+def test_enroll_already_enrolled_users(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+
+    course.enroll([user2, user3])
+
+    # the course_id and user_handle are unique together
+    with pytest.raises(InputError):
+        course.enroll([user2, user3])
+
+
+def test_enroll_with_invalid_user(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+    fake_user = User("Frodo", "Baggins", "frodo@shire.com", "mrUnderHill!")
+
+    # in routes, check if user exists
+    with pytest.raises(IntegrityError):
+        course.enroll([user2, user3, fake_user])
+
+
+def test_course_kick_with_valid_user(test_db, init_users, init_courses):
+    user1, user2, user3 = init_users
+    course, _, _ = init_courses
+    course.enroll([user2, user3])
+
+    # note user1 is enrolled via the init_courses fixture
+    assert len(course.members) == 3
+    course.kick([user1, user2])
+    assert len(course.members) == 1
+
+
+def test_course_kick_with_unenrolled_user(test_db, init_users, init_courses):
+    _, user2, user3 = init_users
+    course, _, _ = init_courses
+    fake_user = User("Frodo", "Baggins", "frodo@shire.com", "mrUnderHill!")
+
+    # invalid details will just not result in a delete
+    course.kick([user2, fake_user])
+
+
+def test_course_update_with_valid_input(test_db, init_courses):
+    course, _, _ = init_courses
+    course_data = {
+        "term": "21T2",
+        "code": "",
+        "name": "Programming Fundamentals Updated",
+    }
+    course.update(course_data)
+    test_db.session.commit()
+
+    updated_course: Course = test_db.session.scalars(
+        test_db.select(Course).filter_by(term="21T2", code="COMP1511")
+    ).first()
+    assert updated_course.term == "21T2"
+    assert updated_course.code == "COMP1511"
     assert updated_course.name == "Programming Fundamentals Updated"
 
 
-def test_course_deletion(test_db):
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
-    test_db.session.add(new_course)
-    test_db.session.commit()
+def test_course_update_code_to_existing_course_offering(test_db, init_courses):
+    course, _, _ = init_courses
+    course_data = {
+        "term": "",
+        "code": "COMP2511",
+        "name": "Programming Fundamentals Updated",
+    }
+    with pytest.raises(IntegrityError):
+        course.update(course_data)
+        test_db.session.commit()
 
-    course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
-    ).first()
+
+def test_course_delete(test_db, init_courses):
+    course, _, _ = init_courses
     test_db.session.delete(course)
     test_db.session.commit()
 
     deleted_course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
+        test_db.select(Course).filter_by(term="23T2", code="COMP1511")
     ).first()
     assert deleted_course is None
-
-
-def test_duplicate_course_code(test_db):
-    new_course1 = Course(code="COMP1511", name="Programming Fundamentals")
-    new_course2 = Course(code="COMP1511", name="Advanced Programming")
-
-    test_db.session.add(new_course1)
-    test_db.session.commit()
-
-    with pytest.raises(IntegrityError):
-        test_db.session.add(new_course2)
-        test_db.session.commit()
-
-
-def test_null_course_code(test_db):
-    with pytest.raises(InputError):
-        Course(code=None, name="Programming Fundamentals")
-
-
-def test_enroll_users(test_db):
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
-    new_user = User(
-        first_name="Alex", last_name="Xu", email="alex@email.com", password="AlexXu123!"
-    )
-    test_db.session.add(new_course)
-    test_db.session.add(new_user)
-    test_db.session.commit()
-
-    new_course.enroll_users([new_user])
-    test_db.session.commit()
-
-    course = test_db.session.scalars(
-        test_db.select(Course).filter_by(code="COMP1511")
-    ).first()
-    assert new_user in course.userset.members

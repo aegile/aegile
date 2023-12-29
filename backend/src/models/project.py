@@ -5,7 +5,7 @@ from .user import User, UserSet
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    course_code = db.Column(db.String(8), db.ForeignKey("course.code"), nullable=False)
+    course_id = db.Column(db.String(8), db.ForeignKey("course.id"), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     creator = db.Column(db.String(54), db.ForeignKey("user.handle"), nullable=False)
@@ -15,12 +15,12 @@ class Project(db.Model):
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
     userset = db.relationship("UserSet", backref="projects", uselist=False)
     __table_args__ = (
-        db.UniqueConstraint("course_code", "group_id", "name", name="grp_proj_name"),
+        db.UniqueConstraint("course_id", "group_id", "name", name="grp_proj_name"),
     )
 
     def __init__(
         self,
-        course_code: str,
+        course_id: str,
         group_id: int,
         name: str,
         creator: str,
@@ -28,7 +28,7 @@ class Project(db.Model):
         description: str = None,
         end_date: str = None,
     ):
-        self.course_code = course_code
+        self.course_id = course_id
         self.group_id = group_id
         self.name = name
         self.creator = creator
