@@ -7,7 +7,7 @@ from ..extensions import db
 
 
 def check_authorization(course: Course, user: User, permission: str):
-    if user.id == course.creator:
+    if user.id == course.creator_id:
         return
     try:
         ucs: UserCourseStatus = db.session.scalars(
@@ -36,6 +36,16 @@ def check_is_member(model, object, user, is_auth_user=True):
         raise NotFoundError(
             f"{user.handle} is not a member of this {(model.__name__).lower()}"
         )
+
+
+def check_access(course: Course, model, object, user: User, permission: str):
+    if user.id == model.creator:
+        return
+    try:
+        check_is_member(model, object, user)
+    except NotFoundError:
+        check_authorization
+        raise InputError(course, user, permission)
 
 
 def check_in_userset(model, object, user, is_auth_user=True):
