@@ -6,9 +6,15 @@ from src.extensions import db
 from src.models.project import Project
 from src.models.task import Task
 from src.models.user import User, UserSet
+from ..api_models.task_models import (
+    task_fetch_all_output,
+    task_fetch_one_output,
+    task_creation_input,
+    task_assignees_fetch_output,
+    task_assignees_input,
+)
 
 from .helpers import (
-    fetch_one_by_id,
     fetch_one,
     fetch_all,
     update_db_object,
