@@ -38,6 +38,10 @@ class Course(db.Model):
     user_course_statuses = db.relationship(
         "UserCourseStatus", backref="course", lazy=True, cascade="all, delete-orphan"
     )
+
+    deliverables = db.relationship(
+        "Deliverable", backref="course", cascade="all, delete-orphan"
+    )
     tutorials = db.relationship(
         "Tutorial", backref="course", cascade="all, delete-orphan"
     )
