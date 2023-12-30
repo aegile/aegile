@@ -1,6 +1,18 @@
-# # GET request to /v1/tutorials/<tutorial_id> - tutorial specific
-# def get_tut(setup, course_code):
-#     return next((tut for tut in setup if tut["id"] == course_code), None)
+# GET request to /v1/tutorials/<tutorial_id> - tutorial specific
+def test_fetch_all_tutorials_as_authorized_manager(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    res = auth_client.get(f"v1/tutorials/crs/{comp1511['id']}")
+    assert res.status_code == 200
+    assert len(res.json) == 2
+    assert any(tut["name"] == "H14A" for tut in res.json)
+    assert any(tut["name"] == "W11B" for tut in res.json)
+
+
+def test_fetch_all_tutorials_as_unenrolled_user(non_creator_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    res = non_creator_client.get(f"v1/tutorials/crs/{comp1511['id']}")
+    assert res.status_code == 200
+    assert len(res.json) == 0
 
 
 # def test_get_tutorial_with_valid_tutorial_id(auth_client, tutorials_setup):
