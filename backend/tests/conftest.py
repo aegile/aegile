@@ -148,55 +148,36 @@ def roles_fetch(auth_client, courses_fetch):
     return {f"{role['name']}": role for role in response.json}
 
 
-@pytest.fixture()
-def roles_assignment(auth_client, users_setup, roles_setup):
-    comp1511 = next(crs for crs in roles_setup if crs["code"] == "COMP1511")
-    userAlex = next(user for user in users_setup if user["email"] == "alex@email.com")
-    auth_client.post(
-        f"v1/courses/{comp1511['id']}/enroll",
-        json={
-            "members": [userAlex["handle"]],
-        },
-    )
-
-    response = auth_client.get(f"v1/roles/course/{comp1511['id']}")
-    tutor_role = next(
-        (role for role in response.json if role["name"] == "Tutor"),
-        None,
-    )
-    auth_client.put(
-        f"v1/roles/{tutor_role['id']}",
-        json={
-            "name": "",
-            "color": "#ffffff",
-            "permissions": ["can_manage_roles"],
-        },
-    )
-
-    response = auth_client.put(
-        f"v1/roles/{tutor_role['id']}/user/{userAlex['id']}/assign"
-    )
-
-    return roles_setup
+@pytest.fixture(scope="module", autouse=True)
+def tutorials_setup(auth_client, courses_setup):
+    courses = auth_client.get("v1/courses").json
+    for course in courses:
+        auth_client.post(
+            f"v1/tutorials/crs/{course['id']}",
+            json={
+                "name": "H14A",
+                "capacity": 30,
+                "datetime": "Thursday 2pm-4pm",
+                "location": "Quadrangle G040",
+            },
+        )
+        auth_client.post(
+            f"v1/tutorials/crs/{course['id']}",
+            json={
+                "name": "W11B",
+                "capacity": 20,
+                "datetime": "Wednesday 11am-1pm",
+                "location": "Quadrangle G040",
+            },
+        )
+    
 
 
-@pytest.fixture()
-def tutorials_setup(auth_client, roles_setup):
-    # Creates a default tutorial H14A for all courses
-    # all users have joined the H14A tutorial for COMP1511 and COMP2511
-    tutorial_creation_data = [
-        {
-            "name": "H14A",
-            "course_code": course["code"],
-            "userset": [user["handle"] for user in course["userset"]["members"]],
-        }
-        for course in roles_setup
-    ]
-    for tutorial_form in tutorial_creation_data:
-        auth_client.post("v1/tutorials", json=tutorial_form)
-
-    response = auth_client.get("v1/tutorials")
-    return response.json
+@pytest.fixture(scope="function")
+def tutorials_fetch(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.get(f"v1/tutorials/crs/{comp1511['id']}")
+    return {f"{tut["name"]}COMP1511": tut for tut in response.json}
 
 
 @pytest.fixture()

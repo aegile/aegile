@@ -10,24 +10,40 @@ from ..models.user import User
 from ..api_models.tutorial_models import tutorial_fetch_output, tutorial_creation_input
 from ..api_models.user_models import userset_list_input
 
-from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
-from .access_checks import check_in_userset, check_course_creator, check_role_permission
+from .helpers import (
+    fetch_one,
+    fetch_all,
+    add_db_object,
+    update_db_object,
+)
+from .access_checks import (
+    check_in_userset,
+    check_authorization,
+    has_manage_authorization,
+)
 
 tuts_ns = Namespace("v1/tutorials", description="Tutorial related operations")
 
 
-@tuts_ns.route("/course/<string:course_code>")
+@tuts_ns.route("/crs/<string:course_id>")
 class TutorialAuth(Resource):
     method_decorators = [jwt_required()]
 
-    def get(self, course_code: str):
-        fetch_one(Course, {"code": course_code})
-        ucs: UserCourseStatus = fetch_one(
-            UserCourseStatus,
-            {"user_id": current_user.id, "course_code": course_code},
-        )
-        check_role_permission(ucs.role, "view_tutorials")
-        return fetch_all(Tutorial)
+    @tuts_ns.marshal_list_with(tutorial_fetch_output)
+    def get(self, course_id: str):
+        course: Course = fetch_one(Course, {"id": course_id})
+        all_tuts: list[Tutorial] = fetch_all(Tutorial, {"course_id": course_id})
+        if has_manage_authorization(course, current_user, "can_manage_course"):
+            return all_tuts
+        return [tut for tut in all_tuts if current_user in tut.userset.members]
+
+    @tuts_ns.expect(tutorial_creation_input)
+    def post(self, course_id: str):
+        course: Course = fetch_one(Course, {"id": course_id})
+        check_authorization(course, current_user, "can_manage_tutorials")
+        new_tut = Tutorial(course_id=course_id, creator=current_user, **tuts_ns.payload)
+        add_db_object(Tutorial, new_tut, new_tut.name)
+        return {"id": new_tut.id}, 201
 
 
 @tuts_ns.route("")
@@ -51,7 +67,8 @@ class TutorialCore(Resource):
                 for handle in tuts_ns.payload["userset"]
             ],
         )
-        return add_db_object(Tutorial, new_tut, new_tut.name)
+        add_db_object(Tutorial, new_tut, new_tut.name)
+        return {"id": new_tut.id}, 201
 
 
 @tuts_ns.route("/<string:tutorial_id>")
