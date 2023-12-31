@@ -7,7 +7,7 @@ api = Api(app)
 @api.route('/api/test')
 class NewYear(Resource):
     def get(self):
-        return "<p>Happy New Year!</p>"
+        return Response("<h1>Happy New Year!</h1>", mimetype='text/html')
 
 @app.route("/api/python")
 def hello_world():
