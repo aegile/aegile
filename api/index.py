@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask_restx import Api, Resource
 
 app = Flask(__name__)
