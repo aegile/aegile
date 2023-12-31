@@ -39,4 +39,3 @@ __pycache__
 *.pyc
 *.db
 *.log
-config.py
