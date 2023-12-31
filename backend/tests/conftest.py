@@ -170,14 +170,13 @@ def tutorials_setup(auth_client, courses_setup):
                 "location": "Quadrangle G040",
             },
         )
-    
 
 
 @pytest.fixture(scope="function")
 def tutorials_fetch(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
     response = auth_client.get(f"v1/tutorials/crs/{comp1511['id']}")
-    return {f"{tut["name"]}COMP1511": tut for tut in response.json}
+    return {f"{tut['name']}COMP1511": tut for tut in response.json}
 
 
 @pytest.fixture()
