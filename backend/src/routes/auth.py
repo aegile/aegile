@@ -9,8 +9,13 @@ from ..api_models.user_models import user_creation_input, user_login_input
 from ..handlers.events import trigger_event
 from .helpers import fetch_one, add_db_object
 
-auth_ns = Namespace("v1/auth", description="Authorization related operations")
+auth_ns = Namespace("api/v1/auth", description="Authorization related operations")
 
+
+@auth_ns.route("/test")
+class Test(Resource):
+    def get(self):
+        return "<p>Happy New Year!</p>"
 
 @auth_ns.route("/register")
 class Register(Resource):

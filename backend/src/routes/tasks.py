@@ -32,7 +32,7 @@ def add_task_assignees(task_id: str):
     ]
 
     db.session.commit()
-    return f"Assigned {", ".join([mem.first_name for mem in userset.members])} to task"
+    return f"Assigned {', '.join([mem.first_name for mem in userset.members])} to task"
 
 
 @tasks.route("/p/<project_id>/t", methods=["GET"])
