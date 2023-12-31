@@ -123,19 +123,36 @@ Upon creation →
 
 ## Tutorial Management
 
-`GET /api/v1/c/<course_id>/tut`
+`GET v1/tutorials/crs/<string:course_id>`
 -  Retrieve a list of tutorials for a specific course.
-
-`GET /api/v1/tut/<tut_id>`
 -  Retrieve details of a specific tutorial.
+-  Details include term offering, course code, name, date/time, location, capacity and member_count. 
+-  user must be either a member of the tut, course or tut creator, or correct permissions
+-  fetches all tutorials the user is a member of, or if authorized, all of them
 
-`POST /api/v1/c/<course_id>/tut`
+
+`GET v1/tutorials/<tutorial_id>`
+-  Retrieve details of a specific tutorial.
+-  user must be either a member of the tut, course or tut creator, or correct permissions
+
+`POST v1/tutorials/crs/<string:course_id>`
 -  Create a new tutorial for a course.
+-  user must be a course creator, or have the correct permissions
 
-`PUT /api/v1/tut/<tut_id>`
+`PUT v1/tutorials/<tutorial_id>`
 -  Update information about a tutorial.
+-  user must be a course or tut creator, or have the correct permissions
 
-`DELETE /api/v1/tut/<tut_id>`
+`GET v1/tutorials/<tutorial_id>/members`
+-  Fetches the full member details of all enrolled members of a tutorial 
+-  user must be a course or tut creator, or have the correct permissions
+
+`PUT v1/tutorials/<tutorial_id>/members`
+-  Update the members of a tutorial to the given list of user handles.
+-  all previous users that aren't in this new list will be removed.
+-  user must be a course or tut creator, or have the correct permissions
+
+`DELETE v1/tutorials/<tutorial_id>`
 -  Delete a tutorial.
 
 
