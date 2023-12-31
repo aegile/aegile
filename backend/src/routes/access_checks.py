@@ -6,8 +6,22 @@ from ..models.role import Role
 from ..extensions import db
 
 
+def has_manage_authorization(course: Course, user: User, permission: str):
+    if user.id == course.creator_id:
+        return True
+    try:
+        ucs: UserCourseStatus = db.session.scalars(
+            db.select(UserCourseStatus).filter_by(course_id=course.id, user_id=user.id)
+        ).one()
+    except AccessError as exc:
+        return False
+
+    if not ucs.role or not ucs.role.has_permission(permission):
+        return False
+
+
 def check_authorization(course: Course, user: User, permission: str):
-    if user.id == course.creator:
+    if user.id == course.creator_id:
         return
     try:
         ucs: UserCourseStatus = db.session.scalars(
@@ -36,6 +50,15 @@ def check_is_member(model, object, user, is_auth_user=True):
         raise NotFoundError(
             f"{user.handle} is not a member of this {(model.__name__).lower()}"
         )
+
+
+def check_access(course: Course, model, object, user: User, permission: str):
+    if user.id == model.creator_id:
+        return
+    try:
+        check_is_member(model, object, user)
+    except AccessError:
+        check_authorization(course, user, permission)
 
 
 def check_in_userset(model, object, user, is_auth_user=True):

@@ -9,6 +9,7 @@ from .extensions import api, db, jwt
 from .models.user import User
 from .routes.auth import auth_ns
 from .routes.courses import courses_ns
+from .routes.deliverables import deliverables_ns
 from .routes.roles import roles_ns
 from .routes.users import users_ns
 from .routes.tutorials import tuts_ns
@@ -74,6 +75,7 @@ def create_app():
     api.add_namespace(users_ns)
     api.add_namespace(roles_ns)
     api.add_namespace(courses_ns)
+    api.add_namespace(deliverables_ns)
     api.add_namespace(tuts_ns)
     api.add_namespace(groups_ns)
     api.add_namespace(projects_ns)

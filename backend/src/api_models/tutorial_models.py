@@ -6,18 +6,20 @@ tutorial_fetch_output = api.model(
     "TutorialFetchOutput",
     {
         "id": fields.Integer,
-        "course_code": fields.String,
         "name": fields.String,
-        "userset": fields.Nested(userset_list_output),
+        "capacity": fields.Integer,
+        "datetime": fields.String,
+        "location": fields.String,
     },
 )
 
 tutorial_creation_input = api.model(
     "TutorialCreationInput",
     {
-        "course_code": fields.String(required=True),
         "name": fields.String(required=True),
-        "userset": fields.List(fields.String, required=True),
+        "capacity": fields.Integer(required=True),
+        "datetime": fields.String(required=True),
+        "location": fields.String(required=True),
     },
     strict=True,
 )
