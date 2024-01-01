@@ -11,7 +11,7 @@ class Permission(db.Model):
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, default="new role")
-    course_id = db.Column(db.String, db.ForeignKey("course.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     color = db.Column(db.String(7), nullable=False, default="#868686")
     user_course_statuses = db.relationship(
         "UserCourseStatus", backref="role", lazy=True

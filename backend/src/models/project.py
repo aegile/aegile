@@ -5,7 +5,7 @@ from .user import User, UserSet
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.String(8), db.ForeignKey("course.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey("group.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
