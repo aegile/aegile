@@ -42,7 +42,7 @@ def create_app():
     # app.config["TRAP_HTTP_EXCEPTIONS"] = True
     app.register_error_handler(Exception, defaultHandler)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL").replace("postgres://", "postgresql://", 1)
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     # app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
