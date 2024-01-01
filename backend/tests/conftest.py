@@ -79,12 +79,13 @@ def users_setup(client):
         },
     ]
     for user_form in user_registration_data:
-        client.post("v1/auth/register", json=user_form)
+        client.post("api/v1/auth/register", json=user_form)
 
 
 @pytest.fixture(scope="function")
 def users_fetch(auth_client):
-    response = auth_client.get("v1/users")
+    response = auth_client.get("api/v1/users")
+    print(response.json)
     return {user["email"]: user for user in response.json}
 
 
@@ -111,30 +112,30 @@ def courses_setup(auth_client):
         },
     ]
     for course_form in course_creation_data:
-        auth_client.post("v1/courses", json=course_form)
+        auth_client.post("api/v1/courses", json=course_form)
 
 
 @pytest.fixture(scope="function")
 def courses_fetch(auth_client):
-    response = auth_client.get("v1/courses")
+    response = auth_client.get("api/v1/courses")
     return {f"{course['term']}{course['code']}": course for course in response.json}
 
 
 @pytest.fixture(scope="module", autouse=True)
 def roles_setup(auth_client):
-    response = auth_client.get("v1/courses")
+    response = auth_client.get("api/v1/courses")
     # Creates a default role Student for all courses
     for course in response.json:
         auth_client.post(
-            f"v1/roles/course/{course['id']}",
+            f"api/v1/roles/course/{course['id']}",
             json={"name": "Student"},
         )
         auth_client.post(
-            f"v1/roles/course/{course['id']}",
+            f"api/v1/roles/course/{course['id']}",
             json={"name": "Tutor"},
         )
         auth_client.post(
-            f"v1/roles/course/{course['id']}",
+            f"api/v1/roles/course/{course['id']}",
             json={"name": "Admin"},
         )
 
@@ -144,16 +145,16 @@ def roles_setup(auth_client):
 @pytest.fixture(scope="function")
 def roles_fetch(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
-    response = auth_client.get(f"v1/roles/course/{comp1511['id']}")
+    response = auth_client.get(f"api/v1/roles/course/{comp1511['id']}")
     return {f"{role['name']}": role for role in response.json}
 
 
 @pytest.fixture(scope="module", autouse=True)
 def tutorials_setup(auth_client, courses_setup):
-    courses = auth_client.get("v1/courses").json
+    courses = auth_client.get("api/v1/courses").json
     for course in courses:
         auth_client.post(
-            f"v1/tutorials/crs/{course['id']}",
+            f"api/v1/tutorials/crs/{course['id']}",
             json={
                 "name": "H14A",
                 "capacity": 30,
@@ -162,7 +163,7 @@ def tutorials_setup(auth_client, courses_setup):
             },
         )
         auth_client.post(
-            f"v1/tutorials/crs/{course['id']}",
+            f"api/v1/tutorials/crs/{course['id']}",
             json={
                 "name": "W11B",
                 "capacity": 20,
@@ -175,7 +176,7 @@ def tutorials_setup(auth_client, courses_setup):
 @pytest.fixture(scope="function")
 def tutorials_fetch(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
-    response = auth_client.get(f"v1/tutorials/crs/{comp1511['id']}")
+    response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}")
     return {f"{tut['name']}COMP1511": tut for tut in response.json}
 
 
@@ -193,17 +194,18 @@ def groups_setup(auth_client, tutorial_setup):
         for tutorial in tutorial_setup
     ]
     for group_form in group_creation_data:
-        auth_client.post("v1/groups", json=group_form)
-    response = auth_client.get("v1/groups")
+        auth_client.post("api/v1/groups", json=group_form)
+    response = auth_client.get("api/v1/groups")
     return response.json
 
 
 @pytest.fixture(scope="module")
 def auth_headers(client, users_setup):
     response = client.post(
-        "v1/auth/login",
+        "api/v1/auth/login",
         json={"email": "john@email.com", "password": "JohnSmith123!"},
     )
+    print(response)
 
     token = response.json["access_token"]
     return {"Authorization": f"Bearer {token}"}
@@ -212,7 +214,7 @@ def auth_headers(client, users_setup):
 @pytest.fixture(scope="module")
 def non_creator_headers(client, users_setup):
     response = client.post(
-        "v1/auth/login",
+        "api/v1/auth/login",
         json={"email": "alex@email.com", "password": "AlexXu123!"},
     )
 
