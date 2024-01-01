@@ -1,5 +1,5 @@
-from src.extensions import db
-from src.error import InputError
+from ..extensions import db
+from ..error import InputError
 from .helpers import get_with_default
 
 
