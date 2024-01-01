@@ -1,4 +1,6 @@
 import os
+# from dotenv import load_dotenv
+
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
@@ -7,6 +9,8 @@ from flask import Flask
 from .extensions import api, db
 from .models.user import User 
 from .routes.auth import auth_ns
+
+# load_dotenv('.env.development.local')
 
 def defaultHandler(err):
     response = err.get_response()
@@ -38,7 +42,7 @@ def create_app():
     # app.config["TRAP_HTTP_EXCEPTIONS"] = True
     app.register_error_handler(Exception, defaultHandler)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL")
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     # app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
