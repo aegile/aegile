@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
@@ -36,9 +37,11 @@ def create_app():
 
     # app.config["TRAP_HTTP_EXCEPTIONS"] = True
     app.register_error_handler(Exception, defaultHandler)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    # app.config["JWT_SECRET_KEY"] = SECRET_KEY
+    # app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
     api.init_app(app)
     db.init_app(app)
