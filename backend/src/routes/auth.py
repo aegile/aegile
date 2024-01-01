@@ -21,8 +21,7 @@ class Test(Resource):
             first_name="Alex",
             last_name="Xu",
         )
-        db.session.add(new_user)
-        db.session.commit()
+        add_db_object(User, new_user, new_user.email)
         return "<p>Happy New Year!</p>"
 
 
