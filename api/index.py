@@ -14,6 +14,8 @@ class NewYear(Resource):
 
 @app.route("/api/python")
 def hello_world():
-    db.session.add(User("John", "Doe", "john@email.com", "JohnDoe123!"))
-    db.session.commit()
-    return "<p>Hello John!</p>"
+    with app.app_context():
+        db.session.add(User("John", "Doe", "john@email.com", "JohnDoe123!"))
+        db.session.commit()
+        user = db.session.scalars(db.select(User)).one()
+        return f"<ph1>Hello {user.first_name}!</h1>"
