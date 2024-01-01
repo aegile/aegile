@@ -22,7 +22,7 @@ from .access_checks import (
     has_manage_authorization,
 )
 
-tuts_ns = Namespace("v1/tutorials", description="Tutorial related operations")
+tuts_ns = Namespace("api/v1/tutorials", description="Tutorial related operations")
 
 
 @tuts_ns.route("/crs/<string:course_id>")

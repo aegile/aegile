@@ -1,8 +1,8 @@
 from flask import Blueprint, request
 
-from src.extensions import db
-from src.models.task import Task
-from src.models.user import User, UserSet
+from ..extensions import db
+from ..models.task import Task
+from ..models.user import User, UserSet
 
 from .helpers import fetch_one_by_id
 

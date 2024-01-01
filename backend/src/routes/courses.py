@@ -15,7 +15,7 @@ from ..api_models.user_models import userset_list_input
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 from .access_checks import check_is_member, check_course_creator, check_authorization
 
-courses_ns = Namespace("v1/courses", description="Courses related operations")
+courses_ns = Namespace("api/v1/courses", description="Courses related operations")
 
 
 # TODO - create roles and assign a base role to the course.

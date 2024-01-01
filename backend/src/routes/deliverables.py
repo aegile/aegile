@@ -17,7 +17,7 @@ from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 from .access_checks import check_is_member, check_access, check_authorization
 
 deliverables_ns = Namespace(
-    "v1/deliverables", description="Deliverable related operations"
+    "api/v1/deliverables", description="Deliverable related operations"
 )
 
 

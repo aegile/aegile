@@ -1,9 +1,9 @@
 from flask import Blueprint, request
 from flask_restx import Resource, Namespace
 
-from src.extensions import db
-from src.models.project import Project, project_new_model
-from src.models.user import User, UserSet
+from ..extensions import db
+from ..models.project import Project, project_new_model
+from ..models.user import User, UserSet
 
 from .helpers import fetch_one_by_id
 
