@@ -14,7 +14,12 @@
                 "ms-python.pylint",
                 "ms-python.vscode-pylance",
                 "njpwerner.autodocstring",
-                "moalamri.inline-fold"
+                "moalamri.inline-fold",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ChakrounAnas.turbo-console-log",
+                "Orta.vscode-twoslash-queries",
+                "deerawan.vscode-faker"
             ],
             "settings": {
                 "terminal.integrated.env.linux": {
