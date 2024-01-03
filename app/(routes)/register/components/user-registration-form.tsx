@@ -27,35 +27,40 @@ const nameSchema = z
   })
   .max(50, { message: 'Name must be less than 50 characters.' });
 
-const FormSchema = z.object({
-  first_name: nameSchema,
-  last_name: nameSchema,
-  email: z
-    .string()
-    .email({
-      message: 'Invalid email address.',
-    })
-    .refine(
-      (value) =>
-        // /^[\w.-]+@student\.unsw\.edu\.au$/.test(value) ||
-        /^z\d{7}@ad\.unsw\.edu\.au$/.test(value),
-      {
-        message: 'Email must follow: z5555555@ad.unsw.edu.au',
-      }
-    ),
-  password: z
-    .string()
-    .min(14, {
-      message: 'Password must be at least 14 characters.',
-    })
-    .refine((value) => /[A-Z]/.test(value), {
-      message: 'Password must contain at least one uppercase letter.',
-    })
-    .refine((value) => /\W|_/.test(value), {
-      message: 'Password must contain at least one symbol.',
-    }),
-  confirmPassword: z.string(),
-});
+const FormSchema = z
+  .object({
+    first_name: nameSchema,
+    last_name: nameSchema,
+    email: z
+      .string()
+      .email({
+        message: 'Invalid email address.',
+      })
+      .refine(
+        (value) =>
+          // /^[\w.-]+@student\.unsw\.edu\.au$/.test(value) ||
+          /^z\d{7}@ad\.unsw\.edu\.au$/.test(value),
+        {
+          message: 'Email must follow: z5555555@ad.unsw.edu.au',
+        }
+      ),
+    password: z
+      .string()
+      .min(14, {
+        message: 'Password must be at least 14 characters.',
+      })
+      .refine((value) => /[A-Z]/.test(value), {
+        message: 'Password must contain at least one uppercase letter.',
+      })
+      .refine((value) => /\W|_/.test(value), {
+        message: 'Password must contain at least one symbol.',
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((schema) => schema.password === schema.confirmPassword, {
+    message: 'Passwords must match.',
+    path: ['confirmPassword'],
+  });
 
 export function UserRegistrationForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -72,13 +77,6 @@ export function UserRegistrationForm() {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    if (data.password !== data.confirmPassword) {
-      form.setError('confirmPassword', {
-        type: 'manual',
-        message: 'Passwords must match.',
-      });
-      return;
-    }
     toast(
       <div className="w-full">
         <p>You submitted the following values:</p>
