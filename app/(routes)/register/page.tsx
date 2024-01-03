@@ -45,7 +45,7 @@ export default function AuthenticationPage() {
             <Image
               src="/aegile-horizontal-text.svg"
               width={125}
-              height={40}
+              height={50}
               alt="aegile logo with text on the right of the logo"
               className="filter brightness-110"
             />
