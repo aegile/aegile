@@ -12,6 +12,7 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     handle = db.Column(db.String(54), nullable=False, unique=True)
     image = db.Column(db.String)
+    last_login = db.Column(db.String)
 
     def __init__(self, first_name: str, last_name: str, email: str, password: str):
         if not first_name or not last_name or not email or not password:
