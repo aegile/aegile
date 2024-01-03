@@ -1,5 +1,6 @@
 import os
 import logging
+
 # from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -28,7 +29,8 @@ log.setLevel(logging.INFO)
 #     log.addHandler(file_handler)
 #     log.addHandler(stream_handler)
 
-# load_dotenv('.env.development.local')
+# load_dotenv(".env.local")
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -62,7 +64,9 @@ def create_app():
     # app.config["TRAP_HTTP_EXCEPTIONS"] = True
     app.register_error_handler(Exception, defaultHandler)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL").replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL").replace(
+        "postgres://", "postgresql://", 1
+    )
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
