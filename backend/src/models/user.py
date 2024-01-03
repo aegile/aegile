@@ -9,7 +9,7 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(50), nullable=False)
+    password = db.Column(db.String, nullable=False)
     handle = db.Column(db.String(54), nullable=False, unique=True)
     image = db.Column(db.String)
 
