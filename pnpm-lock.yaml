@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@hookform/resolvers':
-    specifier: ^3.3.3
+    specifier: ^3.3.2
     version: 3.3.3(react-hook-form@7.49.2)
   '@radix-ui/react-dropdown-menu':
     specifier: ^2.0.6
@@ -81,7 +81,7 @@ dependencies:
     specifier: 5.0.4
     version: 5.0.4
   zod:
-    specifier: ^3.21.4
+    specifier: ^3.22.4
     version: 3.22.4
 
 packages:
