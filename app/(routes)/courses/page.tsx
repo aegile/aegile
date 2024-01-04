@@ -3,8 +3,9 @@ import { cookies } from 'next/headers';
 async function getCourses() {
   const cookieStore = cookies();
   const token = cookieStore.get('accessToken');
-
-  const res = await fetch('http://127.0.0.1:5000/api/v1/courses', {
+  const serverUrl =
+    process.env.NEXT_PUBLIC_VERCEL_URL || 'http://127.0.0.1:5328';
+  const res = await fetch(`${serverUrl}/api/v1/courses`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
