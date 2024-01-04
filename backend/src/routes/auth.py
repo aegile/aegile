@@ -76,7 +76,7 @@ class Login(Resource):
         # raises error if token is invalid
         user: User = fetch_one(User, {"id": current_user.id})
         last_login = datetime.fromisoformat(user.last_login)
-        print(last_login)
+        print(last_login, datetime.utcnow() - last_login)
         if (datetime.utcnow() - last_login) > timedelta(days=3):
             raise AuthError("Token expired.")
         return {}, 200

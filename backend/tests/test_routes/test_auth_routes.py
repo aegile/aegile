@@ -114,3 +114,9 @@ def test_invalid_login_check(client):
 def test_invalid_login_check(auth_client):
     response = auth_client.get("api/v1/auth/check")
     assert response.status_code == 200
+
+
+def test_invalid_login_check(invalid_token_client):
+    response = invalid_token_client.get("api/v1/auth/check")
+    print(response.json)
+    assert response.status_code == 401
