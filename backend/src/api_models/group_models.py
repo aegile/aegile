@@ -1,5 +1,5 @@
 from flask_restx import fields
-from src.extensions import api
+from ..extensions import api
 from .user_models import userset_list_output
 
 group_fetch_output = api.model(

@@ -13,7 +13,7 @@ from ..api_models.user_models import (
 from .helpers import fetch_one, add_db_object, update_db_object
 
 
-users_ns = Namespace("v1/users", description="User related operations")
+users_ns = Namespace("api/v1/users", description="User related operations")
 
 
 @users_ns.route("")

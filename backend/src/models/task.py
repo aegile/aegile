@@ -1,4 +1,4 @@
-from src.extensions import db
+from ..extensions import db
 from .user import User, UserSet
 from ..error import InputError
 

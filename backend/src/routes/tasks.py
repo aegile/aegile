@@ -2,10 +2,10 @@ from flask import Blueprint, request
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 
-from src.extensions import db
-from src.models.project import Project
-from src.models.task import Task
-from src.models.user import User, UserSet
+from ..extensions import db
+from ..models.project import Project
+from ..models.task import Task
+from ..models.user import User, UserSet
 from ..api_models.task_models import (
     task_fetch_all_output,
     task_fetch_one_output,
@@ -53,8 +53,13 @@ tasks_ns = Namespace("v1/tasks", description="Tasks related operations")
 #         for user_id in data["user_ids"]
 #     ]
 
+<<<<<<< HEAD
 #     db.session.commit()
 #     return f"Assigned {", ".join([mem.first_name for mem in userset.members])} to task"
+=======
+    db.session.commit()
+    return f"Assigned {', '.join([mem.first_name for mem in userset.members])} to task"
+>>>>>>> main
 
 
 # @tasks.route("/p/<project_id>/t", methods=["GET"])

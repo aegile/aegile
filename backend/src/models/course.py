@@ -1,4 +1,4 @@
-from sqlalchemy.exc import IntegrityError, ResourceClosedError
+from sqlalchemy.exc import IntegrityError
 from ..extensions import db
 from .user import User, UserSet
 from .helpers import get_with_default
@@ -33,10 +33,14 @@ class Course(db.Model):
     code = db.Column(db.String(8), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String)
-    creator = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     user_course_statuses = db.relationship(
         "UserCourseStatus", backref="course", lazy=True, cascade="all, delete-orphan"
+    )
+
+    deliverables = db.relationship(
+        "Deliverable", backref="course", cascade="all, delete-orphan"
     )
     tutorials = db.relationship(
         "Tutorial", backref="course", cascade="all, delete-orphan"
@@ -57,7 +61,7 @@ class Course(db.Model):
         if not kwargs.get("term") or not kwargs.get("code") or not kwargs.get("name"):
             raise InputError("Course term, code and name must be given.")
 
-        self.creator = creator.id
+        self.creator_id = creator.id
         super(Course, self).__init__(**kwargs)
 
     def update(self, course_data: dict):
@@ -94,7 +98,7 @@ class Course(db.Model):
 
     def kick(self, users: list[User]):
         for user in users:
-            if user.id == self.creator:
+            if user.id == self.creator_id:
                 raise InputError("Creator cannot be kicked from course.")
             db.session.execute(
                 db.delete(UserCourseStatus)

@@ -6,7 +6,7 @@ from ..error import InputError
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.String(8), db.ForeignKey("course.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     tutorial_id = db.Column(db.Integer, db.ForeignKey("tutorial.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)

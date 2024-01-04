@@ -2,11 +2,11 @@ from flask import Blueprint, request
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 
-from src.extensions import db
-from src.models.tutorial import Tutorial
-from src.models.project import Project, project_new_model
-from src.models.task import Task
-from src.models.user import User, UserSet
+from ..extensions import db
+from ..models.tutorial import Tutorial
+from ..models.project import Project, project_new_model
+from ..models.task import Task
+from ..models.user import User, UserSet
 from ..api_models.project_models import (
     project_fetch_all_output,
     project_fetch_one_output,

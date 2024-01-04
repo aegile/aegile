@@ -16,7 +16,7 @@ from ..api_models.role_models import (
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 from .access_checks import check_in_userset, check_course_creator, check_authorization
 
-roles_ns = Namespace("v1/roles", description="Course Role related operations")
+roles_ns = Namespace("api/v1/roles", description="Course Role related operations")
 
 
 @roles_ns.route("/course/<string:course_id>")

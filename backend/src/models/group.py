@@ -6,8 +6,8 @@ from .helpers import get_with_default
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    course_id = db.Column(db.String, db.ForeignKey("course.id"), nullable=False)
-    tutorial_id = db.Column(db.String, db.ForeignKey("tutorial.id"), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
+    tutorial_id = db.Column(db.Integer, db.ForeignKey("tutorial.id"), nullable=False)
     # projects = db.relationship("Project", backref="group", cascade="all, delete-orphan")
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
     userset = db.relationship("UserSet", backref="groups", uselist=False)
