@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const fetchAPIRequest = async (route: string, method: string, token: string = '', bodyData: object = {}): Promise<any> => {
+export const fetchServerAPIRequest = async (route: string, method: string, token: string = '', bodyData: object = {}): Promise<any> => {
   const options: RequestInit = {
     method,
     headers: {
@@ -26,7 +26,7 @@ export const fetchAPIRequest = async (route: string, method: string, token: stri
     };
   }
 
-  const response = await fetch(`http://localhost:5328${route}`, options);
+  const response = await fetch(`http://${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`, options);
   const data = await response.json();
 
   if (!response.ok) {
