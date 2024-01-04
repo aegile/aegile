@@ -1,15 +1,10 @@
-import { cookies } from 'next/headers';
-
 async function getCourses() {
-  const cookieStore = cookies();
-  const token = cookieStore.get('accessToken');
   const serverUrl =
     process.env.NEXT_PUBLIC_VERCEL_URL || 'http://127.0.0.1:5328';
-  const res = await fetch(`${serverUrl}/api/v1/courses`, {
+  const res = await fetch(`${serverUrl}/api/v1/auth/users`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token?.value}`,
     },
   });
   // console.log(res.json());
