@@ -10,8 +10,9 @@ from ..api_models.task_models import (
     task_fetch_all_output,
     task_fetch_one_output,
     task_creation_input,
-    task_assignees_fetch_output,
-    task_assignees_input,
+    task_members_fetch_output,
+    task_members_input,
+    task_edit_input,
 )
 
 from .helpers import (
@@ -20,7 +21,10 @@ from .helpers import (
     update_db_object,
     add_db_object,
 )
-from .access_checks import check_is_member
+from .access_checks import (
+    check_task_view_access,
+    check_task_edit_access,
+)
 
 # tasks = Blueprint("tasks", __name__)
 
@@ -69,24 +73,26 @@ class TaskGeneral(Resource):
     @tasks_ns.marshal_list_with(task_fetch_all_output)
     def get(self):
         tasks: list[Task] = fetch_all(Task)
-        # Change get_assignees() to become an @property
-        return [tsk for tsk in tasks if current_user in tsk.get_assignees()]
+        return [tsk for tsk in tasks if current_user in tsk.members]
 
     @tasks_ns.expect(task_creation_input)
     def post(self):
+        project: Project = fetch_one(Project, {"id": tasks_ns.payload["project_id"]})
+        # Only project members and tutors/lic can create new tasks in a project
+        check_task_view_access(project, current_user)
         new_task = Task(
             name=tasks_ns.payload["name"],
             project_id=tasks_ns.payload["project_id"],
             creator=current_user,
             status=tasks_ns.payload["status"],
-            description=tasks_ns.payload["description"],
-            deadline=tasks_ns.payload["deadline"],
-            weighting=tasks_ns.payload["weighting"],
-            priority=tasks_ns.payload["priority"],
-            attachment=tasks_ns.payload["attachment"],
+            description=tasks_ns.payload.get("description"),
+            deadline=tasks_ns.payload.get("deadline"),
+            weighting=tasks_ns.payload.get("weighting"),
+            priority=tasks_ns.payload.get("priority"),
+            attachment=tasks_ns.payload.get("attachment"),
         )
         add_db_object(Task, new_task, new_task.name)
-        new_task.add_assignees(assignees=[current_user])
+        new_task.add_members(members=[current_user])
         return {}, 201
 
 
@@ -98,44 +104,41 @@ class TaskSpecific(Resource):
     def get(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
         project: Project = fetch_one(Project, {"id": task.project_id})
-        # Should user be a member of project or be assigned the task to be able
-        # to fetch the task?
-        check_is_member(Project, project, current_user)
+        check_task_view_access(project, current_user)
         return task
 
-    @tasks_ns.expect(task_creation_input)
+    @tasks_ns.expect(task_edit_input)
     def put(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        # Will restrict editing tasks to the task creator and assigned members
-        # check_can_edit_task()...
+        # Checks if user is the task creator or has permissions to manage tasks
+        check_task_edit_access(task, current_user, task.project.course_id)
         task.update(task_data=tasks_ns.payload)
         return update_db_object(Task, task)
 
     def delete(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        # Check if user is task creator or assigned member to delete
-        # check_can_edit_task()
+        check_task_edit_access(task, current_user, task.project.course_id)
         db.session.delete(task)
         db.session.commit()
         return {}, 200
 
 
-@tasks_ns.route("/<string:task_id>/assignees")
-class TaskAssignees(Resource):
+@tasks_ns.route("/<string:task_id>/members")
+class TaskMembers(Resource):
     method_decorators = [jwt_required()]
 
-    @tasks_ns.marshal_with(task_assignees_fetch_output)
+    @tasks_ns.marshal_with(task_members_fetch_output)
     def get(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        # Check if user is in the group/project
-        # check_can_edit_task()
-        return task
+        project: Project = fetch_one(Project, {"id": task.project_id})
+        # Check if user is in the project
+        check_task_view_access(project, current_user)
+        return task.members
 
-    @tasks_ns.expect(task_assignees_input)
+    @tasks_ns.expect(task_members_input)
     def post(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        # Check if user is in project/group
-        # check_can_edit_task()
+        check_task_edit_access(task, current_user, task.project.course_id)
         # Assuming payload contains a list of Users
-        task.add_assignees(assignees=tasks_ns.payload["assignees"])
+        task.add_members(members=tasks_ns.payload["members"])
         return {}, 201

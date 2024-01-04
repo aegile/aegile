@@ -1,13 +1,13 @@
 from flask_restx import fields
 from src.extensions import api
-from user_models import user_fetch_output
+from .user_models import user_fetch_output
 
 project_fetch_all_output = api.model(
     "ProjectFetchAllOutput",
     {
         "id": fields.Integer,
-        "course_id": fields.String,
-        "group_id": fields.Integer,
+        "course_id": fields.Integer,
+        "tutorial_id": fields.Integer,
         "creator": fields.String,
         "name": fields.String,
         "subheading": fields.String,
@@ -21,8 +21,8 @@ project_fetch_one_output = api.model(
     "ProjectFetchOneOutput",
     {
         "id": fields.Integer,
-        "course_id": fields.String,
-        "group_id": fields.Integer,
+        "course_id": fields.Integer,
+        "tutorial_id": fields.Integer,
         "creator": fields.String,
         "name": fields.String,
         "subheading": fields.String,
@@ -34,8 +34,8 @@ project_fetch_one_output = api.model(
 project_creation_input = api.model(
     "ProjectCreationInput",
     {
-        "course_id": fields.String(required=True),
-        "group_id": fields.Integer(required=True),
+        "course_id": fields.Integer(required=True),
+        "tutorial_id": fields.Integer(required=True),
         "name": fields.String(required=True),
         "subheading": fields.String,
         "description": fields.String,

@@ -1,13 +1,13 @@
 from flask_restx import fields
 from src.extensions import api
-from user_models import user_fetch_output
+from .user_models import user_fetch_output
 
 task_fetch_all_output = api.model(
     "TaskFetchAllOutput",
     {
         "id": fields.Integer,
-        "name": fields.String,
         "project_id": fields.Integer,
+        "name": fields.String,
         "creator": fields.String,
         "status": fields.String,
         "description": fields.String,
@@ -15,7 +15,7 @@ task_fetch_all_output = api.model(
         "weighting": fields.Integer,
         "priority": fields.String,
         "attachment": fields.String,
-        "assignee_count": fields.Integer,
+        "member_count": fields.Integer,
     },
 )
 
@@ -23,8 +23,8 @@ task_fetch_one_output = api.model(
     "TaskFetchOneOutput",
     {
         "id": fields.Integer,
-        "name": fields.String,
         "project_id": fields.Integer,
+        "name": fields.String,
         "creator": fields.String,
         "status": fields.String,
         "description": fields.String,
@@ -35,17 +35,17 @@ task_fetch_one_output = api.model(
     },
 )
 
-task_assignees_fetch_output = api.model(
-    "TaskAssigneesFetchOutput",
+task_members_fetch_output = api.model(
+    "TaskMembersFetchOutput",
     {
-        "assignees": fields.List(fields.Nested(user_fetch_output)),
+        "members": fields.List(fields.Nested(user_fetch_output)),
     },
 )
 
-task_assignees_input = api.model(
-    "TaskAssigneesInput",
+task_members_input = api.model(
+    "TaskMembersInput",
     {
-        "assignees": fields.List(fields.Nested(user_fetch_output)),
+        "members": fields.List(fields.Nested(user_fetch_output)),
     },
     strict=True,
 )
@@ -57,6 +57,20 @@ task_creation_input = api.model(
         "project_id": fields.Integer(required=True),
         "creator": fields.String(required=True),
         "status": fields.String(required=True),
+        "description": fields.String,
+        "deadline": fields.String,
+        "weighting": fields.Integer,
+        "priority": fields.String,
+        "attachment": fields.String,
+    },
+    strict=True,
+)
+
+task_edit_input = api.model(
+    "TaskEditInput",
+    {
+        "name": fields.String,
+        "status": fields.String,
         "description": fields.String,
         "deadline": fields.String,
         "weighting": fields.Integer,

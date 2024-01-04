@@ -1,12 +1,13 @@
 from src.extensions import db
 from .user import User, UserSet
+from ..error import InputError
 
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
-    creator = db.Column(db.String(54), db.ForeignKey("user.handle"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     status = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100))
     deadline = db.Column(db.String(10))
@@ -25,34 +26,40 @@ class Task(db.Model):
         ),
     )
 
-    def __init__(
-        self,
-        name: str,
-        project_id: int,
-        creator: str,
-        status: str,
-        description: str = None,
-        deadline: str = None,
-        weighting: int = None,
-        priority: str = None,
-        attachment: str = None,
-    ):
-        self.name = name
-        self.project_id = project_id
-        self.creator = creator
-        self.status = status
-        self.description = description
-        self.deadline = deadline
-        self.weighting = weighting
-        self.priority = priority
-        self.attachment = attachment
-        self.userset = UserSet()
+    def __init__(self, creator: User, **kwargs):
+        if not kwargs.get("project_id") or kwargs.get("name") or kwargs.get("status"):
+            InputError("Project ID, name and status must be given.")
 
-    def add_assignees(self, assignees: list[User]):
-        self.userset.members = assignees
+        self.creator_id = creator.id
+        # self.name = kwargs.get("name")
+        # self.project_id = kwargs.get("project_id")
+        # self.status = kwargs.get("status")
+        # self.description = kwargs.get("description")
+        # self.deadline = kwargs.get("deadline")
+        # self.weighting = kwargs.get("weighting")
+        # self.priority = kwargs.get("priority")
+        # self.attachment = kwargs.get("attachment")
+        # self.userset = UserSet()
+        super(Task, self).__init__(**kwargs)
 
-    def get_assignees(self):
+    # Change task assignees to become members for consistency with other classes
+    @property
+    def members(self):
         return self.userset.members
+
+    @members.setter
+    def add_members(self, members: list[User]):
+        self.userset.members = members
+
+    # Assuming project_id and creator cannot be changed
+    def update(self, task_data: dict):
+        self.name = task_data.get("name", self.name)
+        self.status = task_data.get("subheading", self.status)
+        self.description = task_data.get("description", self.description)
+        self.deadline = task_data.get("end_date", self.deadline)
+        self.weighting = task_data.get("weighting", self.weighting)
+        self.priority = task_data.get("priority", self.priority)
+        self.attachment = task_data.get("attachment", self.attachment)
 
     def __repr__(self):
         return f"<Task {self.id=} {self.name}>"

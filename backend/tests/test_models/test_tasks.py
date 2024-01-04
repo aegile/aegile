@@ -16,20 +16,22 @@ def test_tasks(test_db):
         email="philip@email.com",
         password="PhilipTran123!",
     )
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
-    new_tut = Tutorial(course_code=new_course.code, name="H11A")
+    new_course = Course(
+        code="COMP1511", name="Programming Fundamentals", creator=new_user
+    )
+    new_tut = Tutorial(course_id=new_course.id, name="H11A")
     test_db.session.add(new_user)
     test_db.session.add(new_course)
     test_db.session.add(new_tut)
     test_db.session.flush()
-    new_group = Group(
-        course_code=new_course.code, tutorial_id=new_tut.id, name="Group A"
-    )
-    test_db.session.add(new_group)
-    test_db.session.flush()
+    # new_group = Group(
+    #     course_code=new_course.code, tutorial_id=new_tut.id, name="Group A"
+    # )
+    # test_db.session.add(new_group)
+    # test_db.session.flush()
     new_project = Project(
-        course_code=new_course.code,
-        group_id=new_group.id,
+        course_id=new_course.id,
+        tutorial_id=new_tut.id,
         name="Assignment 1",
         creator=new_user.handle,
     )
@@ -314,8 +316,8 @@ def test_multiple_project_tasks(test_db, test_tasks):
 
 def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
     new_project2 = Project(
-        course_code=test_tasks[1],
-        group_id=test_tasks[2],
+        course_id=test_tasks[1],
+        tutorial_id=test_tasks[2],
         name="Assignment 2",
         creator=test_tasks[3],
     )

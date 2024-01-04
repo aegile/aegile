@@ -13,8 +13,8 @@ from .routes.roles import roles_ns
 from .routes.users import users_ns
 from .routes.tutorials import tuts_ns
 from .routes.groups import groups_ns
-from .routes.projects import projects, projects_ns
-from .routes.tasks import tasks
+from .routes.projects import projects_ns
+from .routes.tasks import tasks_ns
 from .config import SECRET_KEY
 from .handlers.log_handler import setup_log_handlers
 

@@ -16,26 +16,28 @@ def test_projects(test_db):
         email="philip@email.com",
         password="PhilipTran123!",
     )
-    new_course = Course(code="COMP1511", name="Programming Fundamentals")
-    new_tut = Tutorial(course_code=new_course.code, name="H11A")
+    new_course = Course(
+        term="23T3", code="COMP1511", name="Programming Fundamentals", creator=new_user
+    )
+    new_tut = Tutorial(course_id=new_course.id, name="H11A")
     test_db.session.add(new_user)
     test_db.session.add(new_course)
     test_db.session.add(new_tut)
     # flush() to access id of new_tut object
     test_db.session.flush()
 
-    new_group = Group(
-        course_code=new_course.code, tutorial_id=new_tut.id, name="Group A"
-    )
-    test_db.session.add(new_group)
-    test_db.session.flush()
-    return new_course.code, new_group.id, new_tut.id, new_user.handle, new_group
+    # Might have to add a deliverable here...
+
+    # new_group = Group(course_id=new_course.id, tutorial_id=new_tut.id, name="Group A")
+    # test_db.session.add(new_group)
+    # test_db.session.flush()
+    return new_course.id, new_tut.id, new_user.handle, new_group
 
 
 def test_project_creation(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -44,21 +46,21 @@ def test_project_creation(test_db, test_projects):
     inserted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
     ).first()
     assert inserted_project is not None
     assert inserted_project.course_code == "COMP1511"
-    assert inserted_project.group_id == 1
+    assert inserted_project.tutorial_id == 1
     assert inserted_project.name == "Assignment 1"
 
 
 def test_project_creation_with_nullable_fields(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
         subheading="Assignment 1 for COMP1511",
@@ -70,7 +72,7 @@ def test_project_creation_with_nullable_fields(test_db, test_projects):
     inserted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -86,8 +88,8 @@ def test_project_creation_with_nullable_fields(test_db, test_projects):
 
 def test_project_update_fields(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -97,7 +99,7 @@ def test_project_update_fields(test_db, test_projects):
     original_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -110,7 +112,7 @@ def test_project_update_fields(test_db, test_projects):
     updated_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 2",
             creator=test_projects[3],
         )
@@ -124,8 +126,8 @@ def test_project_update_fields(test_db, test_projects):
 
 def test_project_deletion(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -135,7 +137,7 @@ def test_project_deletion(test_db, test_projects):
     project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -146,7 +148,7 @@ def test_project_deletion(test_db, test_projects):
     deleted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -156,8 +158,8 @@ def test_project_deletion(test_db, test_projects):
 
 def test_null_course_code(test_db, test_projects):
     new_project = Project(
-        course_code=None,
-        group_id=test_projects[1],
+        course_id=None,
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -168,8 +170,8 @@ def test_null_course_code(test_db, test_projects):
 
 def test_invalid_course_code(test_db, test_projects):
     new_project = Project(
-        course_code="COMP0000",
-        group_id=test_projects[1],
+        course_id=0,
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -178,10 +180,10 @@ def test_invalid_course_code(test_db, test_projects):
         test_db.session.commit()
 
 
-def test_null_group_id(test_db, test_projects):
+def test_null_tutorial_id(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=None,
+        course_id=test_projects[0],
+        tutorial_id=None,
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -190,10 +192,10 @@ def test_null_group_id(test_db, test_projects):
         test_db.session.commit()
 
 
-def test_invalid_group_id(test_db, test_projects):
+def test_invalid_tutorial_id(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=0,
+        course_id=test_projects[0],
+        tutorial_id=0,
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -204,8 +206,8 @@ def test_invalid_group_id(test_db, test_projects):
 
 def test_null_project_name(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name=None,
         creator=test_projects[3],
     )
@@ -217,14 +219,14 @@ def test_null_project_name(test_db, test_projects):
 def test_duplicate_project_names(test_db, test_projects):
     # Testing same project names in a single group
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
     new_project2 = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -238,8 +240,8 @@ def test_duplicate_project_names(test_db, test_projects):
 
 def test_null_project_creator_handle(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=None,
     )
@@ -250,8 +252,8 @@ def test_null_project_creator_handle(test_db, test_projects):
 
 def test_invalid_creator_handle(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator="PhilipTran1234",
     )
@@ -262,20 +264,20 @@ def test_invalid_creator_handle(test_db, test_projects):
 
 def test_multiple_group_projects(test_db, test_projects):
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
     new_project2 = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 2",
         creator=test_projects[3],
     )
     new_project3 = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 3",
         creator=test_projects[3],
     )
@@ -287,7 +289,7 @@ def test_multiple_group_projects(test_db, test_projects):
     inserted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -297,7 +299,7 @@ def test_multiple_group_projects(test_db, test_projects):
     inserted_project2 = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 2",
             creator=test_projects[3],
         )
@@ -307,7 +309,7 @@ def test_multiple_group_projects(test_db, test_projects):
     inserted_project3 = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 3",
             creator=test_projects[3],
         )
@@ -318,20 +320,20 @@ def test_multiple_group_projects(test_db, test_projects):
 
 def test_duplicate_project_names_in_different_groups(test_db, test_projects):
     new_group2 = Group(
-        course_code=test_projects[0], tutorial_id=test_projects[2], name="Group B"
+        course_id=test_projects[0], tutorial_id=test_projects[2], name="Group B"
     )
     test_db.session.add(new_group2)
     test_db.session.flush()
 
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=test_projects[3],
     )
     new_project2 = Project(
-        course_code=test_projects[0],
-        group_id=new_group2.id,
+        course_id=test_projects[0],
+        tutorial_id=new_group2.id,
         name="Assignment 1",
         creator=test_projects[3],
     )
@@ -342,7 +344,7 @@ def test_duplicate_project_names_in_different_groups(test_db, test_projects):
     inserted_project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -353,7 +355,7 @@ def test_duplicate_project_names_in_different_groups(test_db, test_projects):
     inserted_project2 = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=new_group2.id,
+            tutorial_id=new_group2.id,
             name="Assignment 1",
             creator=test_projects[3],
         )
@@ -367,8 +369,8 @@ def test_add_members(test_db, test_projects):
         first_name="Alex", last_name="Xu", email="alex@email.com", password="AlexXu123!"
     )
     new_project = Project(
-        course_code=test_projects[0],
-        group_id=test_projects[1],
+        course_id=test_projects[0],
+        tutorial_id=test_projects[1],
         name="Assignment 1",
         creator=new_user.handle,
     )
@@ -381,7 +383,7 @@ def test_add_members(test_db, test_projects):
     project = test_db.session.scalars(
         test_db.select(Project).filter_by(
             course_code=test_projects[0],
-            group_id=test_projects[1],
+            tutorial_id=test_projects[1],
             name="Assignment 1",
             creator=new_user.handle,
         )
