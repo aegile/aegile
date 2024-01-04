@@ -3,10 +3,8 @@ import { getCookie } from 'cookies-next';
 import { fetchAPIRequest } from '@/lib/utils';
 
 async function getCourses() {
-  const res = await fetchAPIRequest(
-    'http://localhost:5328/api/v1/courses',
-    'GET'
-  );
+  const token = getCookie('accessToken', { cookies }) || '';
+  const res = await fetchAPIRequest('/api/v1/courses', 'GET', token);
   console.log(res);
 }
 
