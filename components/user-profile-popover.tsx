@@ -5,8 +5,7 @@ import { CaretSortIcon } from '@radix-ui/react-icons';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import {
   Popover,
   PopoverContent,
@@ -48,13 +47,14 @@ export function UserProfilePopover({ isCollapsed }: { isCollapsed: boolean }) {
             </p>
           </div>
           <div className="grid gap-2">
-            <Button variant="secondary">
-              <CircleUserRound className="h-4 w-4 mr-3" />
+            <Button variant="ghost">
+              <CircleUserRound className="h-5 w-5 mr-2" />
               Profile
               <span className="sr-only">Profile</span>
             </Button>
+            <Separator />
             <Button variant="ghost">
-              <LogOut className="h-4 w-4 mr-3" />
+              <LogOut className="h-5 w-5 mr-2" />
               Log out
               <span className="sr-only">Log out</span>
             </Button>
