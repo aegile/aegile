@@ -22,12 +22,6 @@ import {
 import { Nav } from './nav';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
-// import {
-//   Tabs,
-//   TabsContent,
-//   TabsList,
-//   TabsTrigger,
-// } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
   ResizableHandle,
