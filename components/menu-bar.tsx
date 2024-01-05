@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/resizable';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { UserProfilePopover } from './user-profile-popover';
 
 interface NavbarProps {
   accounts: {
@@ -150,6 +151,7 @@ export function MenuBar({
             )}`;
           }}
           className={cn(
+            'flex flex-col box-border',
             isCollapsed &&
               'min-w-[50px] transition-all duration-300 ease-in-out'
           )}
@@ -193,6 +195,9 @@ export function MenuBar({
                 : 'ghost') as 'default' | 'ghost',
             }))}
           />
+          <div className="flex mt-auto w-full px-2 box-border mb-5 justify-center">
+            <UserProfilePopover isCollapsed={isCollapsed} />
+          </div>
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
