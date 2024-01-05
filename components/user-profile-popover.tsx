@@ -47,13 +47,13 @@ export function UserProfilePopover({ isCollapsed }: { isCollapsed: boolean }) {
             </p>
           </div>
           <div className="grid gap-2">
-            <Button variant="ghost">
+            <Button variant="ghost" className="justify-start">
               <CircleUserRound className="h-5 w-5 mr-2" />
               Profile
               <span className="sr-only">Profile</span>
             </Button>
             <Separator />
-            <Button variant="ghost">
+            <Button variant="ghost" className="justify-start">
               <LogOut className="h-5 w-5 mr-2" />
               Log out
               <span className="sr-only">Log out</span>
