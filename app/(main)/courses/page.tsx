@@ -1,10 +1,16 @@
 import { fetchServerAPIRequest } from '@/lib/utils';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
+import { toast } from 'sonner';
 
 async function getCourses() {
   const token = getCookie('accessToken', { cookies }) || '';
-  const res = await fetchServerAPIRequest('/api/v1/courses', 'GET', token);
+  // try {
+  //   return await fetchServerAPIRequest('/api/v1/courses', 'GET', token);
+  // } catch (error) {
+  //   const err = error as Error;
+  //   return { error: err.message };
+  // }
 }
 
 export default async function CoursesPage() {
