@@ -31,6 +31,7 @@ import {
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { UserProfilePopover } from './user-profile-popover';
+import { ModeToggle } from '@/components/theme-toggle';
 
 interface NavbarProps {
   accounts: {
@@ -189,6 +190,9 @@ export function MenuBar({
                 : 'ghost') as 'default' | 'ghost',
             }))}
           />
+          <div className="w-full flex justify-center">
+            <ModeToggle />
+          </div>
           <div className="flex mt-auto w-full px-2 box-border mb-5 justify-center">
             <UserProfilePopover isCollapsed={isCollapsed} />
           </div>
