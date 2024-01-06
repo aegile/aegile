@@ -104,3 +104,19 @@ def test_invalid_nonexistent_user_login(client):
     form_data = {"email": "nonexistent_user@email.com", "password": "password"}
     response = client.post("api/v1/auth/login", json=form_data)
     assert response.status_code == 400
+
+
+def test_invalid_login_check(client):
+    response = client.get("api/v1/auth/check")
+    assert response.status_code == 401
+
+
+def test_invalid_login_check(auth_client):
+    response = auth_client.get("api/v1/auth/check")
+    assert response.status_code == 200
+
+
+def test_invalid_login_check(invalid_token_client):
+    response = invalid_token_client.get("api/v1/auth/check")
+    print(response.json)
+    assert response.status_code == 401

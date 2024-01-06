@@ -223,6 +223,11 @@ def non_creator_headers(client, users_setup):
     return {"Authorization": f"Bearer {token}"}
 
 
+@pytest.fixture(scope="module")
+def invalid_headers(client, users_setup):
+    return {"Authorization": "Bearer sadiugdadguiad87adda78dag"}
+
+
 class AuthClient:
     def __init__(self, client, headers):
         self._client = client
@@ -249,3 +254,8 @@ def auth_client(client, auth_headers):
 @pytest.fixture(scope="module")
 def non_creator_client(client, non_creator_headers):
     return AuthClient(client, non_creator_headers)
+
+
+@pytest.fixture(scope="module")
+def invalid_token_client(client, invalid_headers):
+    return AuthClient(client, invalid_headers)

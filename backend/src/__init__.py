@@ -1,12 +1,17 @@
 import os
 import logging
+
 # from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
 from json import dumps, load
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
+from jwt.exceptions import ExpiredSignatureError, DecodeError
+from flask_jwt_extended.exceptions import UserLookupError
+
+from .error import AuthError
 from .extensions import api, db, jwt
 from .models.user import User
 from .routes.auth import auth_ns
@@ -28,7 +33,8 @@ log.setLevel(logging.INFO)
 #     log.addHandler(file_handler)
 #     log.addHandler(stream_handler)
 
-# load_dotenv('.env.development.local')
+# load_dotenv(".env.local")
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -62,10 +68,13 @@ def create_app():
     # app.config["TRAP_HTTP_EXCEPTIONS"] = True
     app.register_error_handler(Exception, defaultHandler)
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL").replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL").replace(
+        "postgres://", "postgresql://", 1
+    )
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    app.config["PROPAGATE_EXCEPTIONS"] = True
 
     api.init_app(app)
     db.init_app(app)
@@ -82,11 +91,61 @@ def create_app():
 
     @jwt.user_identity_loader
     def user_identity_lookup(user):
-        return user.id
+        try:
+            return user.id
+        except UserLookupError:
+            raise AuthError("Access token of unknown user. Please login again.")
 
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
-        identity = jwt_data["sub"]
-        return User.query.filter_by(id=identity).first()
+        try:
+            identity = jwt_data["sub"]
+            return User.query.filter_by(id=identity).first()
+        except ExpiredSignatureError:
+            raise AuthError("Access token has expired. Please login again.")
+        except DecodeError:
+            raise AuthError("Access token is invalid. Please login again.")
+        except UserLookupError:
+            raise AuthError("Access token of unknown user. Please login again.")
+
+    @jwt.expired_token_loader
+    def my_expired_token_callback(expired_token):
+        token_type = expired_token["type"]
+        return (
+            jsonify(
+                {
+                    "status": 401,
+                    "sub_status": 42,
+                    "msg": "The {} token has expired".format(token_type),
+                }
+            ),
+            401,
+        )
+
+    # @jwt.user_loader_error_loader
+    # def my_invalid_user_token_callback(token):
+    #     return (
+    #         jsonify(
+    #             {
+    #                 "status": 401,
+    #                 "sub_status": 42,
+    #                 "msg": "Unknown user associated with this token.",
+    #             }
+    #         ),
+    #         401,
+    #     )
+
+    # @jwt.invalid_token_loader()
+    # def my_invalid_token_callback(token):
+    #     return (
+    #         jsonify(
+    #             {
+    #                 "status": 401,
+    #                 "sub_status": 42,
+    #                 "msg": "Token is of invalid format.",
+    #             }
+    #         ),
+    #         401,
+    #     )
 
     return app

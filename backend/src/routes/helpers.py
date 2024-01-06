@@ -15,7 +15,7 @@ def fetch_one(model, filter):
         filter_str = ", ".join(f"{k}:'{v}'" for k, v in filter.items())
         msg = f"{model.__name__} {filter_str} was not found."
         trigger_event("event_db_query_not_found", msg)
-        raise InputError(f"ERROR: {msg}") from exc
+        raise InputError(f"{msg}") from exc
 
 
 def fetch_all(model, filter=None):
@@ -29,7 +29,7 @@ def fetch_all(model, filter=None):
     except NoResultFound as exc:
         msg = f"{model.__name__}s not found."
         trigger_event("event_db_query_not_found", msg)
-        raise InputError(f"ERROR: {msg}") from exc
+        raise InputError(f"{msg}") from exc
 
 
 def add_db_object(model, object, error_field):
@@ -63,7 +63,7 @@ def fetch_user_by_handle(handle):
     try:
         return db.session.execute(db.select(User).filter_by(handle=handle)).scalar_one()
     except NoResultFound as exc:
-        raise InputError(f"ERROR: User {handle} was not found.") from exc
+        raise InputError(f"User {handle} was not found.") from exc
 
 
 def fetch_all_by_id(model, id, error_message):
