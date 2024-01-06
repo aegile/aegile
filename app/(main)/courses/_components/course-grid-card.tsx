@@ -35,7 +35,7 @@ function CourseGridCard({
 }: CourseCardProps) {
   return (
     <Link href={`/courses/${id}`}>
-      <Card className="h-full flex flex-col">
+      <Card className="h-full flex flex-col hover:bg-accent hover:text-accent-foreground">
         <Image
           src="https://unsplash.it/250/125"
           width={250}

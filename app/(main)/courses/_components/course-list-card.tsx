@@ -43,7 +43,7 @@ function CourseListCard({
 }: CourseCardProps) {
   return (
     <Link href={`/courses/${id}`}>
-      <Card className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <Card className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent dark:hover:text-accent-foreground">
         <CardHeader className="pr-2">
           <CardTitle>
             {term}-{code}
