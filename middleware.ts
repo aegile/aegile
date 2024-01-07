@@ -28,7 +28,6 @@ export default auth((req) => {
   }
   if (!isLoggedIn && !isPublicRoute)
     return Response.redirect(new URL('/login', nextUrl));
-  if (isPublicRoute) return null;
   return null;
 
   console.log('ROUTE: ', req.nextUrl.pathname);

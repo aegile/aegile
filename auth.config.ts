@@ -44,13 +44,16 @@ export const authConfig = {
         if (validatedFields.success) {
           //   const { email, password } = validatedFields.data;
           // fetch to backend
-          const response = await fetch('/api/v1/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(validatedFields.data),
-          });
+          const response = await fetch(
+            `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(validatedFields.data),
+            }
+          );
 
           const result = await response.json();
           console.log(response.status, result);
