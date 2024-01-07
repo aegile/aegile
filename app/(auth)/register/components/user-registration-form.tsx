@@ -86,7 +86,7 @@ export function UserRegistrationForm() {
       </div>
     );
     const { confirmPassword, ...bodyData } = data;
-    const response = await fetch('/api/v1/auth/register', {
+    const response = await fetch('http://localhost:5328/api/v1/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
