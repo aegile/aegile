@@ -22,8 +22,11 @@ import { z } from 'zod';
 async function loginUser(email: string, password: string) {
   try {
     const body = JSON.stringify({ email, password });
+    console.log(
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`
+    );
     const res = await fetch(
-      `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
+      `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
       {
         method: 'POST',
         headers: {
