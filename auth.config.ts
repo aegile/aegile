@@ -52,12 +52,13 @@ export const authConfig = {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Cookie: `_vercel_jwt=${jwtCookie}`,
+                // Cookie: `_vercel_jwt=${jwtCookie}`,
               },
               body: JSON.stringify(validatedFields.data),
             }
           );
-
+          console.log('Response status:', response.status);
+          console.log('Response headers:', response.headers);
           const result = await response.json();
           console.log(response.status, result);
 
