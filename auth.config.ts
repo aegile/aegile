@@ -45,7 +45,7 @@ export const authConfig = {
           //   const { email, password } = validatedFields.data;
           // fetch to backend
           const response = await fetch(
-            `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
+            `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
             {
               method: 'POST',
               headers: {
