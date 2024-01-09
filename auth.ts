@@ -25,6 +25,8 @@ import { cookies } from 'next/headers';
 async function loginUser(email: string, password: string) {
   try {
     const body = JSON.stringify({ email, password });
+    const jwtCookie = getCookie('_vercel_jwt', { cookies });
+    console.log('COOKIE: ', jwtCookie);
     console.log(
       `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`
     );
@@ -34,7 +36,7 @@ async function loginUser(email: string, password: string) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Cookie: `_vercel_jwt=${getCookie('_vercel_jwt', { cookies })}}`,
+          Cookie: `_vercel_jwt=${jwtCookie}`,
         },
         body,
       }
