@@ -46,31 +46,31 @@ export const authConfig = {
           //   const { email, password } = validatedFields.data;
           // fetch to backend
           const jwtCookie = getCookie('_vercel_jwt', { cookies });
-          const response = await fetch(
+
+          const res = await fetch(
             `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
             {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                // Cookie: `_vercel_jwt=${jwtCookie}`,
+                Cookie: `_vercel_jwt=${jwtCookie}`,
               },
               body: JSON.stringify(validatedFields.data),
             }
           );
-          console.log('Response status:', response.status);
-          console.log('Response headers:', response.headers);
-          const result = await response.json();
-          console.log(response.status, result);
+          console.log('Response status:', res.status);
+          console.log('Response headers:', res.headers);
 
-          if (!response.ok) {
+          if (res.status === 400 || res.status === 401) {
             // Handle error
             console.error('Login failed');
             return null;
           } else {
+            const result = await res.json();
+            console.log(result);
             return result;
           }
         }
-        return null;
       },
     }),
   ], // Add providers with an empty array for now
