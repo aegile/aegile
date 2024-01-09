@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 import { CircleUserRound, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { logout } from '@/actions/logout';
+// import { logout } from '@/actions/logout';
 
 export function UserProfilePopover({ isCollapsed }: { isCollapsed: boolean }) {
   return (
@@ -59,9 +59,9 @@ export function UserProfilePopover({ isCollapsed }: { isCollapsed: boolean }) {
             <Button
               variant="ghost"
               className="justify-start"
-              onClick={async () => {
-                await logout();
-              }}
+              // onClick={async () => {
+              //   await logout();
+              // }}
             >
               <LogOut className="h-5 w-5 mr-2" />
               Log out

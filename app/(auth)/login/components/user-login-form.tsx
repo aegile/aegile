@@ -19,7 +19,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { LoginSchema } from '@/schemas';
-import { login } from '@/actions/login';
+import { authenticate } from '@/app/lib/actions';
+// import { login } from '@/actions/login';
 
 export function UserLoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -42,14 +43,15 @@ export function UserLoginForm() {
       </div>
     );
     setIsLoading(true);
-    login(values).then((data) => {
-      console.log(data);
+    console.log('ATTEMPTING LOGIN');
+    console.error('ATTEMPTING LOGIN');
+    authenticate(undefined, values).then((data) => {
       // if (data?.success) toast.success(data.success);
       data?.error
         ? toast.error(data.error)
         : toast.success('Login successful!');
-      setIsLoading(false);
     });
+    setIsLoading(false);
   }
 
   return (
