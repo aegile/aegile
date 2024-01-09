@@ -21,18 +21,23 @@ import { z } from 'zod';
 
 async function loginUser(email: string, password: string) {
   try {
+    const body = JSON.stringify({ email, password });
     const res = await fetch(
       `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body).toString(),
         },
-        body: JSON.stringify({ email, password }),
+        body,
       }
     );
     // const user = await sql<User>`SELECT * FROM users WHERE email=${email}`;
     // return user.rows[0];
+    console.log('Response status:', res.status);
+    console.log('Response headers:', res.headers);
+
     if (res.status === 400 || res.status === 401) return null;
     const result = await res.json();
     console.log(result);
