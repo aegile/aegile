@@ -15,6 +15,9 @@ import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
+import { getCookie } from 'cookies-next';
+import { cookies } from 'next/headers';
+
 // import { sql } from '@vercel/postgres';
 // import type { User } from '@/app/lib/definitions';
 // import bcrypt from 'bcrypt';
@@ -31,7 +34,7 @@ async function loginUser(email: string, password: string) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(body).toString(),
+          Cookie: `_vercel_jwt=${getCookie('_vercel_jwt', { cookies })}}`,
         },
         body,
       }
