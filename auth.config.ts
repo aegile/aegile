@@ -2,7 +2,8 @@ import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 import { LoginSchema } from '@/schemas';
-import { access } from 'fs';
+import { getCookie } from 'cookies-next';
+import { cookies } from 'next/headers';
 
 declare module 'next-auth' {
   interface User {
@@ -44,12 +45,14 @@ export const authConfig = {
         if (validatedFields.success) {
           //   const { email, password } = validatedFields.data;
           // fetch to backend
+          const jwtCookie = getCookie('_vercel_jwt', { cookies });
           const response = await fetch(
             `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
             {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
+                Cookie: `_vercel_jwt=${jwtCookie}`,
               },
               body: JSON.stringify(validatedFields.data),
             }
