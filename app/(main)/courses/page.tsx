@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { fetchServerAPIRequest } from '@/lib/utils';
+import { fetchServerAPIRequest } from '@/lib/server-utils';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
 import { toast } from 'sonner';
