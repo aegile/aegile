@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import { LoginSchema } from '@/schemas';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
+import { fetchServerAPIRequest } from '@/lib/server-utils';
 
 declare module 'next-auth' {
   interface User {
@@ -43,20 +44,13 @@ export const authConfig = {
       async authorize(credentials) {
         const validatedFields = LoginSchema.safeParse(credentials);
         if (validatedFields.success) {
-          //   const { email, password } = validatedFields.data;
+          const { email, password } = validatedFields.data;
           // fetch to backend
           const jwtCookie = getCookie('_vercel_jwt', { cookies });
-
-          const res = await fetch(
-            `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/v1/auth/login`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Cookie: `_vercel_jwt=${jwtCookie}`,
-              },
-              body: JSON.stringify(validatedFields.data),
-            }
+          const res = await fetchServerAPIRequest(
+            '/api/v1/auth/login',
+            'POST',
+            { email, password }
           );
           console.log('Response status:', res.status);
           console.log('Response headers:', res.headers);
