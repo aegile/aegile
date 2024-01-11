@@ -25,7 +25,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors />
+          <Toaster richColors closeButton />
           {children}
         </ThemeProvider>
       </body>
