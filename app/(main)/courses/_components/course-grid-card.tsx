@@ -18,21 +18,7 @@ import Link from 'next/link';
 import { User, BookCheck } from 'lucide-react';
 import IconTextTooltip from '@/components/icon-text-tooltip';
 
-interface CourseCardProps {
-  id: string;
-  term: string;
-  code: string;
-  name: string;
-  deliverables: number;
-}
-
-function CourseGridCard({
-  id,
-  term,
-  code,
-  name,
-  deliverables,
-}: CourseCardProps) {
+function CourseGridCard({ id, term, code, name, member_count }: Course) {
   return (
     <Link href={`/courses/${id}`}>
       <Card className="h-full flex flex-col hover:bg-accent hover:text-accent-foreground">
@@ -57,14 +43,14 @@ function CourseGridCard({
                 {
                   icon: User,
                   marginRight: 1,
-                  text: '2',
-                  tooltip: '2 Members',
+                  text: member_count.toString(),
+                  tooltip: `${member_count} members`,
                 },
                 {
                   icon: BookCheck,
                   marginRight: 1,
-                  text: deliverables.toString(),
-                  tooltip: `${deliverables} Deliberables`,
+                  text: '2',
+                  tooltip: '2 deliverables',
                 },
               ]}
             />

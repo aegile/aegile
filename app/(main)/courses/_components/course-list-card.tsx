@@ -24,23 +24,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import IconTextTooltip from '@/components/icon-text-tooltip';
 
-interface CourseCardProps {
-  id: string;
-  term: string;
-  code: string;
-  name: string;
-  deliverables: number;
-  labels?: string[];
-}
-
 function CourseListCard({
   id,
   term,
   code,
   name,
-  deliverables,
+  member_count,
   labels = ['computer science', 'web design'],
-}: CourseCardProps) {
+}: Course) {
   return (
     <Link href={`/courses/${id}`}>
       <Card className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent dark:hover:text-accent-foreground">
@@ -103,14 +94,14 @@ function CourseListCard({
                 {
                   icon: User,
                   marginRight: 1,
-                  text: '2',
-                  tooltip: '2 Members',
+                  text: member_count.toString(),
+                  tooltip: `${member_count} members`,
                 },
                 {
                   icon: BookCheck,
                   marginRight: 1,
-                  text: deliverables.toString(),
-                  tooltip: `${deliverables} Deliberables`,
+                  text: '2',
+                  tooltip: '2 deliberables',
                 },
               ]}
             />
