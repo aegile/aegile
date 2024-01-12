@@ -86,7 +86,8 @@ export function CourseCreationForm() {
     if (!res.ok) {
       // Handle error
       console.error('Course creation failed');
-      toast.error(res.message);
+      const data = await res.json();
+      toast.error(data.message);
       return;
     }
     router.refresh();
