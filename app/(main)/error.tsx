@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-export default function Error({
+export default function MainPageError({
   error,
   reset,
 }: {
@@ -24,9 +24,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Optionally log the error to an error reporting service
-    console.log(error);
     toast.error(error.message);
-    console.error(error);
   }, [error]);
 
   return (
