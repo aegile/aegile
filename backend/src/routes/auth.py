@@ -65,7 +65,14 @@ class Login(Resource):
 
         user.last_login = datetime.utcnow().isoformat()
         db.session.commit()
-        return {"access_token": create_access_token(user)}
+        return {
+            "access_token": create_access_token(user),
+            "id": user.id,
+            "name": f"{user.first_name} {user.last_name}",
+            "email": user.email,
+            "image": user.image,
+            "handle": user.handle,
+        }
 
 
 @auth_ns.route("/check")

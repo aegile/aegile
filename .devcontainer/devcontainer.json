@@ -19,7 +19,8 @@
                 "esbenp.prettier-vscode",
                 "ChakrounAnas.turbo-console-log",
                 "Orta.vscode-twoslash-queries",
-                "deerawan.vscode-faker"
+                "deerawan.vscode-faker",
+                "bradlc.vscode-tailwindcss"
             ],
             "settings": {
                 "terminal.integrated.env.linux": {

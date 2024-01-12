@@ -18,76 +18,38 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-
-const FormSchema = z.object({
-  email: z
-    .string()
-    .email({
-      message: 'Invalid email address.',
-    })
-    .refine(
-      (value) =>
-        // /^[\w.-]+@student\.unsw\.edu\.au$/.test(value) ||
-        /^z\d{7}@ad\.unsw\.edu\.au$/.test(value),
-      {
-        message: 'Email must follow: z5555555@ad.unsw.edu.au',
-      }
-    ),
-  password: z
-    .string()
-    .min(8, {
-      message: 'Password must be at least 8 characters.',
-    })
-    .refine((value) => /[A-Z]/.test(value), {
-      message: 'Password must contain at least one uppercase letter.',
-    })
-    .refine((value) => /\W|_/.test(value), {
-      message: 'Password must contain at least one symbol.',
-    }),
-});
+import { LoginSchema } from '@/schemas';
+import { login } from '@/actions/login';
 
 export function UserLoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
     toast(
       <div className="w-full">
         <p>You submitted the following values:</p>
         <pre className="mt-2 w-full rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
         </pre>
       </div>
     );
-    const response = await fetch('/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+    setIsLoading(true);
+    login(values).then((data) => {
+      console.log(data);
+      // if (data?.success) toast.success(data.success);
+      data?.error
+        ? toast.error(data.error)
+        : toast.success('Login successful!');
+      setIsLoading(false);
     });
-
-    const result = await response.json();
-    console.log(result);
-
-    if (!response.ok) {
-      // Handle error
-      console.error('Login failed');
-      toast.error(result.message);
-      return;
-    }
-
-    setCookie('accessToken', result.access_token);
-    // handle JWT token
-    // handle success
-    // navigate to login page
   }
 
   return (

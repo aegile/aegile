@@ -1,7 +1,6 @@
 import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 import { Inter } from 'next/font/google';
-import { ModeToggle } from '@/components/theme-toggle';
 import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,8 +25,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors />
-          <ModeToggle />
+          <Toaster richColors closeButton />
           {children}
         </ThemeProvider>
       </body>
