@@ -1,5 +1,6 @@
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
+import { auth } from '@/auth';
 
 export const fetchServerAPIRequest = async (
   route: string,
@@ -19,8 +20,9 @@ export const fetchServerAPIRequest = async (
     options.body = JSON.stringify(bodyData);
   }
 
+  const session = await auth();
   const jwtCookie = getCookie('_vercel_jwt', { cookies });
-  const authToken = getCookie('accessToken', { cookies });
+  const authToken = session?.accessToken;
 
   options.headers = {
     ...options.headers,
@@ -34,7 +36,6 @@ export const fetchServerAPIRequest = async (
       : 'http://';
 
   const url = `${routeProtocolPrefix}${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
-  console.log(url);
   const response = await fetch(url, options);
 
   return response;
@@ -46,17 +47,3 @@ export const fetchServerAPIRequest = async (
 
   return data;
 };
-
-// export async function checkAuth() {
-//   const token = getCookie('accessToken', { cookies }) || ''
-//   if (!token) {
-//     return false;
-//   }
-
-//   try {
-//     await fetchAPIRequest('/api/v1/auth/check', 'GET');
-//   } catch (error) {
-//     return false;
-//   }
-//   return true;
-// }
