@@ -18,7 +18,7 @@ export const authRoutes: string[] = ['/login', '/register'];
  *
  * @type {string}
  */
-export const apiAuthPrefix: string = '/api';
+export const apiAuthPrefix: string = '/auth';
 
 /**
  * Default redirect path after login
