@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { LoginSchema } from '@/schemas';
-import { login } from '@/actions/login';
+import { LoginSchema } from '@/lib/schemas';
+import { login } from '@/lib/actions/login';
 
 export function UserLoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);

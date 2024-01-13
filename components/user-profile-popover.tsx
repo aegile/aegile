@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 import { CircleUserRound, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { logout } from '@/actions/logout';
+import { logout } from '@/lib/actions/logout';
 
 export function UserProfilePopover({ isCollapsed }: { isCollapsed: boolean }) {
   return (

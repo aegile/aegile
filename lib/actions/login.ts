@@ -2,7 +2,7 @@
 
 import * as z from 'zod';
 import { signIn } from '@/auth';
-import { LoginSchema } from '@/schemas';
+import { LoginSchema } from '@/lib/schemas';
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 import { AuthError } from 'next-auth';
 
@@ -18,8 +18,8 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     await signIn('credentials', {
       email,
       password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
-      //   redirectTo: callbackURL || DEFAULT_LOGIN_REDIRECT,
+      // redirectTo: DEFAULT_LOGIN_REDIRECT,
+      // redirectTo: callbackURL || DEFAULT_LOGIN_REDIRECT,
     });
 
     return { success: 'Login succesful!' };

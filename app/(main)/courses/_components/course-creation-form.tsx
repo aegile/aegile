@@ -28,40 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CourseCreationSchema } from '@/lib/schemas';
 import { fetchClientAPIRequest } from '@/lib/utils';
-
-const formSchema = z.object({
-  term: z.string({
-    required_error: 'Please select a term offering.',
-  }),
-  code: z
-    .string()
-    .length(8, { message: 'Course code must be exactly 8 characters.' })
-    .refine((code) => /^[A-Za-z]{4}\d{4}$/.test(code), {
-      message: 'Course code must begin with 4 letters and end with 4 numbers.',
-    }),
-  name: z
-    .string()
-    .max(120, {
-      message: 'Course name must not exceed 120 characters.',
-    })
-    .nonempty('Course name is required.'),
-  // faculty: z.string({
-  //   required_error: 'Please select a faculty.',
-  // }),
-  description: z
-    .string()
-    .max(200, {
-      message: 'Course description must not exceed 200 characters.',
-    })
-    .nonempty('Course description is required.'),
-});
 
 export function CourseCreationForm() {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof CourseCreationSchema>>({
+    resolver: zodResolver(CourseCreationSchema),
     defaultValues: {
       // term: '',
       // code: '',
@@ -70,7 +44,7 @@ export function CourseCreationForm() {
     },
     mode: 'onChange',
   });
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof CourseCreationSchema>) {
     toast(
       <div className="w-full">
         <p>You submitted the following values:</p>
