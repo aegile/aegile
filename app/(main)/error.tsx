@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { logout } from '@/lib/actions/logout';
 
 export default function MainPageError({
   error,
@@ -45,8 +46,8 @@ export default function MainPageError({
           >
             Try Again
           </Button>
-          <Button className="w-full" asChild>
-            <Link href="/login">Log In</Link>
+          <Button className="w-full" onClick={() => logout()}>
+            Log In
           </Button>
         </CardFooter>
       </Card>
