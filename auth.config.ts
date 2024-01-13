@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
-import { LoginSchema } from '@/schemas';
+import { LoginSchema } from '@/lib/schemas';
 import { getCookie } from 'cookies-next';
 import { cookies } from 'next/headers';
 import { fetchServerAPIRequest } from '@/lib/server-utils';

@@ -23,12 +23,19 @@ export default auth((req) => {
 
   if (isApiAuthRoute) return null;
   if (isAuthRoute) {
-    if (isLoggedIn)
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    if (isLoggedIn) {
+      const callbackUrl =
+        nextUrl.searchParams.get('callbackUrl') || DEFAULT_LOGIN_REDIRECT;
+      return Response.redirect(new URL(callbackUrl, nextUrl));
+    }
     return null;
   }
-  if (!isLoggedIn && !isPublicRoute)
-    return Response.redirect(new URL('/login', nextUrl));
+  if (!isLoggedIn && !isPublicRoute) {
+    const loginUrl = new URL('/login', nextUrl);
+    loginUrl.searchParams.set('callbackUrl', nextUrl.pathname);
+    return Response.redirect(loginUrl);
+    // return Response.redirect(new URL('/api/auth/signin', nextUrl));
+  }
   return null;
 });
 
