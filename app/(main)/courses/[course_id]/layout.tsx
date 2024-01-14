@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
 import { fetchServerAPIRequest } from '@/lib/server-utils';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CourseNav } from './_components/course-nav';
 
 async function getCourse(course_id: string) {

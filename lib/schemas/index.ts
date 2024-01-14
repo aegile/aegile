@@ -97,3 +97,15 @@ export const CourseCreationSchema = z.object({
     })
     .nonempty('Course description is required.'),
 });
+
+export const courseEnrolmentSchema = z.object({
+  id: z.string(),
+  email: z.string().email(),
+  first_name: z.string(),
+  last_name: z.string(),
+  handle: z.string(),
+  image: z.string(),
+  role: z.string(),
+});
+
+export type Participant = z.infer<typeof courseEnrolmentSchema>;
