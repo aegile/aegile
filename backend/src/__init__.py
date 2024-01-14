@@ -109,14 +109,14 @@ def create_app():
             raise AuthError("Access token of unknown user. Please login again.")
 
     @jwt.expired_token_loader
-    def my_expired_token_callback(expired_token):
-        token_type = expired_token["type"]
+    def my_expired_token_callback(jwt_header, jwt_data):
+        token_type = jwt_data["type"]
         return (
             jsonify(
                 {
                     "status": 401,
                     "sub_status": 42,
-                    "msg": "The {} token has expired".format(token_type),
+                    "msg": "The token has expired".format(token_type),
                 }
             ),
             401,
