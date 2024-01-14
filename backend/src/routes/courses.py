@@ -74,11 +74,11 @@ class CourseSpecific(Resource):
 class CourseMembers(Resource):
     method_decorators = [jwt_required()]
 
-    @courses_ns.marshal_with(course_members_fetch_output)
+    @courses_ns.marshal_list_with(course_members_fetch_output)
     def get(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
         check_is_member(Course, course, current_user)
-        return course
+        return course.user_course_statuses
 
 
 @courses_ns.route("/<string:course_id>/enroll")
