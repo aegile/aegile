@@ -28,7 +28,7 @@ export default async function CoursesPage() {
   const courses: Course[] = await getCourses();
 
   return (
-    <div className="h-full flex flex-col p-8 space-y-4 overflow-y-auto">
+    <div className="h-full flex flex-col p-8 space-y-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-semibold tracking-tight">My Courses</h2>
       </div>
