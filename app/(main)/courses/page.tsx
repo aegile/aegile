@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { fetchServerAPIRequest } from '@/lib/server-utils';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { LayoutGrid, LayoutList } from 'lucide-react';
@@ -10,6 +9,9 @@ import CourseListCard from './_components/course-list-card';
 import DataNotFound from '@/components/page-ui/data-not-found';
 
 import { CourseCreationDialog } from './_components/course-creation-dialog';
+import CoursesMain from './_components/courses-main';
+import CoursesCalendar from './_components/courses-calendar';
+import CoursesRecents from './_components/courses-recents';
 
 async function getCourses() {
   const res = await fetchServerAPIRequest('/api/v1/courses', 'GET');
@@ -28,60 +30,19 @@ export default async function CoursesPage() {
   const courses: Course[] = await getCourses();
 
   return (
-    <div className="h-full flex flex-col p-8 space-y-6 overflow-y-auto">
-      <div className="flex items-center justify-between">
+    <div className="h-screen flex flex-col p-8 space-y-6 overflow-y-auto">
+      {/* <div className="flex items-center justify-between">
         <h2 className="text-3xl font-semibold tracking-tight">My Courses</h2>
-      </div>
-      <Tabs
-        defaultValue="list-view"
-        className="flex flex-col flex-grow space-y-4"
-      >
-        <div className="flex items-center  space-x-2">
-          <TabsList className="">
-            <TabsTrigger value="grid-view">
-              <LayoutGrid className="w-5 h-5" />
-            </TabsTrigger>
-            <TabsTrigger value="list-view">
-              <LayoutList className="w-5 h-5" />
-            </TabsTrigger>
-          </TabsList>
-          <CourseCreationDialog />
+      </div> */}
+      <div className="flex flex-wrap sm:grid sm:grid-cols-2 lg:grid-cols-3 grid-rows-4 sm:grid-rows-2 h-fit sm:h-full gap-5">
+        <div className="w-full col-span-full lg:col-span-2 row-span-2 lg:row-span-full max-h-[500px] sm:max-h-full">
+          <CoursesMain courses={courses} />
         </div>
-        {!courses.length ? (
-          <DataNotFound dataName="courses" />
-        ) : (
-          <>
-            <TabsContent value="grid-view">
-              <div className="grid w-full gap-6 auto-rows-min md:grid-cols-2 xl:grid-cols-4">
-                {courses.map((course, index) => (
-                  <CourseGridCard
-                    key={index}
-                    id={course.id}
-                    term={course.term}
-                    code={course.code}
-                    name={course.name}
-                    member_count={course.member_count}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-            <TabsContent value="list-view">
-              <div className="flex flex-col w-full gap-6">
-                {courses.map((course, index) => (
-                  <CourseListCard
-                    key={index}
-                    id={course.id}
-                    term={course.term}
-                    code={course.code}
-                    name={course.name}
-                    member_count={course.member_count}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-          </>
-        )}
-      </Tabs>
+
+        <CoursesCalendar courses={courses} />
+        <CoursesRecents courses={courses} />
+        {/* <div className="w-full h-full border border-lime-600">Recents</div> */}
+      </div>
     </div>
   );
 }
