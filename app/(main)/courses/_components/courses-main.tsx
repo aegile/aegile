@@ -19,7 +19,7 @@ import { CourseCreationDialog } from './course-creation-dialog';
 export default function CoursesMain({ courses }: { courses: Course[] }) {
   return (
     <Tabs defaultValue="grid-view" className="h-full">
-      <Card className="w-full flex flex-col h-full">
+      <Card className="w-full flex flex-col h-full max-h-[750px] sm:max-h-full">
         <CardHeader>
           <CardTitle>Courses</CardTitle>
           <CardDescription>View and manage your courses.</CardDescription>
