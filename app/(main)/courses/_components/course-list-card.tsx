@@ -24,14 +24,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import IconTextTooltip from '@/components/icon-text-tooltip';
 
-function CourseListCard({
-  id,
-  term,
-  code,
-  name,
-  member_count,
-  labels = ['computer science', 'web design'],
-}: Course) {
+function CourseListCard({ item }: { item: Course }) {
+  const {
+    id,
+    term,
+    code,
+    name,
+    member_count,
+    labels = ['computer science'],
+  } = item;
   return (
     <Link href={`/courses/${id}`}>
       <Card className="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent dark:hover:text-accent-foreground">

@@ -18,7 +18,9 @@ import Link from 'next/link';
 import { User, BookCheck } from 'lucide-react';
 import IconTextTooltip from '@/components/icon-text-tooltip';
 
-function CourseGridCard({ id, term, code, name, member_count }: Course) {
+function CourseGridCard({ item }: { item: Course }) {
+  const { id, term, code, name, member_count } = item;
+
   return (
     <Link href={`/courses/${id}`}>
       <Card className="h-full flex flex-col hover:bg-accent hover:text-accent-foreground">
