@@ -1,4 +1,3 @@
-import { Metadata } from 'next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Card,
@@ -10,21 +9,33 @@ import {
 
 import { LayoutGrid, LayoutList } from 'lucide-react';
 
-import CourseGridCard from './course-grid-card';
-import CourseListCard from './course-list-card';
 import DataNotFound from '@/components/page-ui/data-not-found';
 
-import { CourseCreationDialog } from './course-creation-dialog';
+// import { CourseCreationDialog } from './course-creation-dialog';
 
-export default function CoursesMain({ courses }: { courses: Course[] }) {
+export default function GridListViewCard<T>({
+  dataName,
+  items,
+  GridItemComponent,
+  ListItemComponent,
+  ItemCreationComponent,
+}: {
+  dataName: string;
+  items: T[];
+  GridItemComponent: React.ElementType<{ item: T }>;
+  ListItemComponent: React.ElementType<{ item: T }>;
+  ItemCreationComponent: React.ElementType;
+}) {
   return (
     <Tabs defaultValue="grid-view" className="h-full">
       <Card className="w-full flex flex-col h-full max-h-[750px] sm:max-h-full">
         <CardHeader>
-          <CardTitle>Courses</CardTitle>
-          <CardDescription>View and manage your courses.</CardDescription>
+          <CardTitle>
+            {dataName.charAt(0).toUpperCase() + dataName.slice(1)}
+          </CardTitle>
+          <CardDescription>View and manage your {dataName}.</CardDescription>
           <div className="flex items-center ml-auto space-x-2">
-            <CourseCreationDialog />
+            {ItemCreationComponent && <ItemCreationComponent />}
             <TabsList>
               <TabsTrigger value="grid-view">
                 <LayoutGrid className="w-5 h-5" />
@@ -39,35 +50,21 @@ export default function CoursesMain({ courses }: { courses: Course[] }) {
           className="h-full overflow-y-auto"
           style={{ scrollbarGutter: 'stable' }}
         >
-          {!courses.length ? (
-            <DataNotFound dataName="courses" />
+          {!items.length ? (
+            <DataNotFound dataName="items" />
           ) : (
             <>
               <TabsContent value="grid-view">
                 <div className="grid w-full gap-6 auto-rows-min sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
-                  {courses.map((course, index) => (
-                    <CourseGridCard
-                      key={index}
-                      id={course.id}
-                      term={course.term}
-                      code={course.code}
-                      name={course.name}
-                      member_count={course.member_count}
-                    />
+                  {items.map((item, index) => (
+                    <GridItemComponent key={index} item={item} />
                   ))}
                 </div>
               </TabsContent>
               <TabsContent value="list-view">
                 <div className="flex flex-col w-full gap-6">
-                  {courses.map((course, index) => (
-                    <CourseListCard
-                      key={index}
-                      id={course.id}
-                      term={course.term}
-                      code={course.code}
-                      name={course.name}
-                      member_count={course.member_count}
-                    />
+                  {items.map((item, index) => (
+                    <ListItemComponent key={index} item={item} />
                   ))}
                 </div>
               </TabsContent>
