@@ -27,9 +27,10 @@ export function UserLoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'z5555555@ad.unsw.edu.au',
+      password: 'AlexXu123!',
     },
+    mode: 'onChange',
   });
 
   async function onSubmit(values: z.infer<typeof LoginSchema>) {

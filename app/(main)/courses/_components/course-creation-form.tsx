@@ -37,10 +37,10 @@ export function CourseCreationForm() {
   const form = useForm<z.infer<typeof CourseCreationSchema>>({
     resolver: zodResolver(CourseCreationSchema),
     defaultValues: {
-      // term: '',
-      // code: '',
-      // name: '',
-      // description: '',
+      term: '24T0',
+      code: 'COMP1511',
+      name: 'Programming Fundamentals',
+      description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit.',
     },
     mode: 'onChange',
   });
