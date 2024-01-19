@@ -9,11 +9,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ClassCreationForm } from './class-creation-form';
-
 import { PlusCircle } from 'lucide-react';
+import { useParams } from 'next/navigation';
+
+import { ClassForm } from './class-form';
 
 export function ClassCreationDialog() {
+  const { course_id } = useParams();
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -22,14 +25,25 @@ export function ClassCreationDialog() {
           New Class
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create a class</DialogTitle>
           <DialogDescription>
             Create a new class. Click submit when you're done.
           </DialogDescription>
         </DialogHeader>
-        <ClassCreationForm />
+        <ClassForm
+          defaultValues={{
+            name: 'H11A',
+            capacity: 25,
+            day: 'Mon',
+            start_time: '11:00',
+            end_time: '13:00',
+            location: 'Quadrangle G047',
+          }}
+          fetchRoute={`/api/v1/tutorials/crs/${course_id}`}
+          method="POST"
+        />
       </DialogContent>
     </Dialog>
   );

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import {
   Form,
@@ -28,26 +28,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ClassCreationSchema } from '@/lib/schemas';
+import { ClassFormSchema } from '@/lib/schemas';
 import { fetchClientAPIRequest } from '@/lib/utils';
 
-export function ClassCreationForm() {
-  const router = useRouter();
-  const { course_id } = useParams();
+type ClassFormProps = {
+  defaultValues: z.infer<typeof ClassFormSchema>;
+  fetchRoute: string;
+  method: 'PUT' | 'POST';
+};
 
-  const form = useForm<z.infer<typeof ClassCreationSchema>>({
-    resolver: zodResolver(ClassCreationSchema),
-    defaultValues: {
-      name: 'H11A',
-      capacity: 25,
-      day: 'Mon',
-      start_time: '11:00',
-      end_time: '13:00',
-      location: 'Quadrangle G047',
-    },
+export function ClassForm({
+  defaultValues,
+  fetchRoute,
+  method,
+}: ClassFormProps) {
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof ClassFormSchema>>({
+    resolver: zodResolver(ClassFormSchema),
+    defaultValues,
     mode: 'onChange',
   });
-  async function onSubmit(data: z.infer<typeof ClassCreationSchema>) {
+  async function onSubmit(data: z.infer<typeof ClassFormSchema>) {
     toast(
       <div className="w-full">
         <p>You submitted the following values:</p>
@@ -57,21 +59,16 @@ export function ClassCreationForm() {
       </div>
     );
     const { name, capacity, day, start_time, end_time, location } = data;
-
-    const res = await fetchClientAPIRequest(
-      `/api/v1/tutorials/crs/${course_id}`,
-      'POST',
-      {
-        name,
-        capacity,
-        day,
-        times: `${start_time} - ${end_time}`,
-        location,
-      }
-    );
+    const res = await fetchClientAPIRequest(fetchRoute, method, {
+      name,
+      capacity,
+      day,
+      times: `${start_time} - ${end_time}`,
+      location,
+    });
     if (!res.ok) {
       // Handle error
-      console.error('Course creation failed');
+      console.error('Class creation failed');
       const data = await res.json();
       toast.error(data.message);
       return;
