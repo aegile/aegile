@@ -17,3 +17,13 @@ type User = {
   image?: string;
   role?: string;
 };
+
+type Class = {
+  id: string;
+  name: string;
+  capacity: number;
+  member_count: number;
+  day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+  times: string;
+  location: string;
+};

@@ -110,7 +110,7 @@ export const courseEnrolmentSchema = z.object({
 
 export type Participant = z.infer<typeof courseEnrolmentSchema>;
 
-export const ClassCreationSchema = z.object({
+export const ClassFormSchema = z.object({
   name: z
     .string()
     .max(50, {
