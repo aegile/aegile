@@ -37,9 +37,15 @@ def add_db_object(model, object, error_field):
         db.session.add(object)
         db.session.commit()
         return {}, 201
-    except IntegrityError as exc:
+    except IntegrityError as err:
         db.session.rollback()
-        raise InputError(f"{model.__name__} {error_field} already exists.") from exc
+        print(err)
+        if model.__name__ == "Tutorial":
+            raise InputError(
+                f"{model.__name__} either already exists or clashes with another."
+            ) from err
+
+        raise InputError(f"{model.__name__} {error_field} already exists.") from err
 
 
 def update_db_object(model, error_field):
