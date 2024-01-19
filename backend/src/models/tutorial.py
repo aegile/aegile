@@ -24,7 +24,10 @@ class Tutorial(db.Model):
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"))
     userset = db.relationship("UserSet", backref="tutorial_userset", uselist=False)
 
-    __table_args__ = (db.UniqueConstraint("course_id", "name", name="uix_course_name"),)
+    __table_args__ = (
+        db.UniqueConstraint("course_id", "name", name="uix_course_name"),
+        db.UniqueConstraint("day", "times", "location", name="uix_tutorial_class"),
+    )
 
     # def __init__(self, course_id: str, name: str, userset: list[User] = []):
     #     self.course_id = course_id
