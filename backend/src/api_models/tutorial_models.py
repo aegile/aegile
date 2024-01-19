@@ -8,6 +8,7 @@ tutorial_fetch_output = api.model(
         "id": fields.Integer,
         "name": fields.String,
         "capacity": fields.Integer,
+        "member_count": fields.Integer,
         "day": fields.String,
         "times": fields.String,
         "location": fields.String,
