@@ -26,7 +26,7 @@ export default function ClassGridCard({ item }: { item: Class }) {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>{name}</CardTitle>
-            <DropdownSettings editItem={item} EditDialog={ClassEditDialog} />
+            <DropdownSettings editItem={item} EditDialog={ClassEditDialog} deleteRoute={`/api/v1/tutorials/${id}`} />
           </div>
           <CardDescription className="font-semibold leading-7">
             {day}, {times}
