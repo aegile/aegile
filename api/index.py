@@ -32,7 +32,7 @@ with app.app_context():
         "z4555555@ad.unsw.edu.au",
         generate_password_hash("VivanZhang123!"),
     )
-    db.session.add_all([user1, user2, user3])
+    db.session.add_all([user1, user2, user3, user4, user5])
     db.session.commit()
     print(db.session.execute(db.select(User)).all())
 
