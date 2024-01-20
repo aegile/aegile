@@ -10,7 +10,7 @@ from ..api_models.course_models import (
     course_members_input,
     course_members_fetch_output,
 )
-from ..api_models.user_models import userset_list_input
+from ..api_models.user_models import user_fetch_output
 
 from .helpers import fetch_one, fetch_all, add_db_object, update_db_object
 from .access_checks import check_is_member, check_course_creator, check_authorization
@@ -81,6 +81,18 @@ class CourseMembers(Resource):
         return course.user_course_statuses
 
 
+@courses_ns.route("/<string:course_id>/enrollable-users")
+class CourseEnrollableUsers(Resource):
+    method_decorators = [jwt_required()]
+
+    @courses_ns.marshal_list_with(user_fetch_output)
+    def get(self, course_id: str):
+        course: Course = fetch_one(Course, {"id": course_id})
+        check_authorization(course, current_user, "can_manage_course")
+        all_users_set: set(User) = set(fetch_all(User))
+        return list(all_users_set - set(course.members))
+
+
 @courses_ns.route("/<string:course_id>/enroll")
 class CourseEnroll(Resource):
     method_decorators = [jwt_required()]
@@ -122,4 +134,16 @@ class CourseKick(Resource):
                 for handle in courses_ns.payload["members"]
             ]
         )
+        return {}, 200
+
+
+@courses_ns.route("/<string:course_id>/kick/<string:handle>")
+class CourseKickUser(Resource):
+    method_decorators = [jwt_required()]
+
+    @courses_ns.expect(course_members_input)
+    def delete(self, course_id: str, handle: str):
+        course: Course = fetch_one(Course, {"id": course_id})
+        check_authorization(course, current_user, "can_manage_course")
+        course.kick(users=[fetch_one(User, {"handle": handle})])
         return {}, 200
