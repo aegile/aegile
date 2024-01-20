@@ -104,8 +104,8 @@ export const courseEnrolmentSchema = z.object({
   first_name: z.string(),
   last_name: z.string(),
   handle: z.string(),
-  image: z.string(),
-  role: z.string(),
+  image: z.string().nullable(),
+  role: z.string().nullable(),
 });
 
 export type Participant = z.infer<typeof courseEnrolmentSchema>;
