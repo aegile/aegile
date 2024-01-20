@@ -8,10 +8,31 @@ with app.app_context():
     db.drop_all()
     print(">>> creating tables")
     db.create_all()
-    user = User(
+    user1 = User(
         "Lex", "Xu", "z5555555@ad.unsw.edu.au", generate_password_hash("AlexXu123!")
     )
-    db.session.add(user)
+    user2 = User(
+        "Sam", "Yu", "z1555555@ad.unsw.edu.au", generate_password_hash("SamYu123!")
+    )
+    user3 = User(
+        "Philip",
+        "Tran",
+        "z2555555@ad.unsw.edu.au",
+        generate_password_hash("PhilipTran123!"),
+    )
+    user4 = User(
+        "Jordan",
+        "Shen",
+        "z3555555@ad.unsw.edu.au",
+        generate_password_hash("JordanShen123!"),
+    )
+    user5 = User(
+        "Vivian",
+        "Zhang",
+        "z4555555@ad.unsw.edu.au",
+        generate_password_hash("VivanZhang123!"),
+    )
+    db.session.add_all([user1, user2, user3])
     db.session.commit()
     print(db.session.execute(db.select(User)).all())
 
