@@ -21,10 +21,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import AlertDeleteDialog from './alert-delete-dialog';
 
 export function DropdownSettings<T>({
   editItem,
   EditDialog,
+  deleteRoute,
 }: {
   editItem: T;
   EditDialog: React.ComponentType<{
@@ -32,6 +34,7 @@ export function DropdownSettings<T>({
     open: boolean;
     setIsOpen: (isOpen: boolean) => void;
   }>;
+  deleteRoute:string;
 }) {
   const [open, setIsOpen] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
@@ -85,7 +88,8 @@ export function DropdownSettings<T>({
         </Dialog> */}
       </div>
       <div onClick={(e) => e.stopPropagation()}>
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDeleteDialog deleteRoute={deleteRoute} showDeleteDialog={showDeleteDialog} setShowDeleteDialog={setShowDeleteDialog} />
+        {/* <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
@@ -110,7 +114,7 @@ export function DropdownSettings<T>({
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
-        </AlertDialog>
+        </AlertDialog> */}
       </div>
     </>
   );
