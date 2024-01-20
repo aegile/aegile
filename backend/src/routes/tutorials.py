@@ -87,4 +87,8 @@ class TutorialSpecific(Resource):
         return update_db_object(Tutorial, tutorial.__repr__())
 
     def delete(self, tutorial_id: str):
-        pass
+        tutorial: Tutorial = fetch_one(Tutorial, {"id": tutorial_id})
+        check_authorization(tutorial.course, current_user, "can_manage_tutorials")
+        db.session.delete(tutorial)
+        db.session.commit()
+        return {}, 200
