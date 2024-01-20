@@ -5,7 +5,7 @@ import { fetchServerAPIRequest } from '@/lib/server-utils';
 import { DataTableToolbar } from './course-participants-table-toolbar';
 import { Button } from '@/components/ui/button';
 import { Users } from 'lucide-react';
-import { InviteParticipantsDialog } from './invite-participants-dialog';
+import { EnrollParticipantsDialog } from './components/enroll-participants-dialog';
 
 async function getParticipants(course_id: string) {
   const res = await fetchServerAPIRequest(
@@ -19,143 +19,6 @@ async function getParticipants(course_id: string) {
 
   const data = await res.json();
   return data;
-  return [
-    {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'z5555555@ad.unsw.edu.au',
-      handle: 'z5555555',
-      role: 'tutor',
-      image: 'null',
-    },
-    {
-      id: '2',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'admin',
-      image: 'null',
-    },
-    {
-      id: '3',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'student',
-      image: 'null',
-    },
-    {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'z5555555@ad.unsw.edu.au',
-      handle: 'z5555555',
-      role: 'tutor',
-      image: 'null',
-    },
-    {
-      id: '2',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'admin',
-      image: 'null',
-    },
-    {
-      id: '3',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'student',
-      image: 'null',
-    },
-    {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'z5555555@ad.unsw.edu.au',
-      handle: 'z5555555',
-      role: 'tutor',
-      image: 'null',
-    },
-    {
-      id: '2',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'admin',
-      image: 'null',
-    },
-    {
-      id: '3',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'student',
-      image: 'null',
-    },
-    {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'z5555555@ad.unsw.edu.au',
-      handle: 'z5555555',
-      role: 'tutor',
-      image: 'null',
-    },
-    {
-      id: '2',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'admin',
-      image: 'null',
-    },
-    {
-      id: '3',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'student',
-      image: 'null',
-    },
-    {
-      id: '1',
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'z5555555@ad.unsw.edu.au',
-      handle: 'z5555555',
-      role: 'tutor',
-      image: 'null',
-    },
-    {
-      id: '2',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'admin',
-      image: 'null',
-    },
-    {
-      id: '3',
-      first_name: 'Lex',
-      last_name: 'Xu',
-      email: 'z5309038@ad.unsw.edu.au',
-      handle: 'z5309038',
-      role: 'student',
-      image: 'null',
-    },
-  ];
 }
 
 export default async function CourseParticipantsPage({
@@ -167,15 +30,11 @@ export default async function CourseParticipantsPage({
 
   return (
     <div className="h-full">
-      {/* <pre>
-        <p>{JSON.stringify(members, null, 4)}</p>
-      </pre> */}
       <div className="flex justify-between">
         <h3 className="text-2xl font-semibold tracking-tight flex items-center">
           <Users className="mr-2" /> Participants
         </h3>
-        <InviteParticipantsDialog />
-        {/* <Button variant="default">Add/Invite Participant</Button> */}
+        <EnrollParticipantsDialog course_id={params.course_id} />
       </div>
       <div className="w-full py-4">
         <DataTable

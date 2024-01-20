@@ -16,23 +16,50 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export function InviteParticipantsDialog() {
+import { fetchServerAPIRequest } from '@/lib/server-utils';
+import EnrollParticipantsForm from './enroll-participants-form';
+
+async function getEnrollableUsers(course_id: string) {
+  const res = await fetchServerAPIRequest(
+    `/api/v1/courses/${course_id}/enrollable-users`,
+    'GET'
+  );
+  if (res.status === 401)
+    throw new Error("You don't have permission to view this page.");
+  if (res.status === 403)
+    throw new Error('You are not authorized to view this page.');
+
+  const data = await res.json();
+  return data;
+}
+
+export async function EnrollParticipantsDialog({
+  course_id,
+}: {
+  course_id: string;
+}) {
+  const enrollableUsers = await getEnrollableUsers(course_id);
+  console.log(
+    '🚀 ~ EnrollParticipantsDialog ~ enrollableUsers:',
+    enrollableUsers
+  );
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">Add/Invite Participants</Button>
+        <Button variant="default">Add/Enroll Participants</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Invite Participants to this course</DialogTitle>
+          <DialogTitle>Enroll Participants</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Enroll existing and verified users to this course.
           </DialogDescription>
         </DialogHeader>
+        <EnrollParticipantsForm enrollableUsers={enrollableUsers} />
         {/* <Tabs defaultValue="account" className="w-[400px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Account</TabsTrigger>
