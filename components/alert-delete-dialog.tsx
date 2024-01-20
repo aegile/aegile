@@ -32,7 +32,9 @@ export default function AlertDeleteDialog({
     if (!res.ok) {
       const data = await res.json();
       toast.error(data.message);
+      return;
     }
+    toast.info('Deletion successful.');
   }
 
   return (
@@ -53,9 +55,7 @@ export default function AlertDeleteDialog({
             variant="destructive"
             onClick={async () => {
               setShowDeleteDialog(false);
-              // fetch request route here
               await handleDelete(deleteRoute);
-              toast.info('Item deleted.');
               router.refresh();
             }}
           >
