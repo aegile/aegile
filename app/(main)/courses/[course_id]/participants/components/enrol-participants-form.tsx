@@ -9,6 +9,7 @@ import * as z from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DialogFooter, DialogClose } from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -29,7 +30,7 @@ const FormSchema = z.object({
   }),
 });
 
-export default function EnrollParticipantsForm({
+export default function EnrolParticipantsForm({
   enrollableUsers,
 }: {
   enrollableUsers: User[];
@@ -102,9 +103,7 @@ export default function EnrollParticipantsForm({
                 </div>
                 {!filteredUsers.length && (
                   <div className="flex items-center justify-center">
-                    <p className="text-sm text-gray-400">
-                      No users found...
-                    </p>
+                    <p className="text-sm text-gray-400">No users found...</p>
                   </div>
                 )}
                 {filteredUsers.map((user) => (
@@ -155,7 +154,13 @@ export default function EnrollParticipantsForm({
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button type="submit" disabled={!form.formState.isValid}>
+                Enrol
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </form>
       </Form>
     </div>

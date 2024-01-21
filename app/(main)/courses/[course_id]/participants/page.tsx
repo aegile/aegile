@@ -5,7 +5,7 @@ import { fetchServerAPIRequest } from '@/lib/server-utils';
 import { DataTableToolbar } from './course-participants-table-toolbar';
 import { Button } from '@/components/ui/button';
 import { Users } from 'lucide-react';
-import { EnrollParticipantsDialog } from './components/enroll-participants-dialog';
+import { EnrolParticipantsDialog } from './components/enrol-participants-dialog';
 
 async function getParticipants(course_id: string) {
   const res = await fetchServerAPIRequest(
@@ -34,7 +34,7 @@ export default async function CourseParticipantsPage({
         <h3 className="text-2xl font-semibold tracking-tight flex items-center">
           <Users className="mr-2" /> Participants
         </h3>
-        <EnrollParticipantsDialog course_id={params.course_id} />
+        <EnrolParticipantsDialog course_id={params.course_id} />
       </div>
       <div className="w-full py-4">
         <DataTable
