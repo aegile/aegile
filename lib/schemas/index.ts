@@ -110,26 +110,31 @@ export const courseEnrolmentSchema = z.object({
 
 export type Participant = z.infer<typeof courseEnrolmentSchema>;
 
-export const ClassFormSchema = z.object({
-  name: z
-    .string()
-    .max(50, {
-      message: 'Class name must not exceed 50 characters.',
-    })
-    .nonempty('Class name is required.'),
-  location: z
-    .string()
-    .max(120, {
-      message: 'Class location must not exceed 120 characters.',
-    })
-    .nonempty('Class location is required.'),
-  capacity: z.coerce
-    .number()
-    .int()
-    .nonnegative()
-    .min(1, { message: 'Capacity must be at least 1.' })
-    .max(50, { message: 'Capacity must not exceed 50.' }),
-  day: z.enum(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']),
-  start_time: z.string().nonempty('Time is required.'),
-  end_time: z.string().nonempty('Time is required.'),
-});
+export const ClassFormSchema = z
+  .object({
+    name: z
+      .string()
+      .max(50, {
+        message: 'Class name must not exceed 50 characters.',
+      })
+      .nonempty('Class name is required.'),
+    location: z
+      .string()
+      .max(120, {
+        message: 'Class location must not exceed 120 characters.',
+      })
+      .nonempty('Class location is required.'),
+    capacity: z.coerce
+      .number()
+      .int()
+      .nonnegative()
+      .min(1, { message: 'Capacity must be at least 1.' })
+      .max(50, { message: 'Capacity must not exceed 50.' }),
+    day: z.enum(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']),
+    start_time: z.string().nonempty('Time is required.'),
+    end_time: z.string().nonempty('Time is required.'),
+  })
+  .refine((schema) => schema.end_time.localeCompare(schema.start_time) > 0, {
+    message: 'Class cannot end before it starts.',
+    path: ['start_time'],
+  });
