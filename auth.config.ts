@@ -76,7 +76,7 @@ export const authConfig = {
             return null;
           } else {
             const result = await res.json();
-            console.log(result);
+            // console.log(result);
             return result;
           }
         }
