@@ -25,8 +25,7 @@ export default async function CourseClassesPage({
 }: {
   params: { course_id: string };
 }) {
-  const tutorials: Class[] = await getTutorials(params.course_id);
-  console.log('🚀 ~ tutorials:', tutorials);
+  const tutorials: Tutorial[] = await getTutorials(params.course_id);
 
   return (
     <div className="h-full flex flex-col space-y-3">
@@ -48,8 +47,8 @@ export default async function CourseClassesPage({
           />
         </div>
         {/* <div className="w-full row-span-full"></div> */}
-        <UpcomingClasses />
-        <UpcomingClasses />
+        <UpcomingClasses tutorials={tutorials} />
+        <UpcomingClasses tutorials={tutorials} />
       </div>
     </div>
   );
