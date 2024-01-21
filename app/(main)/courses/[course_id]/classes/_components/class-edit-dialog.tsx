@@ -19,7 +19,7 @@ export function ClassEditDialog({
   open,
   setIsOpen,
 }: {
-  item: Class;
+  item: Tutorial;
   open: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {

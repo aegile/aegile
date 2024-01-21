@@ -1,3 +1,5 @@
+type Day = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+
 type Course = {
   id: string;
   term: string;
@@ -18,12 +20,12 @@ type User = {
   role?: string;
 };
 
-type Class = {
+type Tutorial = {
   id: string;
   name: string;
   capacity: number;
   member_count: number;
-  day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+  day: Day;
   times: string;
   location: string;
 };
