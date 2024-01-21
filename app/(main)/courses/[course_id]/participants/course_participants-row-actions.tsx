@@ -22,7 +22,7 @@ import AlertDeleteDialog from '@/components/alert-delete-dialog';
 import { courseEnrolmentSchema } from '@/lib/schemas';
 import { useParams } from 'next/navigation';
 
-// import { labels } from '../data/data';
+import { roles } from './data';
 // import { taskSchema } from '../data/schema';
 
 interface DataTableRowActionsProps<TData> {
@@ -49,19 +49,21 @@ export function DataTableRowActions<TData>({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>Roles</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              {/* <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                {label.label}
-                </DropdownMenuRadioItem>
+              <DropdownMenuRadioGroup value={user.role || undefined}>
+                {roles.map((role) => (
+                  <DropdownMenuRadioItem
+                    key={role.value}
+                    value={role.value}
+                    className="justify-start"
+                  >
+                    {role.label}
+                  </DropdownMenuRadioItem>
                 ))}
-              </DropdownMenuRadioGroup> */}
+              </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
           <DropdownMenuSeparator />
@@ -70,7 +72,6 @@ export function DataTableRowActions<TData>({
             className="text-red-400"
           >
             Delete
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

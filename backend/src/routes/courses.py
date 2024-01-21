@@ -2,6 +2,7 @@ from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 from ..extensions import db
 from ..models.course import Course, UserCourseStatus
+from ..models.role import Role
 from ..models.user import User
 from ..api_models.course_models import (
     course_fetch_all_output,
@@ -40,7 +41,15 @@ class CourseGeneral(Resource):
             creator=current_user,
         )
         add_db_object(Course, new_course, new_course.code)
-        new_course.enroll(users=[current_user])
+
+        student_role = Role(name="student", course_id=new_course.id)
+        tutor_role = Role(name="tutor", course_id=new_course.id)
+        admin_role = Role(name="admin", course_id=new_course.id)
+        add_db_object(Role, student_role, student_role.name)
+        add_db_object(Role, tutor_role, tutor_role.name)
+        add_db_object(Role, admin_role, admin_role.name)
+
+        new_course.enroll(users=[current_user], role_id=admin_role.id)
         return {}, 201
 
 
@@ -101,11 +110,15 @@ class CourseEnroll(Resource):
     def post(self, course_id: str):
         course: Course = fetch_one(Course, {"id": course_id})
         check_authorization(course, current_user, "can_manage_course")
+        student_role: Role = fetch_one(
+            Role, {"name": "student", "course_id": course.id}
+        )
         course.enroll(
             users=[
                 fetch_one(User, {"handle": handle})
                 for handle in courses_ns.payload["members"]
-            ]
+            ],
+            role_id=student_role.id,
         )
         return {}, 201
 
