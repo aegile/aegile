@@ -7,16 +7,28 @@ import {
 } from '@/components/ui/card';
 import TimelineExcerpt from './class-timeline-excerpt';
 
-function getRandomDate() {
-  const start = new Date();
-  const end = new Date(new Date().setMonth(start.getMonth() + 1));
-  const date = new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-  return date.toISOString();
-}
+const dayMapping = {
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+  Sun: 7,
+};
 
-export default function UpcomingClasses() {
+export default function UpcomingClasses({
+  tutorials,
+}: {
+  tutorials: Tutorial[];
+}) {
+  tutorials.sort((a, b) => {
+    const dayDiff = dayMapping[a.day] - dayMapping[b.day];
+    if (dayDiff !== 0) return dayDiff;
+
+    return a.times.localeCompare(b.times);
+  });
+
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -24,46 +36,15 @@ export default function UpcomingClasses() {
         <CardDescription>Your upcoming classes and tutorials.</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow overflow-y-auto">
-        <TimelineExcerpt
-          classCode="H14A"
-          times="11am-1pm"
-          date={getRandomDate()}
-          location="Roundhouse G107"
-        />
-        <TimelineExcerpt
-          classCode="B22B"
-          times="9am-11am"
-          date={getRandomDate()}
-          location="Library L204"
-        />
-
-        <TimelineExcerpt
-          classCode="C33C"
-          times="2pm-4pm"
-          date={getRandomDate()}
-          location="Quadrangle G046"
-        />
-
-        <TimelineExcerpt
-          classCode="D44D"
-          times="12pm-2pm"
-          date={getRandomDate()}
-          location="Science S101"
-        />
-
-        <TimelineExcerpt
-          classCode="E55E"
-          times="3pm-5pm"
-          date={getRandomDate()}
-          location="Arts A107"
-        />
-
-        <TimelineExcerpt
-          classCode="F66F"
-          times="10am-12pm"
-          date={getRandomDate()}
-          location="Business B203"
-        />
+        {tutorials.map((tutorial) => (
+          <TimelineExcerpt
+            key={tutorial.id}
+            classCode={tutorial.name}
+            times={tutorial.times}
+            day={tutorial.day}
+            location={tutorial.location}
+          />
+        ))}
       </CardContent>
     </Card>
   );

@@ -1,35 +1,50 @@
+'use client';
+
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
+
+const dayMapping = {
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+  Sun: 7,
+};
+
+const today = new Date().getDay();
+const todayEnum = today === 0 ? 7 : today;
 
 export default function TimelineExcerpt({
   classCode,
   times,
-  date,
+  day,
   location,
 }: {
   classCode: string;
   times: string;
-  date: string;
+  day: Day;
   location: string;
 }) {
-  const dateObj = new Date(date);
-  const localeDate = dateObj.toLocaleDateString('en-AU', {
-    weekday: 'short',
-    // day: 'numeric',
-    // month: 'short',
+  const tutDayEnum = dayMapping[day];
+  const currTime = new Date().toLocaleTimeString('en-GB', {
+    hour: 'numeric',
+    minute: 'numeric',
   });
-  const relativeTime = dateObj.toLocaleTimeString('en-AU', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
+  const [startTime, endTime] = times.split(' - ');
   return (
     <div className="flex items-center">
       <div className="flex flex-col items-center justify-center mr-4">
         <div className="w-px h-[30px] bg-gray-300" />
         <div
           className={`rounded-full w-[15px] h-[15px] border border-gray-500 ${
-            new Date() > dateObj && 'bg-gray-200'
+            todayEnum >= tutDayEnum && currTime.localeCompare(endTime) > 0
+              ? 'bg-gray-200'
+              : todayEnum === tutDayEnum &&
+                currTime.localeCompare(startTime) > 0
+              ? 'bg-primary'
+              : ''
           }`}
         />
         <div className="w-px h-[30px] bg-gray-300" />
@@ -45,7 +60,7 @@ export default function TimelineExcerpt({
           </Link>
         </p>
         <p className="leading-7 text-sm">
-          {localeDate} {relativeTime}
+          {day} {startTime} - {endTime}
         </p>
       </div>
     </div>

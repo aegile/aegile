@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -49,6 +50,9 @@ export function ClassForm({
     defaultValues,
     mode: 'onChange',
   });
+
+  const endTime = form.watch('end_time');
+
   async function onSubmit(data: z.infer<typeof ClassFormSchema>) {
     toast(
       <div className="w-full">
@@ -75,6 +79,10 @@ export function ClassForm({
     }
     router.refresh();
   }
+
+  React.useEffect(() => {
+    form.trigger('start_time');
+  }, [endTime]);
 
   return (
     <Form {...form}>
