@@ -39,7 +39,8 @@ export default function TimelineExcerpt({
         <div className="w-px h-[30px] bg-gray-300" />
         <div
           className={`rounded-full w-[15px] h-[15px] border border-gray-500 ${
-            todayEnum >= tutDayEnum && currTime.localeCompare(endTime) > 0
+            todayEnum > tutDayEnum ||
+            (todayEnum === tutDayEnum && currTime.localeCompare(endTime) > 0)
               ? 'bg-gray-200'
               : todayEnum === tutDayEnum &&
                 currTime.localeCompare(startTime) > 0
