@@ -1,4 +1,6 @@
 from ..extensions import db
+from .course import Course
+from .deliverable import DeliverableInstance
 from .user import User, UserSet
 from .helpers import get_with_default
 from ..error import InputError
@@ -41,22 +43,25 @@ class Tutorial(db.Model):
         self.creator_id = creator.id
         super(Tutorial, self).__init__(**kwargs)
         self.userset = UserSet()
+        self.userset.members = [creator]
         # Retrieve the parent Course
         # course = Course.query.get(self.course_id)
 
         # # Create DeliverableInstance for each Deliverable in the parent Course
         # for deliverable in course.deliverables:
-        #     deliverable_instance = DeliverableInstance(
-        #         tutorial_id=self.id, deliverable_id=deliverable.id
+        #     DeliverableInstance(
+        #         course_id=self.course_id,
+        #         tutorial_id=self.id,
+        #         deliverable_id=deliverable.id,
         #     )
-        #     self.deliverable_instances.append(deliverable_instance)
+        # self.deliverable_instances.append(deliverable_instance)
 
-    def update(self, update_data: dict):
+    def update(self, tutorial_data: dict):
         # self.course_id = get_with_default(update_data, "course_id", self.course_id)
-        self.name = get_with_default(update_data, "name", self.name)
-        self.capacity = get_with_default(update_data, "capacity", self.capacity)
-        self.datetime = get_with_default(update_data, "datetime", self.datetime)
-        self.location = get_with_default(update_data, "location", self.location)
+        self.name = get_with_default(tutorial_data, "name", self.name)
+        self.capacity = get_with_default(tutorial_data, "capacity", self.capacity)
+        self.datetime = get_with_default(tutorial_data, "datetime", self.datetime)
+        self.location = get_with_default(tutorial_data, "location", self.location)
 
     @property
     def members(self):
@@ -69,6 +74,24 @@ class Tutorial(db.Model):
     @property
     def course_code(self):
         return self.course.code
+
+    def enroll(self, users: list[User]):
+        # All users must not be in the project yet
+        for user in users:
+            if user in self.members:
+                raise InputError(
+                    f"User {user.handle} already enrolled in tutorial {self.name}."
+                )
+        self.set_members(self.members + users)
+
+    def kick(self, users: list[User]):
+        # All users must be enrolled in the project
+        for user in users:
+            if user not in self.members:
+                raise InputError(
+                    f"User {user.handle} is not enrolled in tutorial {self.name}."
+                )
+        self.set_members([us for us in self.members if us not in users])
 
     def set_members(self, users: list[User]):
         self.userset.members = users
