@@ -1,9 +1,9 @@
-from flask import Blueprint, request
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 
 from ..extensions import db
 from ..models.tutorial import Tutorial
+from ..models.deliverable import DeliverableInstance
 from ..models.project import Project, project_new_model
 from ..models.task import Task
 from ..models.user import User, UserSet
@@ -16,6 +16,8 @@ from ..api_models.project_models import (
 )
 from ..api_models.task_models import task_fetch_all_output
 
+from ..error import InputError
+
 from .helpers import (
     fetch_one,
     fetch_all,
@@ -23,53 +25,13 @@ from .helpers import (
     add_db_object,
 )
 from .access_checks import (
-    check_is_member,
     check_project_view_access,
     check_project_edit_access,
-    check_task_view_access,
+    check_is_in_a_project,
 )
 
-# projects = Blueprint("projects", __name__)
 
-projects_ns = Namespace("v1/projects", description="Projects related operations")
-
-
-# @projects.route("/p/new/<project_name>", methods=["POST"])
-# def create_new_project(project_name: str):
-#     new_project: Project = Project(name=project_name)
-#     db.session.add(new_project)
-
-#     db.session.commit()
-
-#     return "Created new project"
-
-
-# @projects.route("/p/<project_id>/assign", methods=["PUT"])
-# def add_project_members(project_id: str):
-#     project: Project = fetch_one_by_id(Project, project_id, "Project not found")
-#     userset: UserSet = project.userset
-
-#     userset.members = [
-#         fetch_one_by_id(User, user_id, f"User ID {user_id} not found")
-#         for user_id in request.get_json()["user_ids"]
-#     ]
-
-#     db.session.commit()
-#     return f"Added {', '.join([mem.first_name for mem in userset.members])} users to project"
-
-
-# projects_ns = Namespace("v1/projects", description="Courses related operations")
-
-
-# @projects_ns.route("")
-# class ProjectAPI(Resource):
-#     @projects_ns.expect(project_new_model)
-#     def post(self):
-#         new_project = Project(name=projects_ns.payload["name"])
-#         db.session.add(new_project)
-#         db.session.commit()
-
-#         return {}, 201
+projects_ns = Namespace("api/v1/projects", description="Projects related operations")
 
 
 @projects_ns.route("")
@@ -92,6 +54,7 @@ class ProjectGeneral(Resource):
         new_project = Project(
             course_id=projects_ns.payload["course_id"],
             tutorial_id=projects_ns.payload["tutorial_id"],
+            deliverable_instance_id=projects_ns.payload["deliverable_instance_id"],
             name=projects_ns.payload["name"],
             creator=current_user,
             subheading=projects_ns.payload.get("subheading"),
@@ -99,7 +62,6 @@ class ProjectGeneral(Resource):
             end_date=projects_ns.payload.get("end_date"),
         )
         add_db_object(Project, new_project, new_project.name)
-        new_project.add_members(members=[current_user])
         return {}, 201
 
 
@@ -136,16 +98,15 @@ class ProjectSpecific(Resource):
 class ProjectMembers(Resource):
     method_decorators = [jwt_required()]
 
-    @projects_ns.expect(project_members_fetch_output)
+    @projects_ns.marshal_with(project_members_fetch_output)
     def get(self, project_id: str):
         project: Project = fetch_one(Project, {"id": project_id})
         tutorial: Tutorial = fetch_one(Tutorial, {"id": project.tutorial_id})
         # All tut members and tutors can fetch project members
         check_project_view_access(tutorial, current_user)
-        return project.members
+        return project
 
-    # Leave this commented out for now in case a route is needed, but joining a
-    # group should automatically add the member into all the group's projects
+    # This is called by tutors/lic to set members within projects
     # @projects_ns.marshal_list_with()
     # def post(self, project_id: str):
     #     project: Project = fetch_one(Project, {"id": project_id})
@@ -154,14 +115,51 @@ class ProjectMembers(Resource):
     #     return {}, 201
 
 
-@projects_ns.route("/<string:project_id>/tasks")
-class ProjectTasks(Resource):
+@projects_ns.route("/<string:project_id>/enroll")
+class ProjectEnroll(Resource):
     method_decorators = [jwt_required()]
 
-    @projects_ns.marshal_list_with(task_fetch_all_output)
-    def get(self, project_id: str):
+    # This is called by students in a tutorial so they can self-enrol into
+    # projects (akin to groups in Moodle)
+    def post(self, project_id: str):
         project: Project = fetch_one(Project, {"id": project_id})
-        # Must be project member or tutor to view project tasks
-        check_task_view_access(project, current_user)
-        tasks: list[Task] = fetch_all(Task)
-        return [tsk for tsk in tasks if tsk.project_id == project_id]
+        tutorial: Tutorial = fetch_one(Tutorial, {"id": project.tutorial_id})
+        instance: DeliverableInstance = fetch_one(
+            DeliverableInstance, {"id": project.deliverable_instance_id}
+        )
+        check_project_view_access(tutorial, current_user)
+        # Check that user is not enrolled in a project in the same
+        # deliverable already
+        check_is_in_a_project(instance, current_user)
+        project.enroll(user=current_user)
+        return {}, 201
+
+
+@projects_ns.route("/<string:project_id>/leave")
+class ProjectLeave(Resource):
+    method_decorators = [jwt_required()]
+
+    # This is called by students in a tutorial so they can self-unenrol
+    # themselves from a project
+    def delete(self, project_id: str):
+        project: Project = fetch_one(Project, {"id": project_id})
+        project.leave(user=current_user)
+        return {}, 200
+
+
+@projects_ns.route("/instance/<string:instance_id>")
+class ProjectInstance(Resource):
+    method_decorators = [jwt_required()]
+
+    @projects_ns.marshal_list_with(project_fetch_all_output)
+    def get(self, instance_id: str):
+        instance: DeliverableInstance = fetch_one(
+            DeliverableInstance, {"id": instance_id}
+        )
+        tutorial: Tutorial = fetch_one(Tutorial, {"id": instance.tutorial_id})
+        # Tutorial members and tutors can view all projects within an instance
+        check_project_view_access(tutorial, current_user)
+        projects: list[Project] = fetch_all(
+            Project, {"deliverable_instance_id": instance_id}
+        )
+        return projects
