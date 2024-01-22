@@ -21,7 +21,8 @@ class User(db.Model):
         self.last_name = last_name
         self.email = email
         self.password = password
-        self.handle = f"{first_name}{last_name}"
+        # self.handle = f"{first_name}{last_name}"
+        self.handle = email.split("@")[0]
 
     def update(self, profile_data: dict):
         self.email = get_with_default(profile_data, "email", self.email)

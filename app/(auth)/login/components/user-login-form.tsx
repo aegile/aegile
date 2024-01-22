@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { LoginSchema } from '@/schemas';
-import { login } from '@/actions/login';
+import { LoginSchema } from '@/lib/schemas';
+import { login } from '@/lib/actions/login';
 
 export function UserLoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -27,9 +27,10 @@ export function UserLoginForm() {
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'z5555555@ad.unsw.edu.au',
+      password: 'AlexXu123!',
     },
+    mode: 'onChange',
   });
 
   async function onSubmit(values: z.infer<typeof LoginSchema>) {

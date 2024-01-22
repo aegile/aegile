@@ -8,7 +8,9 @@ tutorial_fetch_output = api.model(
         "id": fields.Integer,
         "name": fields.String,
         "capacity": fields.Integer,
-        "datetime": fields.String,
+        "member_count": fields.Integer,
+        "day": fields.String,
+        "times": fields.String,
         "location": fields.String,
     },
 )
@@ -18,7 +20,8 @@ tutorial_creation_input = api.model(
     {
         "name": fields.String(required=True),
         "capacity": fields.Integer(required=True),
-        "datetime": fields.String(required=True),
+        "day": fields.String(required=True),
+        "times": fields.String(required=True),
         "location": fields.String(required=True),
     },
     strict=True,

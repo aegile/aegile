@@ -24,26 +24,18 @@ import {
 import { Badge } from '@/components/ui/badge';
 import IconTextTooltip from '@/components/icon-text-tooltip';
 
-interface CourseCardProps {
-  id: string;
-  term: string;
-  code: string;
-  name: string;
-  deliverables: number;
-  labels?: string[];
-}
-
-function CourseListCard({
-  id,
-  term,
-  code,
-  name,
-  deliverables,
-  labels = ['computer science', 'web design'],
-}: CourseCardProps) {
+function CourseListCard({ item }: { item: Course }) {
+  const {
+    id,
+    term,
+    code,
+    name,
+    member_count,
+    labels = ['computer science'],
+  } = item;
   return (
     <Link href={`/courses/${id}`}>
-      <Card className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent dark:hover:text-accent-foreground">
+      <Card className="w-full grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent dark:hover:text-accent-foreground">
         <CardHeader className="pr-2">
           <CardTitle>
             {term}-{code}
@@ -59,7 +51,7 @@ function CourseListCard({
             </div>
           ) : null}
         </CardHeader>
-        <CardContent className="md:block hidden text-sm py-5 px-2 space-y-1">
+        <CardContent className="lg:block hidden text-sm py-5 px-2 space-y-1">
           <TooltipProvider>
             <IconTextTooltip
               tooltips={[
@@ -72,28 +64,8 @@ function CourseListCard({
                 {
                   icon: CalendarX,
                   marginRight: 2,
-                  text: 'Thu 15th Apr, 2024',
-                  tooltip: 'Next Assignment Deadline',
-                },
-                {
-                  icon: Clock,
-                  marginRight: 2,
-                  text: '11:59 PM (23:59)',
-                  tooltip: 'Deadline Time',
-                },
-              ]}
-            />
-          </TooltipProvider>
-        </CardContent>
-        <div className="py-5 px-2 xl:block hidden text-sm text-muted-foreground">
-          <TooltipProvider>
-            <IconTextTooltip
-              tooltips={[
-                {
-                  icon: GraduationCap,
-                  marginRight: 2,
-                  text: 'Dr. William H. Olsen',
-                  tooltip: 'Course Convenor',
+                  text: 'Thu 15th Apr, 2024 (11:59 PM)',
+                  tooltip: 'Upcoming Assignment Deadline',
                 },
               ]}
             />
@@ -103,25 +75,25 @@ function CourseListCard({
                 {
                   icon: User,
                   marginRight: 1,
-                  text: '2',
-                  tooltip: '2 Members',
+                  text: member_count.toString(),
+                  tooltip: `${member_count} members`,
                 },
                 {
                   icon: BookCheck,
                   marginRight: 1,
-                  text: deliverables.toString(),
-                  tooltip: `${deliverables} Deliberables`,
+                  text: '2',
+                  tooltip: '2 deliberables',
                 },
               ]}
             />
           </TooltipProvider>
-        </div>
+        </CardContent>
         <div className="relative block w-full h-full">
           <Image
             src="https://unsplash.it/250/125"
             alt="Test"
             fill
-            className="ml-auto lg:block hidden rounded-r-xl object-cover"
+            className="ml-auto xl:block hidden rounded-r-xl object-cover"
           />
         </div>
       </Card>

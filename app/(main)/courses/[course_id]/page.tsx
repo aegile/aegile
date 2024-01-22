@@ -1,11 +1,3 @@
-export default function SpecificCoursePage({
-  params,
-}: {
-  params: { course_id: string };
-}) {
-  return (
-    <div className="grid h-full items-center justify-center">
-      <h1>Course #{params.course_id}</h1>
-    </div>
-  );
+export default async function CourseHomePage() {
+  return <div className="h-full flex justify-center items-center">Home</div>;
 }

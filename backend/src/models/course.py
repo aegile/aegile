@@ -80,13 +80,14 @@ class Course(db.Model):
     def member_count(self):
         return len(self.user_course_statuses)
 
-    def enroll(self, users: list[User]):
+    def enroll(self, users: list[User], role_id: str = None):
+        # NOTE: This method assumes the student Role is already created within the
         try:
             for user in users:
                 ucs = UserCourseStatus(
                     user_id=user.id,
                     course_id=self.id,
-                    role_id=None,
+                    role_id=role_id,
                 )
                 db.session.add(ucs)
             db.session.commit()
