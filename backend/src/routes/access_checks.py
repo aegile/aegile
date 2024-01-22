@@ -3,6 +3,7 @@ from ..error import InputError, AccessError, NotFoundError
 from ..models.course import Course, UserCourseStatus
 from ..models.user import User
 from ..models.tutorial import Tutorial
+from ..models.deliverable import DeliverableInstance
 from ..models.project import Project
 from ..models.task import Task
 from ..models.role import Role
@@ -16,7 +17,7 @@ def has_manage_authorization(course: Course, user: User, permission: str):
         ucs: UserCourseStatus = db.session.scalars(
             db.select(UserCourseStatus).filter_by(course_id=course.id, user_id=user.id)
         ).one()
-    except AccessError as exc:
+    except NoResultFound as exc:
         return False
 
     if not ucs.role or not ucs.role.has_permission(permission):
@@ -38,27 +39,41 @@ def check_authorization(course: Course, user: User, permission: str):
 
 
 def check_course_creator(course: Course, user: User):
-    if user.id != course.creator:
+    if user.id != course.creator_id:
         raise AccessError(
             f"You are not the creator of this {(Course.__name__).lower()}"
         )
 
 
+def check_in_other_tuts(course: Course, tutorial: Tutorial, user: User):
+    for tut in course.tutorials:
+        if user in tut.members and tut.id != tutorial.id:
+            raise InputError(
+                f"User {user.handle} is already enrolled in another tutorial."
+            )
+
+
+def check_is_in_a_project(instance: DeliverableInstance, user: User):
+    for prj in instance.projects:
+        if user in prj.members:
+            raise InputError(
+                f"User {user.handle} is already enrolled in project {prj.name}."
+            )
+
+
 def check_project_view_access(tutorial: Tutorial, user: User):
-    if user in tutorial.userset.members:
+    if user in tutorial.members:
         return
     course: Course = db.session.scalars(
-        db.select(Course).filter_by(course_id=tutorial.course_id)
+        db.select(Course).filter_by(id=tutorial.course_id)
     ).one()
     check_authorization(course, user, "can_manage_projects")
 
 
 def check_project_edit_access(project: Project, user: User, course_id: str):
-    if user.id == project.creator:
+    if user.id == project.creator_id:
         return
-    course: Course = db.session.scalars(
-        db.select(Course).filter_by(course_id=course_id)
-    ).one()
+    course: Course = db.session.scalars(db.select(Course).filter_by(id=course_id)).one()
     check_authorization(course, user, "can_manage_projects")
 
 
@@ -68,7 +83,7 @@ def check_task_view_access(project: Project, user: User):
     if user in project.members:
         return
     course: Course = db.session.scalars(
-        db.select(Course).filter_by(course_id=project.course_id)
+        db.select(Course).filter_by(id=project.course_id)
     ).one()
     check_authorization(course, user, "can_manage_tasks")
 
@@ -76,11 +91,9 @@ def check_task_view_access(project: Project, user: User):
 # Only allows task creators or course tutors to edit a particular task
 # "can_manage_tasks" is a permission that is provided to tutors and lic
 def check_task_edit_access(task: Task, user: User, course_id: str):
-    if user.id == task.creator:
+    if user.id == task.creator_id:
         return
-    course: Course = db.session.scalars(
-        db.select(Course).filter_by(course_id=course_id)
-    ).one()
+    course: Course = db.session.scalars(db.select(Course).filter_by(id=course_id)).one()
     check_authorization(course, user, "can_manage_tasks")
 
 
