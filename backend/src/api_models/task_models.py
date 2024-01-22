@@ -8,7 +8,7 @@ task_fetch_all_output = api.model(
         "id": fields.Integer,
         "project_id": fields.Integer,
         "name": fields.String,
-        "creator": fields.String,
+        "creator_id": fields.Integer,
         "status": fields.String,
         "description": fields.String,
         "deadline": fields.String,
@@ -25,7 +25,7 @@ task_fetch_one_output = api.model(
         "id": fields.Integer,
         "project_id": fields.Integer,
         "name": fields.String,
-        "creator": fields.String,
+        "creator_id": fields.Integer,
         "status": fields.String,
         "description": fields.String,
         "deadline": fields.String,
@@ -45,7 +45,7 @@ task_members_fetch_output = api.model(
 task_members_input = api.model(
     "TaskMembersInput",
     {
-        "members": fields.List(fields.Nested(user_fetch_output)),
+        "members": fields.List(fields.String(required=True)),
     },
     strict=True,
 )
@@ -55,7 +55,6 @@ task_creation_input = api.model(
     {
         "name": fields.String(required=True),
         "project_id": fields.Integer(required=True),
-        "creator": fields.String(required=True),
         "status": fields.String(required=True),
         "description": fields.String,
         "deadline": fields.String,

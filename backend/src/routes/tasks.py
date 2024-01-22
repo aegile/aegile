@@ -24,51 +24,11 @@ from .helpers import (
 from .access_checks import (
     check_task_view_access,
     check_task_edit_access,
+    check_is_member,
 )
 
-# tasks = Blueprint("tasks", __name__)
 
-tasks_ns = Namespace("v1/tasks", description="Tasks related operations")
-
-
-# @tasks.route("/p/<project_id>/t", methods=["POST"])
-# def create_new_task(project_id: str):
-#     data = request.get_json()
-#     new_task: Task = Task(name=data["task_name"], project_id=project_id)
-#     db.session.add(new_task)
-
-#     db.session.commit()
-
-#     return f"Created new task {new_task.name}"
-
-
-# @tasks.route("/t/<task_id>/assign", methods=["PUT"])
-# def add_task_assignees(task_id: str):
-#     data = request.get_json()
-#     project: Task = fetch_one_by_id(Task, task_id, f"Task ID {task_id} not found")
-#     userset: UserSet = project.userset
-
-#     userset.members = [
-#         fetch_one_by_id(User, user_id, f"User ID {user_id} not found")
-#         for user_id in data["user_ids"]
-#     ]
-
-<<<<<<< HEAD
-#     db.session.commit()
-#     return f"Assigned {", ".join([mem.first_name for mem in userset.members])} to task"
-=======
-    db.session.commit()
-    return f"Assigned {', '.join([mem.first_name for mem in userset.members])} to task"
->>>>>>> main
-
-
-# @tasks.route("/p/<project_id>/t", methods=["GET"])
-# def fetch_all_tasks(project_id: str):
-#     tasks: list[Task] = db.session.execute(
-#         db.select(Task).filter_by(project_id=project_id)
-#     ).scalars()
-
-#     return f"Fetched {', '.join([t.name for t in tasks])}"
+tasks_ns = Namespace("api/v1/tasks", description="Tasks related operations")
 
 
 @tasks_ns.route("")
@@ -97,7 +57,6 @@ class TaskGeneral(Resource):
             attachment=tasks_ns.payload.get("attachment"),
         )
         add_db_object(Task, new_task, new_task.name)
-        new_task.add_members(members=[current_user])
         return {}, 201
 
 
@@ -115,14 +74,16 @@ class TaskSpecific(Resource):
     @tasks_ns.expect(task_edit_input)
     def put(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
+        project: Project = fetch_one(Project, {"id": task.project_id})
         # Checks if user is the task creator or has permissions to manage tasks
-        check_task_edit_access(task, current_user, task.project.course_id)
+        check_task_edit_access(task, current_user, project.course_id)
         task.update(task_data=tasks_ns.payload)
         return update_db_object(Task, task)
 
     def delete(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        check_task_edit_access(task, current_user, task.project.course_id)
+        project: Project = fetch_one(Project, {"id": task.project_id})
+        check_task_edit_access(task, current_user, project.course_id)
         db.session.delete(task)
         db.session.commit()
         return {}, 200
@@ -138,12 +99,32 @@ class TaskMembers(Resource):
         project: Project = fetch_one(Project, {"id": task.project_id})
         # Check if user is in the project
         check_task_view_access(project, current_user)
-        return task.members
+        return task
 
     @tasks_ns.expect(task_members_input)
     def post(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        check_task_edit_access(task, current_user, task.project.course_id)
-        # Assuming payload contains a list of Users
-        task.add_members(members=tasks_ns.payload["members"])
+        project: Project = fetch_one(Project, {"id": task.project_id})
+        check_task_edit_access(task, current_user, project.course_id)
+        # Assuming payload contains a list of User handles
+        users = [
+            fetch_one(User, {"handle": handle})
+            for handle in tasks_ns.payload["members"]
+        ]
+        # Checking that all task assignees are members of the project
+        for user in users:
+            check_is_member(Project, project, user, is_auth_user=False)
+        task.set_members(members=users)
         return {}, 201
+
+
+@tasks_ns.route("/prj/<string:project_id>")
+class TaskProjectSpecific(Resource):
+    method_decorators = [jwt_required()]
+
+    @tasks_ns.marshal_list_with(task_fetch_all_output)
+    def get(self, project_id: str):
+        project: Project = fetch_one(Project, {"id": project_id})
+        # Only project members and tutors can view the project tasks
+        check_task_view_access(project, current_user)
+        return project.tasks
