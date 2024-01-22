@@ -45,6 +45,8 @@ deliverable_instance_fetch_all_output = api.model(
     "DeliverableInstanceFetchAllOutput",
     {
         "id": fields.Integer,
+        "course_id": fields.Integer,
+        "tutorial_id": fields.Integer,
         "name": fields.String,
         "deliverable_type": fields.String,
         "weighting": fields.Integer,
