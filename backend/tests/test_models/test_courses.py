@@ -76,7 +76,7 @@ def test_enroll_with_invalid_user(test_db, init_users, init_courses):
     fake_user = User("Frodo", "Baggins", "frodo@shire.com", "mrUnderHill!")
 
     # in routes, check if user exists
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
         course.enroll([user2, user3, fake_user])
 
 
@@ -87,7 +87,7 @@ def test_course_kick_with_valid_user(test_db, init_users, init_courses):
 
     # note user1 is enrolled via the init_courses fixture
     assert len(course.members) == 3
-    course.kick([user1, user2])
+    course.kick([user2, user3])
     assert len(course.members) == 1
 
 

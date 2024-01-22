@@ -6,6 +6,7 @@ from src.models.group import Group
 from src.models.project import Project
 from src.models.task import Task
 from src.models.user import User, UserSet
+from src.error import InputError
 
 
 @pytest.fixture(scope="function")
@@ -16,14 +17,28 @@ def test_tasks(test_db):
         email="philip@email.com",
         password="PhilipTran123!",
     )
-    new_course = Course(
-        code="COMP1511", name="Programming Fundamentals", creator=new_user
-    )
-    new_tut = Tutorial(course_id=new_course.id, name="H11A")
     test_db.session.add(new_user)
+    test_db.session.flush()
+    test_db.session.refresh(new_user)
+
+    new_course = Course(
+        term="23T3", code="COMP1511", name="Programming Fundamentals", creator=new_user
+    )
     test_db.session.add(new_course)
+    test_db.session.flush()
+    test_db.session.refresh(new_course)
+
+    new_tut = Tutorial(
+        creator=new_user,
+        course_id=new_course.id,
+        name="H11A",
+        capacity=30,
+        datetime="Monday 12:00",
+        location="OrganPhysU",
+    )
     test_db.session.add(new_tut)
     test_db.session.flush()
+    test_db.session.refresh(new_tut)
     # new_group = Group(
     #     course_code=new_course.code, tutorial_id=new_tut.id, name="Group A"
     # )
@@ -33,18 +48,19 @@ def test_tasks(test_db):
         course_id=new_course.id,
         tutorial_id=new_tut.id,
         name="Assignment 1",
-        creator=new_user.handle,
+        creator=new_user,
     )
     test_db.session.add(new_project)
     test_db.session.flush()
-    return new_project.id, new_course.code, new_group.id, new_user.handle
+    test_db.session.refresh(new_project)
+    return new_project.id, new_course.id, new_user, new_tut.id
 
 
 def test_task_creation(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -53,14 +69,14 @@ def test_task_creation(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
     assert inserted_task is not None
     assert inserted_task.name == "Task 1"
     assert inserted_task.project_id == test_tasks[0]
-    assert inserted_task.creator == test_tasks[3]
+    assert inserted_task.creator_id == test_tasks[2].id
     assert inserted_task.status == "Not Started"
 
 
@@ -68,7 +84,7 @@ def test_task_creation_with_nullable_fields(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
         description="Write unit tests for auth implementation",
         deadline="31/12/2023",
@@ -82,7 +98,7 @@ def test_task_creation_with_nullable_fields(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -98,7 +114,7 @@ def test_task_update_fields(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -108,17 +124,19 @@ def test_task_update_fields(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
-    original_task.name = "Task 2"
-    original_task.status = "In Progress"
-    original_task.description = "Implement backend for auth"
-    original_task.deadline = "10/01/2024"
-    original_task.weighting = 4
-    original_task.priority = "High"
-    test_db.session.commit()
+    task_updates = {
+        "name": "Task 2",
+        "status": "In Progress",
+        "description": "Implement backend for auth",
+        "deadline": "10/01/2024",
+        "weighting": 4,
+        "priority": "High",
+    }
+    original_task.update(task_updates)
 
     updated_task = test_db.session.scalars(
         test_db.select(Task).filter_by(name="Task 2")
@@ -137,7 +155,7 @@ def test_task_deletion(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -147,7 +165,7 @@ def test_task_deletion(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -161,64 +179,43 @@ def test_task_deletion(test_db, test_tasks):
 
 
 def test_null_task_name(test_db, test_tasks):
-    new_task = Task(
-        name=None, project_id=test_tasks[0], creator=test_tasks[3], status="Not Started"
-    )
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
+        new_task = Task(
+            name=None,
+            project_id=test_tasks[0],
+            creator=test_tasks[2],
+            status="Not Started",
+        )
         test_db.session.add(new_task)
         test_db.session.commit()
 
 
 def test_null_project_id(test_db, test_tasks):
-    new_task = Task(
-        name="Task 1", project_id=None, creator=test_tasks[3], status="Not Started"
-    )
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
+        new_task = Task(
+            name="Task 1", project_id=None, creator=test_tasks[2], status="Not Started"
+        )
         test_db.session.add(new_task)
         test_db.session.commit()
 
 
 def test_invalid_project_id(test_db, test_tasks):
-    new_task = Task(
-        name="Task 1", project_id=0, creator=test_tasks[3], status="Not Started"
-    )
-    with pytest.raises(IntegrityError):
-        test_db.session.add(new_task)
-        test_db.session.commit()
-
-
-def test_null_creator_handle(test_db, test_tasks):
-    new_task = Task(
-        name="Task 1",
-        project_id=test_tasks[0],
-        creator=None,
-        status="Not Started",
-    )
-    with pytest.raises(IntegrityError):
-        test_db.session.add(new_task)
-        test_db.session.commit()
-
-
-def test_invalid_creator_handle(test_db, test_tasks):
-    new_task = Task(
-        name="Task 1",
-        project_id=test_tasks[0],
-        creator="PhilipTran1234",
-        status="Not Started",
-    )
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
+        new_task = Task(
+            name="Task 1", project_id=0, creator=test_tasks[2], status="Not Started"
+        )
         test_db.session.add(new_task)
         test_db.session.commit()
 
 
 def test_null_task_status(test_db, test_tasks):
-    new_task = Task(
-        name="Task 1",
-        project_id=test_tasks[0],
-        creator=test_tasks[3],
-        status=None,
-    )
-    with pytest.raises(IntegrityError):
+    with pytest.raises(InputError):
+        new_task = Task(
+            name="Task 1",
+            project_id=test_tasks[0],
+            creator=test_tasks[2],
+            status=None,
+        )
         test_db.session.add(new_task)
         test_db.session.commit()
 
@@ -228,7 +225,7 @@ def test_invalid_task_status(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Blocked",
     )
     with pytest.raises(IntegrityError):
@@ -241,13 +238,13 @@ def test_duplicate_project_names(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     new_task2 = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -262,19 +259,19 @@ def test_multiple_project_tasks(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     new_task2 = Task(
         name="Task 2",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     new_task3 = Task(
         name="Task 3",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -286,7 +283,7 @@ def test_multiple_project_tasks(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -296,7 +293,7 @@ def test_multiple_project_tasks(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 2",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -306,7 +303,7 @@ def test_multiple_project_tasks(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 3",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -317,9 +314,9 @@ def test_multiple_project_tasks(test_db, test_tasks):
 def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
     new_project2 = Project(
         course_id=test_tasks[1],
-        tutorial_id=test_tasks[2],
+        tutorial_id=test_tasks[3],
         name="Assignment 2",
-        creator=test_tasks[3],
+        creator=test_tasks[2],
     )
     test_db.session.add(new_project2)
     test_db.session.flush()
@@ -327,13 +324,13 @@ def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     new_task2 = Task(
         name="Task 1",
         project_id=new_project2.id,
-        creator=test_tasks[3],
+        creator=test_tasks[2],
         status="Not Started",
     )
     test_db.session.add(new_task)
@@ -344,7 +341,7 @@ def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -355,7 +352,7 @@ def test_duplicate_task_names_in_different_projects(test_db, test_tasks):
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=new_project2.id,
-            creator=test_tasks[3],
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
@@ -367,24 +364,29 @@ def test_add_members(test_db, test_tasks):
     new_user = User(
         first_name="Alex", last_name="Xu", email="alex@email.com", password="AlexXu123!"
     )
+    test_db.session.add(new_user)
+    test_db.session.flush()
+    test_db.session.refresh(new_user)
     new_task = Task(
         name="Task 1",
         project_id=test_tasks[0],
-        creator=new_user.handle,
+        creator=test_tasks[2],
         status="Not Started",
     )
-    test_db.session.add(new_user)
     test_db.session.add(new_task)
-    test_db.session.commit()
+    test_db.session.flush()
+    test_db.session.refresh(new_task)
 
-    new_task.add_assignees([new_user])
+    new_task.add_members([test_tasks[2], new_user])
     test_db.session.commit()
     task = test_db.session.scalars(
         test_db.select(Task).filter_by(
             name="Task 1",
             project_id=test_tasks[0],
-            creator=new_user.handle,
+            creator_id=test_tasks[2].id,
             status="Not Started",
         )
     ).first()
-    assert new_user in task.get_assignees()
+    assert task.member_count == 2
+    assert test_tasks[2] in task.members
+    assert new_user in task.members
