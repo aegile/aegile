@@ -1,6 +1,13 @@
 import pytest
 
 
+pytestmark = [
+    pytest.mark.no_tutorials_setup,
+    pytest.mark.no_deliverables_setup,
+    pytest.mark.no_projects_setup,
+]
+
+
 # GET Requests - course specific
 def test_get_course_with_valid_course_id(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
