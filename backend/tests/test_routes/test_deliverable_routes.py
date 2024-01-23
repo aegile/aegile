@@ -181,7 +181,8 @@ def test_create_tutorial_with_existing_deliverables(auth_client, courses_fetch):
         json={
             "name": "F09A",
             "capacity": 20,
-            "datetime": "Friday 9am-11am",
+            "day": "Friday",
+            "times": "9am-11am",
             "location": "Quadrangle G041",
         },
     )

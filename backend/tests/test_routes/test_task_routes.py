@@ -326,7 +326,7 @@ def test_fetch_task_info_by_project_member(
     assert len(res.json["members"]) == 1
     assert res.json["members"][0]["first_name"] == "John"
     assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "JohnSmith"
+    assert res.json["members"][0]["handle"] == "john"
     assert res.json["members"][0]["email"] == "john@email.com"
 
 
@@ -350,11 +350,11 @@ def test_fetch_new_task_assignees(auth_client, tasks_fetch):
     assert len(res.json["members"]) == 2
     assert res.json["members"][0]["first_name"] == "John"
     assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "JohnSmith"
+    assert res.json["members"][0]["handle"] == "john"
     assert res.json["members"][0]["email"] == "john@email.com"
     assert res.json["members"][1]["first_name"] == "Alex"
     assert res.json["members"][1]["last_name"] == "Xu"
-    assert res.json["members"][1]["handle"] == "AlexXu"
+    assert res.json["members"][1]["handle"] == "alex"
     assert res.json["members"][1]["email"] == "alex@email.com"
 
 

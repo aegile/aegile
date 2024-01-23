@@ -73,7 +73,8 @@ def test_get_tutorial_check_response_structure(auth_client, get_tut):
     assert "id" in data
     assert "name" in data
     assert "capacity" in data
-    assert "datetime" in data
+    assert "day" in data
+    assert "times" in data
     assert "location" in data
 
 
@@ -86,7 +87,8 @@ def test_get_tutorial_check_response_data(auth_client, get_tut):
     assert data["id"] == tut["id"]
     assert data["name"] == tut["name"]
     assert data["capacity"] == tut["capacity"]
-    assert data["datetime"] == tut["datetime"]
+    assert data["day"] == tut["day"]
+    assert data["times"] == tut["times"]
     assert data["location"] == tut["location"]
 
 
@@ -115,7 +117,8 @@ def test_get_all_tutorials_check_response_structure(auth_client):
         assert "id" in tutorial
         assert "name" in tutorial
         assert "capacity" in tutorial
-        assert "datetime" in tutorial
+        assert "day" in tutorial
+        assert "times" in tutorial
         assert "location" in tutorial
         # Add more assertions for other fields in the response
 
@@ -148,7 +151,8 @@ def test_valid_tutorial_creation(auth_client, courses_fetch):
         json={
             "name": "C10B",
             "capacity": 20,
-            "datetime": "Friday 3pm-5pm",
+            "day": "Friday",
+            "times": "3pm-5pm",
             "location": "Physics Theatre K14",
         },
     )
@@ -165,7 +169,8 @@ def test_invalid_tutorial_creation_duplicate_name(auth_client, courses_fetch):
         json={
             "name": "C10B",
             "capacity": 15,
-            "datetime": "Monday 10am-12pm",
+            "day": "Monday",
+            "times": "10am-12pm",
             "location": "Flute Lab J17",
         },
     )
@@ -178,7 +183,8 @@ def test_invalid_tutorial_creation_no_name(auth_client, courses_fetch):
         f"api/v1/tutorials/crs/{comp1511['id']}",
         json={
             "capacity": 30,
-            "datetime": "Wednesday 2pm-4pm",
+            "day": "Wednesday",
+            "times": "2pm-4pm",
             "location": "Oboe Lab J17",
         },
     )
@@ -191,7 +197,8 @@ def test_invalid_tutorial_creation_no_capacity(auth_client, courses_fetch):
         f"api/v1/tutorials/crs/{comp1511['id']}",
         json={
             "name": "A01B",
-            "datetime": "Wednesday 2pm-4pm",
+            "day": "Wednesday",
+            "times": "2pm-4pm",
             "location": "Oboe Lab J17",
         },
     )
@@ -218,7 +225,8 @@ def test_invalid_tutorial_creation_no_location(auth_client, courses_fetch):
         json={
             "name": "A01B",
             "capacity": 30,
-            "datetime": "Wednesday 2pm-4pm",
+            "day": "Wednesday",
+            "times": "2pm-4pm",
         },
     )
     assert response.status_code == 400
@@ -241,11 +249,10 @@ def test_valid_tutorial_update(auth_client, tutorials_fetch):
     )
     assert response.status_code == 200
     response = auth_client.get(f"api/v1/tutorials/{new_tut['id']}")
-    # assert len(response.json) == 7
-    # any(tut["name"] == "Y99Z" for tut in response.json)
     assert response.json["name"] == "Y99Z"
     assert response.json["capacity"] == 40
-    assert response.json["datetime"] == "Friday 3pm-5pm"
+    assert response.json["day"] == "Friday"
+    assert response.json["times"] == "3pm-5pm"
     assert response.json["location"] == "Physics Theatre K14"
 
 
@@ -255,7 +262,8 @@ def test_invalid_tutorial_update_bad_tut_id(auth_client):
         json={
             "name": "P10T",
             "capacity": 30,
-            "datetime": "Monday 9am-11am",
+            "day": "Monday",
+            "times": "9am-11am",
             "location": "Sitar Lab J17",
         },
     )

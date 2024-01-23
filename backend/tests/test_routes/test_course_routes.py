@@ -230,7 +230,7 @@ def test_course_enroll_users_to_course_with_valid_input(
     assert response.status_code == 201
     updated_course = auth_client.get(f"api/v1/courses/{comp1511['id']}/members")
     assert updated_course.status_code == 200
-    assert len(updated_course.json["members"]) == 2
+    assert len(updated_course.json) == 2
 
 
 def test_course_kick_with_valid_input(auth_client, users_fetch, courses_fetch):
@@ -247,7 +247,7 @@ def test_course_kick_with_valid_input(auth_client, users_fetch, courses_fetch):
     updated_course = auth_client.get(f"api/v1/courses/{comp1511['id']}/members")
     assert updated_course.status_code == 200
 
-    members = updated_course.json["members"]
+    members = updated_course.json
     assert len(members) == 1
     assert any(user["handle"] != userAlex["handle"] for user in members)
     assert any(user["handle"] == creator["handle"] for user in members)

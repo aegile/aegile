@@ -324,11 +324,11 @@ def test_fetch_project_members(auth_client, projects_fetch):
     assert len(res.json["members"]) == 2
     assert res.json["members"][0]["first_name"] == "John"
     assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "JohnSmith"
+    assert res.json["members"][0]["handle"] == "john"
     assert res.json["members"][0]["email"] == "john@email.com"
     assert res.json["members"][1]["first_name"] == "Alex"
     assert res.json["members"][1]["last_name"] == "Xu"
-    assert res.json["members"][1]["handle"] == "AlexXu"
+    assert res.json["members"][1]["handle"] == "alex"
     assert res.json["members"][1]["email"] == "alex@email.com"
 
 
@@ -348,7 +348,7 @@ def test_self_leave_user_from_project(auth_client, non_creator_client, projects_
     res = auth_client.get(f"api/v1/projects/{project['id']}/members")
     assert res.status_code == 200
     assert len(res.json["members"]) == 1
-    assert res.json["members"][0]["handle"] == "JohnSmith"
+    assert res.json["members"][0]["handle"] == "john"
 
 
 def test_invalid_leave_not_in_project(non_creator_client, projects_fetch):
