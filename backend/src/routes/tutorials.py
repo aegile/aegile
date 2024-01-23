@@ -103,14 +103,13 @@ class TutorialSpecific(Resource):
     @tuts_ns.expect(tutorial_edit_input)
     def put(self, tutorial_id: str):
         tutorial: Tutorial = fetch_one(Tutorial, {"id": tutorial_id})
-        check_authorization(tutorial, current_user, "can_manage_tutorials")
-        # todo: check if user has manage course permission
-        tutorial.update(tutorial_data=tuts_ns.payload)
-        return update_db_object(Tutorial, tutorial.name)
+        check_authorization(tutorial.course, current_user, "can_manage_tutorials")
+        tutorial.update(tuts_ns.payload)
+        return update_db_object(Tutorial, tutorial.__repr__())
 
     def delete(self, tutorial_id: str):
         tutorial: Tutorial = fetch_one(Tutorial, {"id": tutorial_id})
-        check_authorization(tutorial, current_user, "can_manage_tutorials")
+        check_authorization(tutorial.course, current_user, "can_manage_tutorials")
         db.session.delete(tutorial)
         db.session.commit()
         return {}, 200
@@ -135,7 +134,7 @@ class TutorialEnroll(Resource):
     def post(self, tutorial_id: str):
         tutorial: Tutorial = fetch_one(Tutorial, {"id": tutorial_id})
         course: Course = fetch_one(Course, {"id": tutorial.course_id})
-        check_authorization(tutorial, current_user, "can_manage_tutorials")
+        check_authorization(tutorial.course, current_user, "can_manage_tutorials")
         # Check users are enrolled in the tutorial's course
         users = [
             fetch_one(User, {"handle": handle}) for handle in tuts_ns.payload["members"]
@@ -155,7 +154,7 @@ class TutorialKick(Resource):
     @tuts_ns.expect(tutorial_members_input)
     def delete(self, tutorial_id: str):
         tutorial: Tutorial = fetch_one(Tutorial, {"id": tutorial_id})
-        check_authorization(tutorial, current_user, "can_manage_tutorials")
+        check_authorization(tutorial.course, current_user, "can_manage_tutorials")
         tutorial.kick(
             users=[
                 fetch_one(User, {"handle": handle})

@@ -12,6 +12,7 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     handle = db.Column(db.String(54), nullable=False, unique=True)
     image = db.Column(db.String)
+    last_login = db.Column(db.String)
 
     def __init__(self, first_name: str, last_name: str, email: str, password: str):
         if not first_name or not last_name or not email or not password:
@@ -20,7 +21,8 @@ class User(db.Model):
         self.last_name = last_name
         self.email = email
         self.password = password
-        self.handle = f"{first_name}{last_name}"
+        # self.handle = f"{first_name}{last_name}"
+        self.handle = email.split("@")[0]
 
     def update(self, profile_data: dict):
         self.email = get_with_default(profile_data, "email", self.email)

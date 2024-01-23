@@ -29,7 +29,13 @@ course_fetch_one_output = api.model(
 course_members_fetch_output = api.model(
     "CourseMembersFetchOutput",
     {
-        "members": fields.List(fields.Nested(user_fetch_output)),
+        "id": fields.String(attribute="user.id"),
+        "email": fields.String(attribute="user.email"),
+        "first_name": fields.String(attribute="user.first_name"),
+        "last_name": fields.String(attribute="user.last_name"),
+        "handle": fields.String(attribute="user.handle"),
+        "image": fields.String(attribute="user.image"),
+        "role": fields.String(attribute="role.name"),
     },
 )
 

@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { fetchClientAPIRequest } from '@/lib/utils';
 
 const nameSchema = z
   .string()
@@ -46,8 +47,8 @@ const FormSchema = z
       ),
     password: z
       .string()
-      .min(14, {
-        message: 'Password must be at least 14 characters.',
+      .min(8, {
+        message: 'Password must be at least 8 characters.',
       })
       .refine((value) => /[A-Z]/.test(value), {
         message: 'Password must contain at least one uppercase letter.',
@@ -86,24 +87,32 @@ export function UserRegistrationForm() {
       </div>
     );
     const { confirmPassword, ...bodyData } = data;
-    const response = await fetch('/api/v1/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(bodyData),
-    });
+    const res = await fetchClientAPIRequest(
+      '/api/v1/auth/register',
+      'POST',
+      bodyData
+    );
+    // const response = await fetch('/api/v1/auth/register', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(bodyData),
+    // });
 
-    if (!response.ok) {
+    if (!res.ok) {
       // Handle error
       console.error('Registration failed');
-      const result = await response.json();
+      const result = await res.json();
       console.log(result);
       toast.error(result.message);
       return;
     }
 
     // handle success
+    toast.info(
+      'Account created! Please check your email for a verification link.'
+    );
     // navigate to login page
   }
 

@@ -12,7 +12,8 @@ class Tutorial(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey("course.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     capacity = db.Column(db.Integer, nullable=False, default=25)
-    datetime = db.Column(db.String, nullable=False)
+    day = db.Column(db.String, nullable=False)
+    times = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=False)
 
     # announcements = db.relationship(
@@ -25,7 +26,10 @@ class Tutorial(db.Model):
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"))
     userset = db.relationship("UserSet", backref="tutorial_userset", uselist=False)
 
-    __table_args__ = (db.UniqueConstraint("course_id", "name", name="uix_course_name"),)
+    __table_args__ = (
+        db.UniqueConstraint("course_id", "name", name="uix_course_name"),
+        db.UniqueConstraint("day", "times", "location", name="uix_tutorial_class"),
+    )
 
     # def __init__(self, course_id: str, name: str, userset: list[User] = []):
     #     self.course_id = course_id
@@ -34,7 +38,7 @@ class Tutorial(db.Model):
     #     self.userset.members = userset
 
     def __init__(self, creator: User, **kwargs):
-        required_fields = ["course_id", "name", "capacity", "datetime", "location"]
+        required_fields = ["course_id", "name", "capacity", "day", "times", "location"]
 
         if not all(kwargs.get(field) for field in required_fields):
             raise InputError(
@@ -56,12 +60,13 @@ class Tutorial(db.Model):
         #     )
         # self.deliverable_instances.append(deliverable_instance)
 
-    def update(self, tutorial_data: dict):
+    def update(self, update_data: dict):
         # self.course_id = get_with_default(update_data, "course_id", self.course_id)
-        self.name = get_with_default(tutorial_data, "name", self.name)
-        self.capacity = get_with_default(tutorial_data, "capacity", self.capacity)
-        self.datetime = get_with_default(tutorial_data, "datetime", self.datetime)
-        self.location = get_with_default(tutorial_data, "location", self.location)
+        self.name = get_with_default(update_data, "name", self.name)
+        self.capacity = get_with_default(update_data, "capacity", self.capacity)
+        self.day = get_with_default(update_data, "day", self.day)
+        self.times = get_with_default(update_data, "times", self.times)
+        self.location = get_with_default(update_data, "location", self.location)
 
     @property
     def members(self):

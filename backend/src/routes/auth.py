@@ -1,11 +1,17 @@
 from flask_restx import Resource, Namespace
+from flask_jwt_extended import jwt_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
+from datetime import datetime, timedelta
 
 from ..error import AuthError
 from ..extensions import db
 from ..models.user import User
-from ..api_models.user_models import user_creation_input, user_login_input, user_fetch_output
+from ..api_models.user_models import (
+    user_creation_input,
+    user_login_input,
+    user_fetch_output,
+)
 from ..handlers.events import trigger_event
 from .helpers import fetch_one, add_db_object
 
@@ -56,4 +62,28 @@ class Login(Resource):
             trigger_event("event_user_login_fail", user)
             raise AuthError("Incorrect password.")
         trigger_event("event_user_login_success", user)
-        return {"access_token": create_access_token(user)}
+
+        user.last_login = datetime.utcnow().isoformat()
+        db.session.commit()
+        return {
+            "access_token": create_access_token(user),
+            "id": user.id,
+            "name": f"{user.first_name} {user.last_name}",
+            "email": user.email,
+            "image": user.image,
+            "handle": user.handle,
+        }
+
+
+@auth_ns.route("/check")
+class Login(Resource):
+    method_decorators = [jwt_required()]
+
+    def get(self):
+        # raises error if token is invalid
+        user: User = fetch_one(User, {"id": current_user.id})
+        last_login = datetime.fromisoformat(user.last_login)
+        print(last_login, datetime.utcnow() - last_login)
+        if (datetime.utcnow() - last_login) > timedelta(days=3):
+            raise AuthError("Token expired.")
+        return {}, 200
