@@ -123,25 +123,27 @@ def courses_fetch(auth_client):
     return {f"{course['term']}{course['code']}": course for course in response.json}
 
 
-@pytest.fixture(scope="module", autouse=True)
-def roles_setup(auth_client):
-    response = auth_client.get("api/v1/courses")
-    # Creates a default role Student for all courses
-    for course in response.json:
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Student"},
-        )
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Tutor"},
-        )
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Admin"},
-        )
+# Remove roles setup since Courses now automatically make roles upon creation
 
-    return courses_setup
+# @pytest.fixture(scope="module", autouse=True)
+# def roles_setup(auth_client):
+#     response = auth_client.get("api/v1/courses")
+#     # Creates a default role Student for all courses
+#     for course in response.json:
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Student"},
+#         )
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Tutor"},
+#         )
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Admin"},
+#         )
+
+#     return courses_setup
 
 
 @pytest.fixture(scope="function")
@@ -157,14 +159,16 @@ def tutorials_setup(auth_client, courses_setup, request):
         return
 
     courses = auth_client.get("api/v1/courses").json
-    for course in courses:
+    locations = ["Quadrangle G040", "Lawrence West 4034", "Electrical Engineering G10"]
+    for course, location in zip(courses, locations):
         auth_client.post(
             f"api/v1/tutorials/crs/{course['id']}",
             json={
                 "name": "H14A",
                 "capacity": 30,
-                "datetime": "Thursday 2pm-4pm",
-                "location": "Quadrangle G040",
+                "day": "Thursday",
+                "times": "2pm-4pm",
+                "location": location,
             },
         )
         auth_client.post(
@@ -172,8 +176,9 @@ def tutorials_setup(auth_client, courses_setup, request):
             json={
                 "name": "W11B",
                 "capacity": 20,
-                "datetime": "Wednesday 11am-1pm",
-                "location": "Quadrangle G040",
+                "day": "Wednesday",
+                "times": "11am-1pm",
+                "location": location,
             },
         )
 
