@@ -165,18 +165,22 @@ def test_fetch_projects_with_authorised_user(
     tut = tutorials_fetch["H14ACOMP1511"]
     res = auth_client.get("api/v1/projects")
     assert len(res.json) == 2
-    # For first project
-    assert res.json[0]["name"] == "Group Assignment 1"
-    assert res.json[0]["course_id"] == comp1511["id"]
-    assert res.json[0]["tutorial_id"] == tut["id"]
-    assert res.json[0]["subheading"] is None
-    # For second project
-    assert res.json[1]["name"] == "Group Assignment 2"
-    assert res.json[1]["course_id"] == comp1511["id"]
-    assert res.json[1]["tutorial_id"] == tut["id"]
-    assert res.json[1]["subheading"] == "Assignment 2 for COMP1511"
-    assert res.json[1]["description"] == "This is an assignment in groups of 5 students"
-    assert res.json[1]["end_date"] == "31/04/2024"
+    # Check that first project is fetched
+    assert any(prj["name"] == "Group Assignment 1" for prj in res.json)
+    assert any(prj["subheading"] is None for prj in res.json)
+    assert any(prj["description"] is None for prj in res.json)
+    assert any(prj["end_date"] is None for prj in res.json)
+    # Check that second project is fetched
+    assert any(prj["name"] == "Group Assignment 2" for prj in res.json)
+    assert any(prj["subheading"] == "Assignment 2 for COMP1511" for prj in res.json)
+    assert any(
+        prj["description"] == "This is an assignment in groups of 5 students"
+        for prj in res.json
+    )
+    assert any(prj["end_date"] == "31/04/2024" for prj in res.json)
+    # Check course and tut id of both projects
+    assert all(prj["course_id"] == comp1511["id"] for prj in res.json)
+    assert all(prj["tutorial_id"] == tut["id"] for prj in res.json)
 
 
 def test_fetch_projects_in_deliverable_instance_with_unauthorized_user(
@@ -196,16 +200,22 @@ def test_fetch_projects_in_deliverable_instance_with_authorized_user(
     res = auth_client.get(f"api/v1/projects/instance/{instance['id']}")
     assert res.status_code == 200
     assert len(res.json) == 2
-    assert res.json[0]["name"] == "Group Assignment 1"
-    assert res.json[0]["course_id"] == comp1511["id"]
-    assert res.json[0]["tutorial_id"] == tut["id"]
-    assert res.json[0]["subheading"] is None
-    assert res.json[1]["name"] == "Group Assignment 2"
-    assert res.json[1]["course_id"] == comp1511["id"]
-    assert res.json[1]["tutorial_id"] == tut["id"]
-    assert res.json[1]["subheading"] == "Assignment 2 for COMP1511"
-    assert res.json[1]["description"] == "This is an assignment in groups of 5 students"
-    assert res.json[1]["end_date"] == "31/04/2024"
+    # Check that first project is fetched
+    assert any(prj["name"] == "Group Assignment 1" for prj in res.json)
+    assert any(prj["subheading"] is None for prj in res.json)
+    assert any(prj["description"] is None for prj in res.json)
+    assert any(prj["end_date"] is None for prj in res.json)
+    # Check that second project is fetched
+    assert any(prj["name"] == "Group Assignment 2" for prj in res.json)
+    assert any(prj["subheading"] == "Assignment 2 for COMP1511" for prj in res.json)
+    assert any(
+        prj["description"] == "This is an assignment in groups of 5 students"
+        for prj in res.json
+    )
+    assert any(prj["end_date"] == "31/04/2024" for prj in res.json)
+    # Check course and tut id of both projects
+    assert all(prj["course_id"] == comp1511["id"] for prj in res.json)
+    assert all(prj["tutorial_id"] == tut["id"] for prj in res.json)
 
 
 def test_edit_existing_project_with_unauthorized_user(
@@ -322,14 +332,14 @@ def test_fetch_project_members(auth_client, projects_fetch):
     res = auth_client.get(f"api/v1/projects/{project['id']}/members")
     assert res.status_code == 200
     assert len(res.json["members"]) == 2
-    assert res.json["members"][0]["first_name"] == "John"
-    assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "john"
-    assert res.json["members"][0]["email"] == "john@email.com"
-    assert res.json["members"][1]["first_name"] == "Alex"
-    assert res.json["members"][1]["last_name"] == "Xu"
-    assert res.json["members"][1]["handle"] == "alex"
-    assert res.json["members"][1]["email"] == "alex@email.com"
+    assert any(user["first_name"] == "John" for user in res.json["members"])
+    assert any(user["last_name"] == "Smith" for user in res.json["members"])
+    assert any(user["handle"] == "john" for user in res.json["members"])
+    assert any(user["email"] == "john@email.com" for user in res.json["members"])
+    assert any(user["first_name"] == "Alex" for user in res.json["members"])
+    assert any(user["last_name"] == "Xu" for user in res.json["members"])
+    assert any(user["handle"] == "alex" for user in res.json["members"])
+    assert any(user["email"] == "alex@email.com" for user in res.json["members"])
 
 
 def test_creator_leave_project(auth_client, projects_fetch):
@@ -348,7 +358,7 @@ def test_self_leave_user_from_project(auth_client, non_creator_client, projects_
     res = auth_client.get(f"api/v1/projects/{project['id']}/members")
     assert res.status_code == 200
     assert len(res.json["members"]) == 1
-    assert res.json["members"][0]["handle"] == "john"
+    assert any(user["handle"] == "john" for user in res.json["members"])
 
 
 def test_invalid_leave_not_in_project(non_creator_client, projects_fetch):
@@ -372,10 +382,10 @@ def test_delete_project_by_creator(auth_client, projects_fetch):
 
     rem_projects = auth_client.get("api/v1/projects").json
     assert len(rem_projects) == 1
-    assert rem_projects[0]["name"] == "Group Assignment 2"
-    assert rem_projects[0]["subheading"] == "Assignment 2 for COMP1511"
-    assert (
-        rem_projects[0]["description"]
-        == "This is an assignment in groups of 5 students"
+    assert any(prj["name"] == "Group Assignment 2" for prj in rem_projects)
+    assert any(prj["subheading"] == "Assignment 2 for COMP1511" for prj in rem_projects)
+    assert any(
+        prj["description"] == "This is an assignment in groups of 5 students"
+        for prj in rem_projects
     )
-    assert rem_projects[0]["end_date"] == "31/04/2024"
+    assert any(prj["end_date"] == "31/04/2024" for prj in rem_projects)

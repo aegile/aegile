@@ -389,7 +389,9 @@ def test_valid_delete_tutorial(auth_client, courses_fetch, tutorials_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
     new_tut = tutorials_fetch["Y99ZCOMP1511"]
 
-    assert len(auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}").json) == 3
+    response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}").json
+    assert len(response) == 3
+    assert any(tut["name"] == "Y99Z" for tut in response)
     response = auth_client.delete(f"api/v1/tutorials/{new_tut['id']}")
     assert response.status_code == 200
     response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}").json

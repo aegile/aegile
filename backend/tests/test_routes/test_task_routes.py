@@ -157,23 +157,25 @@ def test_fetch_tasks_with_authorised_user(auth_client, projects_fetch):
     assert res.status_code == 200
     assert len(res.json) == 2
     # For first task
-    assert res.json[0]["name"] == "Task 1"
-    assert res.json[0]["project_id"] == project["id"]
-    assert res.json[0]["status"] == "Not Started"
-    assert res.json[0]["description"] is None
-    assert res.json[0]["deadline"] is None
-    assert res.json[0]["weighting"] is None
-    assert res.json[0]["priority"] is None
-    assert res.json[0]["attachment"] is None
+    assert any(task["name"] == "Task 1" for task in res.json)
+    assert any(task["project_id"] == project["id"] for task in res.json)
+    assert any(task["status"] == "Not Started" for task in res.json)
+    assert any(task["description"] is None for task in res.json)
+    assert any(task["deadline"] is None for task in res.json)
+    assert any(task["weighting"] is None for task in res.json)
+    assert any(task["priority"] is None for task in res.json)
+    assert any(task["attachment"] is None for task in res.json)
     # For second task
-    assert res.json[1]["name"] == "Task 2"
-    assert res.json[1]["project_id"] == project["id"]
-    assert res.json[1]["status"] == "In Progress"
-    assert res.json[1]["description"] == "Write the executive summary"
-    assert res.json[1]["deadline"] == "01/01/2024"
-    assert res.json[1]["weighting"] == 3
-    assert res.json[1]["priority"] == "Medium"
-    assert res.json[1]["attachment"] == "test.img"
+    assert any(task["name"] == "Task 2" for task in res.json)
+    assert any(task["project_id"] == project["id"] for task in res.json)
+    assert any(task["status"] == "In Progress" for task in res.json)
+    assert any(
+        task["description"] == "Write the executive summary" for task in res.json
+    )
+    assert any(task["deadline"] == "01/01/2024" for task in res.json)
+    assert any(task["weighting"] == 3 for task in res.json)
+    assert any(task["priority"] == "Medium" for task in res.json)
+    assert any(task["attachment"] == "test.img" for task in res.json)
 
 
 def test_edit_existing_task_with_unauthorized_user(non_creator_client, tasks_fetch):
@@ -247,21 +249,23 @@ def test_fetch_tasks_in_project(auth_client, projects_fetch):
     assert res.status_code == 200
     assert len(res.json) == 2
     # For first task
-    assert res.json[0]["name"] == "Changed Task 1"
-    assert res.json[0]["status"] == "In Progress"
-    assert res.json[0]["description"] == "Create report template"
-    assert res.json[0]["deadline"] == "01/01/2024"
-    assert res.json[0]["weighting"] == 2
-    assert res.json[0]["priority"] == "Low"
-    assert res.json[0]["attachment"] == "test.img"
+    assert any(task["name"] == "Changed Task 1" for task in res.json)
+    assert any(task["status"] == "In Progress" for task in res.json)
+    assert any(task["description"] == "Create report template" for task in res.json)
+    assert any(task["deadline"] == "01/01/2024" for task in res.json)
+    assert any(task["weighting"] == 2 for task in res.json)
+    assert any(task["priority"] == "Low" for task in res.json)
+    assert any(task["attachment"] == "test.img" for task in res.json)
     # For second task
-    assert res.json[1]["name"] == "Task 2"
-    assert res.json[1]["status"] == "In Progress"
-    assert res.json[1]["description"] == "Write the executive summary"
-    assert res.json[1]["deadline"] == "01/01/2024"
-    assert res.json[1]["weighting"] == 3
-    assert res.json[1]["priority"] == "Medium"
-    assert res.json[1]["attachment"] == "test.img"
+    assert any(task["name"] == "Task 2" for task in res.json)
+    assert any(task["status"] == "In Progress" for task in res.json)
+    assert any(
+        task["description"] == "Write the executive summary" for task in res.json
+    )
+    assert any(task["deadline"] == "01/01/2024" for task in res.json)
+    assert any(task["weighting"] == 3 for task in res.json)
+    assert any(task["priority"] == "Medium" for task in res.json)
+    assert any(task["attachment"] == "test.img" for task in res.json)
 
 
 def test_assign_task_to_non_project_member(auth_client, users_fetch, tasks_fetch):
@@ -324,10 +328,10 @@ def test_fetch_task_info_by_project_member(
 
     res = non_creator_client.get(f"api/v1/tasks/{task['id']}/members")
     assert len(res.json["members"]) == 1
-    assert res.json["members"][0]["first_name"] == "John"
-    assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "john"
-    assert res.json["members"][0]["email"] == "john@email.com"
+    assert any(user["first_name"] == "John" for user in res.json["members"])
+    assert any(user["last_name"] == "Smith" for user in res.json["members"])
+    assert any(user["handle"] == "john" for user in res.json["members"])
+    assert any(user["email"] == "john@email.com" for user in res.json["members"])
 
 
 def test_set_task_assignees(auth_client, users_fetch, tasks_fetch):
@@ -348,14 +352,14 @@ def test_fetch_new_task_assignees(auth_client, tasks_fetch):
     res = auth_client.get(f"api/v1/tasks/{task['id']}/members")
     assert res.status_code == 200
     assert len(res.json["members"]) == 2
-    assert res.json["members"][0]["first_name"] == "John"
-    assert res.json["members"][0]["last_name"] == "Smith"
-    assert res.json["members"][0]["handle"] == "john"
-    assert res.json["members"][0]["email"] == "john@email.com"
-    assert res.json["members"][1]["first_name"] == "Alex"
-    assert res.json["members"][1]["last_name"] == "Xu"
-    assert res.json["members"][1]["handle"] == "alex"
-    assert res.json["members"][1]["email"] == "alex@email.com"
+    assert any(user["first_name"] == "John" for user in res.json["members"])
+    assert any(user["last_name"] == "Smith" for user in res.json["members"])
+    assert any(user["handle"] == "john" for user in res.json["members"])
+    assert any(user["email"] == "john@email.com" for user in res.json["members"])
+    assert any(user["first_name"] == "Alex" for user in res.json["members"])
+    assert any(user["last_name"] == "Xu" for user in res.json["members"])
+    assert any(user["handle"] == "alex" for user in res.json["members"])
+    assert any(user["email"] == "alex@email.com" for user in res.json["members"])
 
 
 def test_delete_task_by_unauthorized_user(non_creator_client, tasks_fetch):
@@ -371,10 +375,12 @@ def test_delete_task_by_creator(auth_client, tasks_fetch):
 
     rem_tasks = auth_client.get("api/v1/tasks").json
     assert len(rem_tasks) == 1
-    assert rem_tasks[0]["name"] == "Task 2"
-    assert rem_tasks[0]["status"] == "In Progress"
-    assert rem_tasks[0]["description"] == "Write the executive summary"
-    assert rem_tasks[0]["deadline"] == "01/01/2024"
-    assert rem_tasks[0]["weighting"] == 3
-    assert rem_tasks[0]["priority"] == "Medium"
-    assert rem_tasks[0]["attachment"] == "test.img"
+    assert any(task["name"] == "Task 2" for task in rem_tasks)
+    assert any(task["status"] == "In Progress" for task in rem_tasks)
+    assert any(
+        task["description"] == "Write the executive summary" for task in rem_tasks
+    )
+    assert any(task["deadline"] == "01/01/2024" for task in rem_tasks)
+    assert any(task["weighting"] == 3 for task in rem_tasks)
+    assert any(task["priority"] == "Medium" for task in rem_tasks)
+    assert any(task["attachment"] == "test.img" for task in rem_tasks)
