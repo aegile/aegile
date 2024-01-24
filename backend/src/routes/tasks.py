@@ -67,23 +67,20 @@ class TaskSpecific(Resource):
     @tasks_ns.marshal_with(task_fetch_one_output)
     def get(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        project: Project = fetch_one(Project, {"id": task.project_id})
-        check_task_view_access(project, current_user)
+        check_task_view_access(task.project, current_user)
         return task
 
     @tasks_ns.expect(task_edit_input)
     def put(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        project: Project = fetch_one(Project, {"id": task.project_id})
         # Checks if user is the task creator or has permissions to manage tasks
-        check_task_edit_access(task, current_user, project.course_id)
+        check_task_edit_access(task, current_user, task.project.course_id)
         task.update(task_data=tasks_ns.payload)
         return update_db_object(Task, task)
 
     def delete(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        project: Project = fetch_one(Project, {"id": task.project_id})
-        check_task_edit_access(task, current_user, project.course_id)
+        check_task_edit_access(task, current_user, task.project.course_id)
         db.session.delete(task)
         db.session.commit()
         return {}, 200
@@ -96,16 +93,14 @@ class TaskMembers(Resource):
     @tasks_ns.marshal_with(task_members_fetch_output)
     def get(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        project: Project = fetch_one(Project, {"id": task.project_id})
         # Check if user is in the project
-        check_task_view_access(project, current_user)
+        check_task_view_access(task.project, current_user)
         return task
 
     @tasks_ns.expect(task_members_input)
     def post(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
-        project: Project = fetch_one(Project, {"id": task.project_id})
-        check_task_edit_access(task, current_user, project.course_id)
+        check_task_edit_access(task, current_user, task.project.course_id)
         # Assuming payload contains a list of User handles
         users = [
             fetch_one(User, {"handle": handle})
@@ -113,7 +108,7 @@ class TaskMembers(Resource):
         ]
         # Checking that all task assignees are members of the project
         for user in users:
-            check_is_member(Project, project, user, is_auth_user=False)
+            check_is_member(Project, task.project, user, is_auth_user=False)
         task.set_members(members=users)
         return {}, 201
 

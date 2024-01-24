@@ -18,8 +18,8 @@ class Project(db.Model):
     description = db.Column(db.String(100))
     end_date = db.Column(db.String(10))
     userset_id = db.Column(db.Integer, db.ForeignKey("user_set.id"), unique=True)
-    userset = db.relationship("UserSet", backref="projects", uselist=False)
-    tasks = db.relationship("Task", backref="projects", cascade="all, delete-orphan")
+    userset = db.relationship("UserSet", backref="project", uselist=False)
+    tasks = db.relationship("Task", backref="project", cascade="all, delete-orphan")
     __table_args__ = (
         db.UniqueConstraint("deliverable_instance_id", "name", name="dlv_proj_name"),
     )
