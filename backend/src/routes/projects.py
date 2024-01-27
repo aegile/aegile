@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required, current_user
 from ..extensions import db
 from ..models.tutorial import Tutorial
 from ..models.deliverable import DeliverableInstance
-from ..models.project import Project, project_new_model
+from ..models.project import Project
 from ..models.task import Task
 from ..models.user import User, UserSet
 from ..api_models.project_models import (
