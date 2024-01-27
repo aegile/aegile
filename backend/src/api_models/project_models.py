@@ -1,5 +1,5 @@
 from flask_restx import fields
-from src.extensions import api
+from ..extensions import api
 from .user_models import user_fetch_output
 
 project_fetch_all_output = api.model(
