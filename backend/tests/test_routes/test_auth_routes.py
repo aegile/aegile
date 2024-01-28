@@ -1,7 +1,6 @@
 import pytest
 
 
-@pytest.mark.xfail(reason="SQLite doesn't support character limits")
 def test_invalid_name_overflow_registration(client):
     form_data = {
         "first_name": "A" * 51,
@@ -13,7 +12,6 @@ def test_invalid_name_overflow_registration(client):
     assert response.status_code == 400
 
 
-@pytest.mark.xfail(reason="SQLite doesn't support character limits")
 def test_invalid_email_overflow_registration(client):
     form_data = {
         "first_name": "AlexAlex",
@@ -106,17 +104,17 @@ def test_invalid_nonexistent_user_login(client):
     assert response.status_code == 400
 
 
-def test_invalid_login_check(client):
+def test_invalid_login_check_with_unauthorized_token(client):
     response = client.get("api/v1/auth/check")
     assert response.status_code == 401
 
 
-def test_invalid_login_check(auth_client):
+def test_valid_login_check(auth_client):
     response = auth_client.get("api/v1/auth/check")
     assert response.status_code == 200
 
 
-def test_invalid_login_check(invalid_token_client):
+def test_invalid_login_check_with_invalid_token(invalid_token_client):
     response = invalid_token_client.get("api/v1/auth/check")
     print(response.json)
     assert response.status_code == 401

@@ -113,9 +113,18 @@ def test_create_course_with_existing_course_offering(auth_client):
     assert response.status_code == 400
 
 
-@pytest.mark.xfail(reason="SQLite doesn't support character limits")
+# @pytest.mark.xfail(reason="SQLite doesn't support character limits")
 def test_create_course_with_invalid_course_code(auth_client):
-    pass
+    response = auth_client.post(
+        "api/v1/courses",
+        json={
+            "term": "23T2",
+            "code": "COMP15111",
+            "name": "Programming Fundamentals",
+            "description": "",
+        },
+    )
+    assert response.status_code == 400
 
 
 def test_create_course_without_course_code(auth_client):
