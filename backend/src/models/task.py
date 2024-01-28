@@ -21,12 +21,12 @@ class Task(db.Model):
     __table_args__ = (
         db.UniqueConstraint("name", "project_id", name="proj_task_name"),
         db.CheckConstraint(
-            "status == 'Not Started' or status == 'In Progress' or \
-            status == 'Completed' or status == 'Backlog'"
+            "status = 'Not Started' or status = 'In Progress' or \
+            status = 'Completed' or status = 'Backlog'"
         ),
         db.CheckConstraint(
-            "priority == 'Low' or priority == 'Medium' or \
-            Priority == 'High'"
+            "priority = 'Low' or priority = 'Medium' or \
+            Priority = 'High'"
         ),
     )
 
