@@ -1,7 +1,7 @@
 import os
 import logging
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
@@ -21,8 +21,8 @@ from .routes.roles import roles_ns
 from .routes.users import users_ns
 from .routes.tutorials import tuts_ns
 from .routes.groups import groups_ns
-from .routes.projects import projects, projects_ns
-from .routes.tasks import tasks
+from .routes.projects import projects_ns
+from .routes.tasks import tasks_ns
 from .handlers.log_handler import setup_log_handlers
 
 log = logging.getLogger("werkzeug")
@@ -33,7 +33,7 @@ log.setLevel(logging.INFO)
 #     log.addHandler(file_handler)
 #     log.addHandler(stream_handler)
 
-# load_dotenv(".env.local")
+load_dotenv(".env.local")
 
 
 def defaultHandler(err):
@@ -88,6 +88,7 @@ def create_app():
     api.add_namespace(tuts_ns)
     api.add_namespace(groups_ns)
     api.add_namespace(projects_ns)
+    api.add_namespace(tasks_ns)
 
     @jwt.user_identity_loader
     def user_identity_lookup(user):

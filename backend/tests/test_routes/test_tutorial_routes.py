@@ -1,3 +1,12 @@
+import pytest
+
+
+pytestmark = [
+    pytest.mark.no_deliverables_setup,
+    pytest.mark.no_projects_setup,
+]
+
+
 # GET request to /v1/tutorials/<tutorial_id> - tutorial specific
 def test_fetch_all_tutorials_as_authorized_manager(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
@@ -15,314 +24,376 @@ def test_fetch_all_tutorials_as_unenrolled_user(non_creator_client, courses_fetc
     assert len(res.json) == 0
 
 
-# def test_get_tutorial_with_valid_tutorial_id(auth_client, tutorials_setup):
-#     tut = get_tut(tutorials_setup, "COMP1511")
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 200
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_get_tutorial_with_valid_tutorial_id(auth_client, get_tut):
+    tut = get_tut["H14A23T2COMP1511"]
+    response = auth_client.get(f"api/v1/tutorials/{tut['id']}")
+    assert response.status_code == 200
 
 
-# def test_get_tutorial_with_invalid_tutorial_id(auth_client, tutorials_setup):
-#     response = auth_client.get("v1/tutorials/9999")
-#     assert response.status_code == 400
+def test_get_tutorial_with_invalid_tutorial_id(auth_client):
+    response = auth_client.get("api/v1/tutorials/9999")
+    assert response.status_code == 400
 
 
-# def test_get_tutorial_without_authentication(client, tutorials_setup):
-#     tut = get_tut(tutorials_setup, "COMP1511")
-#     response = client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 401
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_get_tutorial_without_authentication(client, get_tut):
+    tut = get_tut["H14A23T2COMP1511"]
+    response = client.get(f"api/v1/tutorials/{tut['id']}")
+    assert response.status_code == 401
 
 
-# def test_get_tutorial_with_unauthorized_user(auth_client, tutorials_setup):
+# @pytest.mark.parametrize("course", ["23T2COMP6080"])
+# def test_get_tutorial_with_unauthorized_user(auth_client, get_tut):
 #     # User is not in the COMP6080 tutorial
-#     tut = get_tut(tutorials_setup, "COMP6080")
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
+#     tut = get_tut["H14A23T2COMP6080"]
+#     response = auth_client.get(f"api/v1/tutorials/{tut['id']}")
 #     assert response.status_code == 401
 
 
-# def test_get_tutorial_with_empty_tutorial_id(auth_client, tutorials_setup):
-#     response = auth_client.get("v1/tutorials/")
-#     assert response.status_code == 404
+def test_get_tutorial_with_empty_tutorial_id(auth_client):
+    response = auth_client.get("api/v1/tutorials/")
+    assert response.status_code == 404
 
 
-# def test_get_tutorial_check_content_type(auth_client, tutorials_setup):
-#     tut = get_tut(tutorials_setup, "COMP1511")
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 200
-#     assert response.headers["Content-Type"] == "application/json"
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_get_tutorial_check_content_type(auth_client, get_tut):
+    tut = get_tut["H14A23T2COMP1511"]
+    response = auth_client.get(f"api/v1/tutorials/{tut['id']}")
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/json"
 
 
-# def test_get_tutorial_check_response_structure(auth_client, tutorials_setup):
-#     tut = get_tut(tutorials_setup, "COMP1511")
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 200
-#     data = response.json
-#     assert "id" in data
-#     assert "name" in data
-#     assert "course_code" in data
-#     assert "userset" in data
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_get_tutorial_check_response_structure(auth_client, get_tut):
+    tut = get_tut["H14A23T2COMP1511"]
+    response = auth_client.get(f"api/v1/tutorials/{tut['id']}")
+    assert response.status_code == 200
+    data = response.json
+    assert "id" in data
+    assert "name" in data
+    assert "capacity" in data
+    assert "day" in data
+    assert "times" in data
+    assert "location" in data
 
 
-# def test_get_tutorial_check_response_data(auth_client, tutorials_setup):
-#     tut = get_tut(tutorials_setup, "COMP1511")
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 200
-#     data = response.json
-#     assert data["id"] == tut["id"]
-#     assert data["name"] == tut["name"]
-#     assert data["course_code"] == tut["course_code"]
-#     assert data["userset"] == tut["userset"]
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_get_tutorial_check_response_data(auth_client, get_tut):
+    tut = get_tut["H14A23T2COMP1511"]
+    response = auth_client.get(f"api/v1/tutorials/{tut['id']}")
+    assert response.status_code == 200
+    data = response.json
+    assert data["id"] == tut["id"]
+    assert data["name"] == tut["name"]
+    assert data["capacity"] == tut["capacity"]
+    assert data["day"] == tut["day"]
+    assert data["times"] == tut["times"]
+    assert data["location"] == tut["location"]
 
 
-# # GET request to /v1/tutorials
-# def test_get_all_tutorials_with_valid_tutorial_id(auth_client, tutorials_setup):
-#     response = auth_client.get("v1/tutorials")
-#     assert response.status_code == 200
+# GET request to /v1/tutorials
+def test_get_all_tutorials_with_valid_tutorial_id(auth_client):
+    response = auth_client.get("api/v1/tutorials")
+    assert response.status_code == 200
 
 
-# def test_get_all_tutorials_without_authentication(client):
-#     response = client.get("/v1/tutorials")
-#     assert response.status_code == 401
+def test_get_all_tutorials_without_authentication(client):
+    response = client.get("api/v1/tutorials")
+    assert response.status_code == 401
 
 
-# def test_get_all_tutorials_check_content_type(auth_client):
-#     response = auth_client.get("/v1/tutorials")
-#     assert response.status_code == 200
-#     assert response.headers["Content-Type"] == "application/json"
+def test_get_all_tutorials_check_content_type(auth_client):
+    response = auth_client.get("api/v1/tutorials")
+    assert response.status_code == 200
+    assert response.headers["Content-Type"] == "application/json"
 
 
-# def test_get_all_tutorials_check_response_structure(auth_client):
-#     response = auth_client.get("/v1/tutorials")
-#     assert response.status_code == 200
-#     assert isinstance(response.json, list)
-#     for tutorial in response.json:
-#         assert "id" in tutorial
-#         assert "name" in tutorial
-#         assert "course_code" in tutorial
-#         assert "userset" in tutorial
-#         # Add more assertions for other fields in the response
+def test_get_all_tutorials_check_response_structure(auth_client):
+    response = auth_client.get("api/v1/tutorials")
+    assert response.status_code == 200
+    assert isinstance(response.json, list)
+    for tutorial in response.json:
+        assert "id" in tutorial
+        assert "name" in tutorial
+        assert "capacity" in tutorial
+        assert "day" in tutorial
+        assert "times" in tutorial
+        assert "location" in tutorial
+        # Add more assertions for other fields in the response
 
 
-# def test_get_all_tutorials_check_response_data(auth_client, tutorials_setup):
-#     # Since all the users are only enrolled in 2 tutorials, COMP6080 lacks users
-#     # this fetchall should only contain 2 tutorials,
-#     # hence checking for authorization
+def test_get_all_tutorials_check_response_data(auth_client, courses_fetch):
+    # The user is currently enrolled in 6 tutorials, since these were created
+    # in the setup.
 
-#     response = auth_client.get("/v1/tutorials")
-#     assert response.status_code == 200
-#     assert len(response.json) == 2
-#     assert any(tut["name"] == "H14A" for tut in response.json)
-#     assert any(tut["course_code"] == "COMP1511" for tut in response.json)
-#     assert any(tut["course_code"] == "COMP2511" for tut in response.json)
-#     assert not any(tut["course_code"] == "COMP6080" for tut in response.json)
-#     # Add additional assertions if needed
-
-
-# # POST request to /v1/tutorials - course creation
-# def test_valid_tutorial_creation(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={
-#             "name": TUT_A_NAME,
-#             "course_code": COURSE_A_CODE,
-#             "userset": [],
-#         },
-#     )
-#     assert response.status_code == 201
+    comp1511 = courses_fetch["23T2COMP1511"]
+    comp2511 = courses_fetch["23T2COMP2511"]
+    comp6080 = courses_fetch["23T2COMP6080"]
+    response = auth_client.get("api/v1/tutorials")
+    assert response.status_code == 200
+    assert len(response.json) == 6
+    for tut in response.json:
+        assert tut["name"] == "H14A" or tut["name"] == "W11B"
+        assert (
+            tut["course_id"] == comp1511["id"]
+            or tut["course_id"] == comp2511["id"]
+            or tut["course_id"] == comp6080["id"]
+        )
 
 
-# def test_invalid_tutorial_creation_user_in_another_tut(auth_client, tutorials_setup):
-#     tut = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={
-#             "name": TUT_B_NAME,
-#             "course_code": COURSE_A_CODE,
-#             "userset": [user["handle"] for user in tut["userset"]],
-#         },
-#     )
-#     assert response.status_code == 400
+# POST request to /v1/tutorials/crs/ - course creation
+def test_valid_tutorial_creation(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "name": "C10B",
+            "capacity": 20,
+            "day": "Friday",
+            "times": "3pm-5pm",
+            "location": "Physics Theatre K14",
+        },
+    )
+    assert response.status_code == 201
+    tuts = auth_client.get("api/v1/tutorials")
+    assert len(tuts.json) == 7
+    assert any(tut["name"] == "C10B" for tut in tuts.json)
 
 
-# def test_invalid_tutorial_creation_duplicate_name(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={"name": TUT_A_NAME, "course_code": COURSE_A_CODE, "userset": []},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_creation_duplicate_name(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "name": "C10B",
+            "capacity": 15,
+            "day": "Monday",
+            "times": "10am-12pm",
+            "location": "Flute Lab J17",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_creation_bad_course_code(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={
-#             "name": TUT_A_NAME,
-#             "course_code": "ABCD1234",
-#             "userset": [],
-#         },
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_creation_no_name(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "capacity": 30,
+            "day": "Wednesday",
+            "times": "2pm-4pm",
+            "location": "Oboe Lab J17",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_creation_no_name(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={"course_code": COURSE_A_CODE, "userset": []},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_creation_no_capacity(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "name": "A01B",
+            "day": "Wednesday",
+            "times": "2pm-4pm",
+            "location": "Oboe Lab J17",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_creation_no_course_code(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={"name": TUT_A_NAME, "userset": []},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_creation_no_datetime(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "name": "A01B",
+            "capacity": 30,
+            "location": "Oboe Lab J17",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_creation_no_userset(auth_client, tutorials_setup):
-#     response = auth_client.post(
-#         "v1/tutorials",
-#         json={"name": TUT_A_NAME, "course_code": COURSE_A_CODE},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_creation_no_location(auth_client, courses_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/crs/{comp1511['id']}",
+        json={
+            "name": "A01B",
+            "capacity": 30,
+            "day": "Wednesday",
+            "times": "2pm-4pm",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_fetch_bad_tut_id(auth_client, tutorials_setup):
-#     response = auth_client.get("v1/tutorials/9999")
-#     assert response.status_code == 400
+def test_invalid_tutorial_fetch_bad_tut_id(auth_client):
+    response = auth_client.get("api/v1/tutorials/9999")
+    assert response.status_code == 400
 
 
-# def test_valid_tutorial_update(auth_client, tutorials_setup):
-#     response = auth_client.get("v1/tutorials")
-#     tut = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tut['id']}",
-#         json={"name": TUT_B_NAME, "userset": []},
-#     )
-#     assert response.status_code == 200
-#     response = auth_client.get(f"v1/tutorials/{tut['id']}")
-#     assert response.json["name"] == TUT_B_NAME
-#     assert response.json["course_code"] == COURSE_A_CODE
+def test_valid_tutorial_update(auth_client, tutorials_fetch):
+    new_tut = tutorials_fetch["C10BCOMP1511"]
+
+    response = auth_client.put(
+        f"api/v1/tutorials/{new_tut['id']}",
+        json={
+            "name": "Y99Z",
+            "capacity": 40,
+        },
+    )
+    assert response.status_code == 200
+    response = auth_client.get(f"api/v1/tutorials/{new_tut['id']}")
+    assert response.json["name"] == "Y99Z"
+    assert response.json["capacity"] == 40
+    assert response.json["day"] == "Friday"
+    assert response.json["times"] == "3pm-5pm"
+    assert response.json["location"] == "Physics Theatre K14"
 
 
-# def test_invalid_tutorial_update_bad_tut_id(auth_client, tutorials_setup):
-#     response = auth_client.put(
-#         "v1/tutorials/9999",
-#         json={"name": TUT_B_NAME, "course_code": COURSE_A_CODE, "userset": []},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_update_bad_tut_id(auth_client):
+    response = auth_client.put(
+        "api/v1/tutorials/9999",
+        json={
+            "name": "P10T",
+            "capacity": 30,
+            "day": "Monday",
+            "times": "9am-11am",
+            "location": "Sitar Lab J17",
+        },
+    )
+    assert response.status_code == 400
 
 
-# def test_valid_tutorial_join(auth_client, courses_setup):
-#     auth_client.post(
-#         "v1/tutorials",
-#         json={"name": TUT_A_NAME, "course_code": COURSE_A_CODE, "userset": []},
-#     )
-#     tut_id = auth_client.get("v1/tutorials").json[0]["id"]
-#     course = next(
-#         (course for course in courses_setup if course["code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tut_id}/join",
-#         json={"userset": [user["handle"] for user in course["userset"]]},
-#     )
-#     assert response.status_code == 200
-#     response = auth_client.get(f"v1/tutorials/{tut_id}")
-#     assert len(response.json["userset"]) == 4
+def test_valid_tutorial_join(auth_client, users_fetch, courses_fetch, tutorials_fetch):
+    # Need to make Alex join 23T2COMP1511 course first
+    # Then auth_client can enrol Alex into the tutorial
+    comp1511 = courses_fetch["23T2COMP1511"]
+    tut = tutorials_fetch["Y99ZCOMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.post(
+        f"api/v1/courses/{comp1511['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 201
+
+    response = auth_client.post(
+        f"api/v1/tutorials/{tut['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 201
+
+    response = auth_client.get(f"api/v1/tutorials/{tut['id']}/members")
+    assert response.status_code == 200
+    assert len(response.json["members"]) == 2
+    assert any(user["email"] == "alex@email.com" for user in response.json["members"])
 
 
-# def test_invalid_tutorial_join_bad_tut_id(auth_client, tutorials_setup):
-#     response = auth_client.put(
-#         "v1/tutorials/9999/join",
-#         json={"userset": []},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_join_bad_tut_id(auth_client, users_fetch):
+    userAlex = users_fetch["alex@email.com"]
+    response = auth_client.post(
+        "api/v1/tutorials/9999/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_join_nonexistent_user(auth_client, tutorials_setup):
-#     tut = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tut['id']}/join",
-#         json={"userset": ["nonexistent_user"]},  # user isn't in the database
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_join_nonexistent_user(auth_client, tutorials_fetch):
+    tut = tutorials_fetch["Y99ZCOMP1511"]
+    response = auth_client.post(
+        f"api/v1/tutorials/{tut['id']}/enroll",
+        json={"members": ["nonexistent_user"]},  # user isn't in the database
+    )
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_join_unenrolled_user(auth_client, tutorials_setup):
-#     tutA = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     tutC = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_C_CODE),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tutC['id']}/join",
-#         json={"userset": [user["handle"] for user in tutA["userset"]]},
-#     )
-#     # Users in tutA aren't enrolled in tutC's course
-#     assert response.status_code == 400
+@pytest.mark.parametrize("course", ["23T2COMP2511"])
+def test_invalid_tutorial_join_unenrolled_user(auth_client, users_fetch, get_tut):
+    comp2511Tut = get_tut["H14A23T2COMP2511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.post(
+        f"api/v1/tutorials/{comp2511Tut['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    # Alex in tut Y99ZCOMP1511 isn't enrolled in tut H14A's COMP2511 course
+    assert response.status_code == 404
 
 
-# def test_invalid_tutorial_join_duplicate_user(auth_client, tutorials_setup):
-#     tut = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tut['id']}/join",
-#         json={"userset": [user["handle"] for user in tut["userset"]]},
-#     )
-#     assert response.status_code == 400
+def test_invalid_tutorial_join_duplicate_user(
+    auth_client, users_fetch, tutorials_fetch
+):
+    new_tut = tutorials_fetch["Y99ZCOMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.post(
+        f"api/v1/tutorials/{new_tut['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    # Alex joins the H14ACOMP1511 tutorial again
+    assert response.status_code == 400
 
 
-# def test_invalid_tutorial_join_user_in_another_tut(auth_client, tutorials_setup):
-#     tutA = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     auth_client.post(
-#         "v1/tutorials",
-#         json={
-#             "name": TUT_B_NAME,
-#             "course_code": COURSE_A_CODE,
-#             "userset": [],
-#         },
-#     )
-#     tutB = next(
-#         (
-#             tut
-#             for tut in tutorials_setup
-#             if (tut["course_code"] == COURSE_A_CODE and tut["name"] == TUT_B_NAME)
-#         ),
-#         None,
-#     )
-#     response = auth_client.put(
-#         f"v1/tutorials/{tutB['id']}/join",
-#         json={"userset": [user["handle"] for user in tutA["userset"]]},
-#     )
-#     # Students already in a tutorial for a course
-#     # cannot join another tutorial for the same course
-#     assert response.status_code == 400
+def test_invalid_tutorial_join_user_in_another_tut(
+    auth_client, users_fetch, tutorials_fetch
+):
+    second_tut = tutorials_fetch["H14ACOMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.post(
+        f"api/v1/tutorials/{second_tut['id']}/enroll",
+        json={"members": [userAlex["handle"]]},
+    )
+    # Students already in a tutorial for a course
+    # cannot join another tutorial for the same course
+    assert response.status_code == 400
 
 
-# def test_valid_delete_tutorial(auth_client, tutorials_setup):
-#     tut = next(
-#         (tut for tut in tutorials_setup if tut["course_code"] == COURSE_A_CODE),
-#         None,
-#     )
-#     assert len(auth_client.get("v1/tutorials").json) == 3
-#     response = auth_client.delete(f"v1/tutorials/{tut['id']}")
-#     assert response.status_code == 200
-#     assert len(auth_client.get("v1/tutorials").json) == 2
+def test_valid_tutorial_kick(auth_client, users_fetch, tutorials_fetch):
+    new_tut = tutorials_fetch["Y99ZCOMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.delete(
+        f"api/v1/tutorials/{new_tut['id']}/kick",
+        json={"members": [userAlex["handle"]]},
+    )
+    assert response.status_code == 200
+
+    response = auth_client.get(f"api/v1/tutorials/{new_tut['id']}/members")
+    assert response.status_code == 200
+    assert len(response.json["members"]) == 1
+    assert all(user["email"] != "alex@email.com" for user in response.json["members"])
+
+
+def test_invalid_tutorial_kick_not_in_tutorial(
+    auth_client, users_fetch, tutorials_fetch
+):
+    new_tut = tutorials_fetch["Y99ZCOMP1511"]
+    userAlex = users_fetch["alex@email.com"]
+
+    response = auth_client.delete(
+        f"api/v1/tutorials/{new_tut['id']}/kick",
+        json={"members": [userAlex["handle"]]},
+    )
+    # Error leaving since Alex is not in the tutorial anymore
+    assert response.status_code == 400
+
+
+def test_valid_delete_tutorial(auth_client, courses_fetch, tutorials_fetch):
+    comp1511 = courses_fetch["23T2COMP1511"]
+    new_tut = tutorials_fetch["Y99ZCOMP1511"]
+
+    response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}").json
+    assert len(response) == 3
+    assert any(tut["name"] == "Y99Z" for tut in response)
+    response = auth_client.delete(f"api/v1/tutorials/{new_tut['id']}")
+    assert response.status_code == 200
+    response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}").json
+    assert len(response) == 2
+    assert all(tut["name"] != "Y99Z" for tut in response)

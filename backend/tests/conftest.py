@@ -35,10 +35,12 @@ def client(test_app):
 @pytest.fixture(scope="function")
 def test_db(test_app):
     with test_app.app_context():
-        db.create_all()
-        yield db
         db.session.remove()
         db.drop_all()
+        db.create_all()
+        yield db
+        # db.session.remove()
+        # db.drop_all()
 
 
 # TODO: The logic behind these setup fixtures is to provide convenience
@@ -121,25 +123,27 @@ def courses_fetch(auth_client):
     return {f"{course['term']}{course['code']}": course for course in response.json}
 
 
-@pytest.fixture(scope="module", autouse=True)
-def roles_setup(auth_client):
-    response = auth_client.get("api/v1/courses")
-    # Creates a default role Student for all courses
-    for course in response.json:
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Student"},
-        )
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Tutor"},
-        )
-        auth_client.post(
-            f"api/v1/roles/course/{course['id']}",
-            json={"name": "Admin"},
-        )
+# Remove roles setup since Courses now automatically make roles upon creation
 
-    return courses_setup
+# @pytest.fixture(scope="module", autouse=True)
+# def roles_setup(auth_client):
+#     response = auth_client.get("api/v1/courses")
+#     # Creates a default role Student for all courses
+#     for course in response.json:
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Student"},
+#         )
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Tutor"},
+#         )
+#         auth_client.post(
+#             f"api/v1/roles/course/{course['id']}",
+#             json={"name": "Admin"},
+#         )
+
+#     return courses_setup
 
 
 @pytest.fixture(scope="function")
@@ -150,16 +154,21 @@ def roles_fetch(auth_client, courses_fetch):
 
 
 @pytest.fixture(scope="module", autouse=True)
-def tutorials_setup(auth_client, courses_setup):
+def tutorials_setup(auth_client, courses_setup, request):
+    if "no_tutorials_setup" in request.keywords:
+        return
+
     courses = auth_client.get("api/v1/courses").json
-    for course in courses:
+    locations = ["Quadrangle G040", "Lawrence West 4034", "Electrical Engineering G10"]
+    for course, location in zip(courses, locations):
         auth_client.post(
             f"api/v1/tutorials/crs/{course['id']}",
             json={
                 "name": "H14A",
                 "capacity": 30,
-                "datetime": "Thursday 2pm-4pm",
-                "location": "Quadrangle G040",
+                "day": "Thursday",
+                "times": "2pm-4pm",
+                "location": location,
             },
         )
         auth_client.post(
@@ -167,8 +176,9 @@ def tutorials_setup(auth_client, courses_setup):
             json={
                 "name": "W11B",
                 "capacity": 20,
-                "datetime": "Wednesday 11am-1pm",
-                "location": "Quadrangle G040",
+                "day": "Wednesday",
+                "times": "11am-1pm",
+                "location": location,
             },
         )
 
@@ -178,6 +188,13 @@ def tutorials_fetch(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
     response = auth_client.get(f"api/v1/tutorials/crs/{comp1511['id']}")
     return {f"{tut['name']}COMP1511": tut for tut in response.json}
+
+
+@pytest.fixture(scope="function")
+def get_tut(auth_client, courses_fetch, course: str):
+    course_obj = courses_fetch[course]
+    response = auth_client.get(f"api/v1/tutorials/crs/{course_obj['id']}")
+    return {f"{tut['name']}{course}": tut for tut in response.json}
 
 
 @pytest.fixture()
@@ -197,6 +214,90 @@ def groups_setup(auth_client, tutorial_setup):
         auth_client.post("api/v1/groups", json=group_form)
     response = auth_client.get("api/v1/groups")
     return response.json
+
+
+@pytest.fixture(scope="module", autouse=True)
+def deliverables_setup(auth_client, tutorials_setup, request):
+    if "no_deliverables_setup" in request.keywords:
+        return
+
+    courses = auth_client.get("api/v1/courses").json
+
+    for course in courses:
+        auth_client.post(
+            f"api/v1/deliverables/crs/{course['id']}",
+            json={
+                "name": "Sandbox Group Assignment",
+                "deliverable_type": "Group",
+                "limit": "10 Minutes",
+                "weighting": 20,
+                "deadline": "Monday 30 April 11:59pm",
+                "description": "lorem ipsum dolor amet sit.",
+            },
+        )
+        auth_client.post(
+            f"api/v1/deliverables/crs/{course['id']}",
+            json={
+                "name": "Sandbox Group Assignment 2",
+                "deliverable_type": "Group",
+                "limit": "10 Minutes",
+                "weighting": 20,
+                "deadline": "Friday 30 May 11:59pm",
+                "description": "lorem ipsum dolor amet sit.",
+            },
+        )
+
+
+@pytest.fixture(scope="function")
+def deliverable_instances_fetch(auth_client, tutorials_fetch):
+    tut = tutorials_fetch["H14ACOMP1511"]
+    response = auth_client.get(f"api/v1/deliverables/tut/{tut['id']}")
+    return {f"{dlv['name']}H14ACOMP1511": dlv for dlv in response.json}
+
+
+@pytest.fixture(scope="module", autouse=True)
+def projects_setup(auth_client, deliverables_setup, request):
+    if "no_projects_setup" in request.keywords:
+        return
+
+    tutorials = auth_client.get("api/v1/tutorials").json
+
+    for tut in tutorials:
+        instances = auth_client.get(f"api/v1/deliverables/tut/{tut['id']}").json
+
+        for instance in instances:
+            auth_client.post(
+                "api/v1/projects",
+                json={
+                    "course_id": instance["course_id"],
+                    "tutorial_id": instance["tutorial_id"],
+                    "deliverable_instance_id": instance["id"],
+                    "name": "Test Project 1",
+                },
+            )
+            auth_client.post(
+                "api/v1/projects",
+                json={
+                    "course_id": instance["course_id"],
+                    "tutorial_id": instance["tutorial_id"],
+                    "deliverable_instance_id": instance["id"],
+                    "name": "Test Project 2",
+                },
+            )
+
+
+@pytest.fixture(scope="function")
+def projects_fetch(auth_client, deliverable_instances_fetch):
+    instance = deliverable_instances_fetch["Sandbox Group AssignmentH14ACOMP1511"]
+    response = auth_client.get(f"api/v1/projects/instance/{instance['id']}")
+    return {f"{prj['name']}H14ACOMP1511": prj for prj in response.json}
+
+
+@pytest.fixture(scope="function")
+def tasks_fetch(auth_client, projects_fetch):
+    project = projects_fetch["Test Project 1H14ACOMP1511"]
+    response = auth_client.get(f"api/v1/tasks/prj/{project['id']}")
+    return {f"{task['name']}H14ACOMP1511": task for task in response.json}
 
 
 @pytest.fixture(scope="module")

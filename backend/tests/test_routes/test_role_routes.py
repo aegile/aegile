@@ -1,6 +1,13 @@
 import pytest
 
 
+pytestmark = [
+    pytest.mark.no_tutorials_setup,
+    pytest.mark.no_deliverables_setup,
+    pytest.mark.no_projects_setup,
+]
+
+
 # GET Requests - all roles within a course
 def test_get_all_roles_with_valid_course_code(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
@@ -8,9 +15,9 @@ def test_get_all_roles_with_valid_course_code(auth_client, courses_fetch):
     assert response.status_code == 200
     print(response.json)
     assert len(response.json) == 3
-    assert any(role["name"] == "Student" for role in response.json)
-    assert any(role["name"] == "Tutor" for role in response.json)
-    assert any(role["name"] == "Admin" for role in response.json)
+    assert any(role["name"] == "student" for role in response.json)
+    assert any(role["name"] == "tutor" for role in response.json)
+    assert any(role["name"] == "admin" for role in response.json)
 
 
 def test_get_all_roles_with_non_course_creator(non_creator_client, courses_fetch):
@@ -25,12 +32,12 @@ def test_get_role_with_valid_role_id(auth_client, courses_fetch):
     response = auth_client.get(f"api/v1/roles/course/{comp1511['id']}")
     assert response.status_code == 200
     tutor_role = next(
-        (role for role in response.json if role["name"] == "Tutor"),
+        (role for role in response.json if role["name"] == "tutor"),
         None,
     )
     response = auth_client.get(f"api/v1/roles/{tutor_role['id']}")
     assert response.status_code == 200
-    assert response.json["name"] == "Tutor"
+    assert response.json["name"] == "tutor"
     assert response.json["permissions"]["can_manage_roles"] == 0
     assert response.json["permissions"]["can_access_tutorials"] == 0
 
@@ -116,7 +123,7 @@ def test_update_role_with_valid_role_id(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
     response = auth_client.get(f"api/v1/roles/course/{comp1511['id']}")
     tutor_role = next(
-        (role for role in response.json if role["name"] == "Tutor"),
+        (role for role in response.json if role["name"] == "tutor"),
         None,
     )
     response = auth_client.put(
@@ -131,7 +138,7 @@ def test_update_role_with_valid_role_id(auth_client, courses_fetch):
     response = auth_client.get(f"api/v1/roles/{tutor_role['id']}")
 
     assert response.status_code == 200
-    assert response.json["name"] == "Tutor"
+    assert response.json["name"] == "tutor"
     assert response.json["color"] == "#ffffff"
     assert response.json["permissions"]["can_manage_roles"] == 1
     assert response.json["permissions"]["can_access_tutorials"] == 0
@@ -143,7 +150,7 @@ def test_assign_role_to_unenrolled_user(
 ):
     comp1511 = courses_fetch["23T2COMP1511"]
     userAlex = users_fetch["alex@email.com"]
-    tutor_role = roles_fetch["Tutor"]
+    tutor_role = roles_fetch["tutor"]
     response = auth_client.get(f"api/v1/roles/course/{comp1511['id']}")
     response = auth_client.put(
         f"api/v1/roles/{tutor_role['id']}/user/{userAlex['id']}/assign"
@@ -156,7 +163,7 @@ def test_assign_role_with_enrolled_but_unauthorized_user(
 ):
     comp1511 = courses_fetch["23T2COMP1511"]
     userAlex = users_fetch["alex@email.com"]
-    tutor_role = roles_fetch["Tutor"]
+    tutor_role = roles_fetch["tutor"]
     auth_client.post(
         f"api/v1/courses/{comp1511['id']}/enroll",
         json={
@@ -175,7 +182,7 @@ def test_assign_role_to_enrolled_user(
 ):
     comp1511 = courses_fetch["23T2COMP1511"]
     userAlex = users_fetch["alex@email.com"]
-    tutor_role = roles_fetch["Tutor"]
+    tutor_role = roles_fetch["tutor"]
 
     # Note the can_manage_roles permission was enabled in the prev test
     response = auth_client.put(
@@ -191,7 +198,7 @@ def test_unassign_role_from_enrolled_user(
 ):
     comp1511 = courses_fetch["23T2COMP1511"]
     userAlex = users_fetch["alex@email.com"]
-    tutor_role = roles_fetch["Tutor"]
+    tutor_role = roles_fetch["tutor"]
 
     response = auth_client.put(
         f"api/v1/roles/{tutor_role['id']}/user/{userAlex['id']}/unassign"
@@ -205,7 +212,7 @@ def test_delete_role_with_valid_role_id(
     auth_client, non_creator_client, courses_fetch, roles_fetch
 ):
     comp1511 = courses_fetch["23T2COMP1511"]
-    tutor_role = roles_fetch["Tutor"]
+    tutor_role = roles_fetch["tutor"]
     response = auth_client.delete(f"api/v1/roles/{tutor_role['id']}")
     assert response.status_code == 200
     response = non_creator_client.get(f"api/v1/roles/course/{comp1511['id']}")

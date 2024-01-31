@@ -1,6 +1,13 @@
 import pytest
 
 
+pytestmark = [
+    pytest.mark.no_tutorials_setup,
+    pytest.mark.no_deliverables_setup,
+    pytest.mark.no_projects_setup,
+]
+
+
 # GET Requests - course specific
 def test_get_course_with_valid_course_id(auth_client, courses_fetch):
     comp1511 = courses_fetch["23T2COMP1511"]
@@ -106,9 +113,18 @@ def test_create_course_with_existing_course_offering(auth_client):
     assert response.status_code == 400
 
 
-@pytest.mark.xfail(reason="SQLite doesn't support character limits")
+# @pytest.mark.xfail(reason="SQLite doesn't support character limits")
 def test_create_course_with_invalid_course_code(auth_client):
-    pass
+    response = auth_client.post(
+        "api/v1/courses",
+        json={
+            "term": "23T2",
+            "code": "COMP15111",
+            "name": "Programming Fundamentals",
+            "description": "",
+        },
+    )
+    assert response.status_code == 400
 
 
 def test_create_course_without_course_code(auth_client):
@@ -223,7 +239,7 @@ def test_course_enroll_users_to_course_with_valid_input(
     assert response.status_code == 201
     updated_course = auth_client.get(f"api/v1/courses/{comp1511['id']}/members")
     assert updated_course.status_code == 200
-    assert len(updated_course.json["members"]) == 2
+    assert len(updated_course.json) == 2
 
 
 def test_course_kick_with_valid_input(auth_client, users_fetch, courses_fetch):
@@ -240,7 +256,7 @@ def test_course_kick_with_valid_input(auth_client, users_fetch, courses_fetch):
     updated_course = auth_client.get(f"api/v1/courses/{comp1511['id']}/members")
     assert updated_course.status_code == 200
 
-    members = updated_course.json["members"]
+    members = updated_course.json
     assert len(members) == 1
     assert any(user["handle"] != userAlex["handle"] for user in members)
     assert any(user["handle"] == creator["handle"] for user in members)

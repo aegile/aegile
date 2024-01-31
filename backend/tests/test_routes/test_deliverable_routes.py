@@ -1,5 +1,7 @@
 import pytest
 
+pytestmark = [pytest.mark.no_deliverables_setup, pytest.mark.no_projects_setup]
+
 
 def test_create_deliverable_with_invalid_course_id(auth_client):
     res = auth_client.post(
@@ -96,9 +98,10 @@ def test_create_deliverable_with_valid_input(auth_client, courses_fetch):
     assert res.status_code == 201
 
 
-def test_fetch_deliverable_instances_auto_create(auth_client, tutorials_fetch):
-    for tut_code in ["H14ACOMP1511", "W11BCOMP1511"]:
-        tut = tutorials_fetch[tut_code]
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_fetch_deliverable_instances_auto_create(auth_client, get_tut):
+    for tut_code in ["H14A23T2COMP1511", "W11B23T2COMP1511"]:
+        tut = get_tut[tut_code]
         res = auth_client.get(f"api/v1/deliverables/tut/{tut['id']}")
         assert len(res.json) == 1
         assert res.json[0]["name"] == "Sandbox Group Assignment"
@@ -156,9 +159,10 @@ def test_update_deliverable_with_valid_input(auth_client, courses_fetch):
     assert res.status_code == 200
 
 
-def test_fetch_deliverable_instances_post_update(auth_client, tutorials_fetch):
-    for tut_code in ["H14ACOMP1511", "W11BCOMP1511"]:
-        tut = tutorials_fetch[tut_code]
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_fetch_deliverable_instances_post_update(auth_client, get_tut):
+    for tut_code in ["H14A23T2COMP1511", "W11B23T2COMP1511"]:
+        tut = get_tut[tut_code]
         res = auth_client.get(f"api/v1/deliverables/tut/{tut['id']}")
         assert len(res.json) == 1
         assert res.json[0]["name"] == "SANDBOX Group Assignment"
@@ -177,23 +181,23 @@ def test_create_tutorial_with_existing_deliverables(auth_client, courses_fetch):
         json={
             "name": "F09A",
             "capacity": 20,
-            "datetime": "Friday 9am-11am",
+            "day": "Friday",
+            "times": "9am-11am",
             "location": "Quadrangle G041",
         },
     )
-    tut_id = res.json["id"]
+    # DON'T NEED TO CALL THIS ROUTE ANYMORE, THE TUTORIAL ROUTE HANDLES IT
+    # tut_id = res.json["id"]
     # The following route must be called when a tutorial is created.
     # It syncs the course's current deliverables with the tutorial.
-    res = auth_client.post(f"api/v1/deliverables/tut/{tut_id}")
+    # res = auth_client.post(f"api/v1/deliverables/tut/{tut_id}")
     assert res.status_code == 201
 
 
-def test_fetch_deliverable_instances_auto_create_in_new_tut(
-    auth_client, tutorials_fetch
-):
-    print(tutorials_fetch)
-    for tut_code in ["H14ACOMP1511", "W11BCOMP1511", "F09ACOMP1511"]:
-        tut = tutorials_fetch[tut_code]
+@pytest.mark.parametrize("course", ["23T2COMP1511"])
+def test_fetch_deliverable_instances_auto_create_in_new_tut(auth_client, get_tut):
+    for tut_code in ["H14A23T2COMP1511", "W11B23T2COMP1511", "F09A23T2COMP1511"]:
+        tut = get_tut[tut_code]
         res = auth_client.get(f"api/v1/deliverables/tut/{tut['id']}")
         print(res.json)
         assert len(res.json) == 1

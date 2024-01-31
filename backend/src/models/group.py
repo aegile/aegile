@@ -25,6 +25,10 @@ class Group(db.Model):
         )
         self.name = get_with_default(course_data, "name", self.name)
 
+    @property
+    def members(self):
+        return self.userset.members
+
     def enroll_users(self, users: list[User]):
         self.userset.members = users
 

@@ -1,4 +1,4 @@
-from sqlalchemy.exc import NoResultFound, IntegrityError
+from sqlalchemy.exc import NoResultFound, IntegrityError, DataError
 
 from ..extensions import db
 from ..error import InputError, AccessError, NotFoundError
@@ -16,6 +16,12 @@ def fetch_one(model, filter):
         msg = f"{model.__name__} {filter_str} was not found."
         trigger_event("event_db_query_not_found", msg)
         raise InputError(f"{msg}") from exc
+    except DataError as exc:
+        filter_str = ", ".join(f"{k}:'{v}'" for k, v in filter.items())
+        msg = f"{filter_str} incorrect filter type for {model.__name__}."
+        trigger_event("event_db_query_incorrect_filter_type", msg)
+        db.session.rollback()
+        raise InputError(f"{msg}") from exc
 
 
 def fetch_all(model, filter=None):
@@ -29,6 +35,12 @@ def fetch_all(model, filter=None):
     except NoResultFound as exc:
         msg = f"{model.__name__}s not found."
         trigger_event("event_db_query_not_found", msg)
+        raise InputError(f"{msg}") from exc
+    except DataError as exc:
+        filter_str = ", ".join(f"{k}:'{v}'" for k, v in filter.items())
+        msg = f"{filter_str} incorrect filter type for {model.__name__}."
+        trigger_event("event_db_query_incorrect_filter_type", msg)
+        db.session.rollback()
         raise InputError(f"{msg}") from exc
 
 
@@ -46,6 +58,9 @@ def add_db_object(model, object, error_field):
             ) from err
 
         raise InputError(f"{model.__name__} {error_field} already exists.") from err
+    except DataError as err:
+        db.session.rollback()
+        raise InputError(f"{model.__name__} contains an invalid data type.") from err
 
 
 def update_db_object(model, error_field):
@@ -55,6 +70,9 @@ def update_db_object(model, error_field):
     except IntegrityError as exc:
         db.session.rollback()
         raise InputError(f"{model.__name__} {error_field} already exists.") from exc
+    except DataError as exc:
+        db.session.rollback()
+        raise InputError(f"{model.__name__} contains an invalid data type.") from exc
 
 
 # Legacy

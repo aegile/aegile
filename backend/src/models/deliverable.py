@@ -51,9 +51,9 @@ class DeliverableInstance(db.Model):
     deliverable_id = db.Column(
         db.Integer, db.ForeignKey("deliverable.id"), nullable=False
     )
-    # projects = db.relationship(
-    #     "Project", backref="deliverable_instance", cascade="all, delete-orphan"
-    # )
+    projects = db.relationship(
+        "Project", backref="deliverable_instance", cascade="all, delete-orphan"
+    )
 
     def __init__(self, **kwargs):
         required_fields = ["tutorial_id", "course_id", "deliverable_id"]
