@@ -8,6 +8,7 @@ class Task(db.Model):
     name = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey("project.id"), nullable=False)
     creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    parent_task_id = db.Column(db.Integer, db.ForeignKey("task.id"))
     status = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100))
     deadline = db.Column(db.String(10))

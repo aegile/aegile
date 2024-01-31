@@ -1,11 +1,10 @@
-from flask import Blueprint, request
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, current_user
 
 from ..extensions import db
 from ..models.project import Project
 from ..models.task import Task
-from ..models.user import User, UserSet
+from ..models.user import User
 from ..api_models.task_models import (
     task_fetch_all_output,
     task_fetch_one_output,
@@ -81,6 +80,11 @@ class TaskSpecific(Resource):
     def delete(self, task_id: str):
         task: Task = fetch_one(Task, {"id": task_id})
         check_task_edit_access(task, current_user, task.project.course_id)
+        # Need to delete subtasks first
+        subtasks: list[Task] = fetch_all(Task, {"parent_task_id": task_id})
+        for subtask in subtasks:
+            db.session.delete(subtask)
+            db.session.commit()
         db.session.delete(task)
         db.session.commit()
         return {}, 200
@@ -123,3 +127,35 @@ class TaskProjectSpecific(Resource):
         # Only project members and tutors can view the project tasks
         check_task_view_access(project, current_user)
         return project.tasks
+
+
+@tasks_ns.route("/<string:task_id>/subtasks")
+class TaskSubtasks(Resource):
+    method_decorators = [jwt_required()]
+
+    @tasks_ns.expect(task_creation_input)
+    def post(self, task_id: str):
+        task: Task = fetch_one(Task, {"id": task_id})
+        # Only the task creator or admins can create subtasks
+        check_task_edit_access(task, current_user, task.project.course_id)
+        new_subtask = Task(
+            name=tasks_ns.payload["name"],
+            project_id=tasks_ns.payload["project_id"],
+            creator=current_user,
+            status=tasks_ns.payload["status"],
+            parent_task_id=task_id,
+            description=tasks_ns.payload.get("description"),
+            deadline=tasks_ns.payload.get("deadline"),
+            weighting=tasks_ns.payload.get("weighting"),
+            priority=tasks_ns.payload.get("priority"),
+            attachment=tasks_ns.payload.get("attachment"),
+        )
+        add_db_object(Task, new_subtask, new_subtask.name)
+        return {}, 201
+
+    @tasks_ns.marshal_list_with(task_fetch_all_output)
+    def get(self, task_id: str):
+        task: Task = fetch_one(Task, {"id": task_id})
+        check_task_view_access(task.project, current_user)
+        subtasks: list[Task] = fetch_all(Task, {"parent_task_id": task_id})
+        return subtasks
