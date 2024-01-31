@@ -36,7 +36,7 @@ def test_create_task_with_unauthorized_user(
 ):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = non_creator_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 1",
@@ -49,7 +49,7 @@ def test_create_task_with_unauthorized_user(
 def test_create_task_with_extra_fields(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 1",
@@ -63,7 +63,7 @@ def test_create_task_with_extra_fields(auth_client, projects_fetch):
 def test_create_task_with_missing_required_fields(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 1",
@@ -75,7 +75,7 @@ def test_create_task_with_missing_required_fields(auth_client, projects_fetch):
 def test_create_task_with_incorrect_field_types(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": f"{project['id']}",
             "name": "Task 1",
@@ -88,7 +88,7 @@ def test_create_task_with_incorrect_field_types(auth_client, projects_fetch):
 def test_create_task_with_invalid_status(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": f"{project['id']}",
             "name": "Task 1",
@@ -102,7 +102,7 @@ def test_create_task_with_invalid_status(auth_client, projects_fetch):
 def test_create_task_with_valid_fields(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 1",
@@ -115,7 +115,7 @@ def test_create_task_with_valid_fields(auth_client, projects_fetch):
 def test_create_task_with_optional_fields(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 2",
@@ -133,7 +133,7 @@ def test_create_task_with_optional_fields(auth_client, projects_fetch):
 def test_create_task_with_invalid_priority(auth_client, projects_fetch):
     project = projects_fetch["Test Project 1H14ACOMP1511"]
     res = auth_client.post(
-        f"api/v1/tasks",
+        "api/v1/tasks",
         json={
             "project_id": project["id"],
             "name": "Task 3",
@@ -360,6 +360,84 @@ def test_fetch_new_task_assignees(auth_client, tasks_fetch):
     assert any(user["last_name"] == "Xu" for user in res.json["members"])
     assert any(user["handle"] == "alex" for user in res.json["members"])
     assert any(user["email"] == "alex@email.com" for user in res.json["members"])
+
+
+def test_create_subtask_by_unauthorized_user(non_creator_client, tasks_fetch):
+    task = tasks_fetch["Changed Task 1H14ACOMP1511"]
+    res = non_creator_client.post(
+        f"api/v1/tasks/{task['id']}/subtasks",
+        json={
+            "project_id": task["project_id"],
+            "name": "Subtask 1",
+            "status": "Not Started",
+        },
+    )
+    # Only task creator and admins can create subtasks
+    assert res.status_code == 403
+
+
+def test_create_valid_subtask(auth_client, tasks_fetch):
+    task = tasks_fetch["Changed Task 1H14ACOMP1511"]
+    res = auth_client.post(
+        f"api/v1/tasks/{task['id']}/subtasks",
+        json={
+            "project_id": task["project_id"],
+            "name": "Subtask 1",
+            "status": "Not Started",
+        },
+    )
+    assert res.status_code == 201
+
+
+def test_fetch_task_subtasks(auth_client, tasks_fetch):
+    task = tasks_fetch["Changed Task 1H14ACOMP1511"]
+    res = auth_client.get(f"api/v1/tasks/{task['id']}/subtasks")
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+    assert any(subtask["name"] == "Subtask 1" for subtask in res.json)
+    assert any(subtask["status"] == "Not Started" for subtask in res.json)
+    assert any(subtask["parent_task_id"] == task["id"] for subtask in res.json)
+    assert any(subtask["description"] is None for subtask in res.json)
+
+
+def test_edit_subtask_using_task_specific_route(auth_client, tasks_fetch):
+    subtask = tasks_fetch["Subtask 1H14ACOMP1511"]
+    # Still using task specific route to edit the subtask
+    res = auth_client.put(
+        f"api/v1/tasks/{subtask['id']}",
+        json={
+            "status": "In Progress",
+            "deadline": "01/01/2024",
+            "weighting": 5,
+        },
+    )
+    assert res.status_code == 200
+
+
+def test_fetch_subtask_using_task_specific_route(auth_client, tasks_fetch):
+    subtask = tasks_fetch["Subtask 1H14ACOMP1511"]
+    # Still using task specific route to fetch the subtask
+    res = auth_client.get(f"api/v1/tasks/{subtask['id']}")
+    assert res.status_code == 200
+    assert res.json["name"] == "Subtask 1"
+    assert res.json["status"] == "In Progress"
+    assert res.json["description"] is None
+    assert res.json["deadline"] == "01/01/2024"
+    assert res.json["weighting"] == 5
+    assert res.json["priority"] is None
+    assert res.json["attachment"] is None
+
+
+def test_delete_subtask_using_task_specific_route(auth_client, tasks_fetch):
+    task = tasks_fetch["Changed Task 1H14ACOMP1511"]
+    subtask = tasks_fetch["Subtask 1H14ACOMP1511"]
+    # Still using task specific route to delete the subtask
+    res = auth_client.delete(f"api/v1/tasks/{subtask['id']}")
+    assert res.status_code == 200
+
+    res = auth_client.get(f"api/v1/tasks/{task['id']}/subtasks")
+    assert len(res.json) == 0
 
 
 def test_delete_task_by_unauthorized_user(non_creator_client, tasks_fetch):
