@@ -62,7 +62,7 @@ export const authConfig = {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Cookie: `_vercel_jwt=${jwtCookie}`,
+                ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
               },
               body: JSON.stringify(validatedFields.data),
             }
