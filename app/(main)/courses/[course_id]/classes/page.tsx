@@ -6,6 +6,7 @@ import UpcomingClasses from './_components/upcoming-classes';
 import { ClassCreationDialog } from './_components/class-creation-dialog';
 import GridListViewCard from '@/components/grid-list-view-card';
 import ClassGridCard from './_components/class-grid-card';
+import { Tutorial } from '@/lib/types';
 
 async function getTutorials(course_id: string) {
   const res = await fetchServerAPIRequest(

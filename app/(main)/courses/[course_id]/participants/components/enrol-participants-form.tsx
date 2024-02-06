@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { fetchClientAPIRequest } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
+import { User } from '@/lib/types';
 
 const FormSchema = z.object({
   members: z.array(z.string()).refine((value) => value.some((item) => item), {

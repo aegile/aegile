@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { PlusCircle } from 'lucide-react';
 import { useParams } from 'next/navigation';
-
+import { Tutorial } from '@/lib/types';
 import { ClassForm } from './class-form';
 
 export function ClassEditDialog({

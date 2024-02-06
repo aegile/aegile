@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Course } from '@/lib/types';
 
 export default function CoursesRecents({ courses }: { courses: Course[] }) {
   return (

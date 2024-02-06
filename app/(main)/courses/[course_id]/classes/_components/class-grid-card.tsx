@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ClassForm } from './class-form';
 import { ClassEditDialog } from './class-edit-dialog';
+import { Tutorial } from '@/lib/types';
 
 export default function ClassGridCard({ item }: { item: Tutorial }) {
   const { id, name, capacity, member_count, day, times, location } = item;
