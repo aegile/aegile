@@ -9,9 +9,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "reset": "pnpm store prune && rm -rf node_modules && pnpm install"
+    "reset": "pnpm store prune && sudo rm -rf node_modules && pnpm install"
   },
   "dependencies": {
+    "@blocknote/core": "^0.11.2",
+    "@blocknote/react": "^0.11.2",
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.3.3",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
