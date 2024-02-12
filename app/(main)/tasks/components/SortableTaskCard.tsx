@@ -8,8 +8,6 @@ type TaskCardProps = Task & {
   index: number;
   parentIndex?: number;
   isSubtask?: boolean;
-  rootTasks: Task[];
-  unassignSubtask: (parentIndex: number, childIndex: number) => void;
 };
 
 export function SortableTaskCard(props: TaskCardProps) {
@@ -33,7 +31,7 @@ export function SortableTaskCard(props: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className="w-full"
+      className="w-full max-w-[750px]"
     >
       <TaskEditorCard {...props} isCollapsed={isDragging} />
     </div>

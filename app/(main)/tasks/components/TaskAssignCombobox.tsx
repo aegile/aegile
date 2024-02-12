@@ -14,35 +14,52 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Task } from '@/lib/types';
+import { TaskEditorContext } from '../contexts/TaskEditorContext';
 
 function TaskAssignCombobox({
-  rootTasks,
   parentIndex,
   currIndex,
 }: {
-  rootTasks: Task[];
   parentIndex: number;
   currIndex: number;
 }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(parentIndex);
+  const { tasks, setTasks } = React.useContext(TaskEditorContext);
+
+  function reassignParent(
+    parentIndex: number,
+    childIndex: number,
+    targetIndex: number
+  ) {
+    setTasks((tasks) => {
+      const newItems = [...tasks];
+      const childItem =
+        parentIndex >= 0
+          ? newItems[parentIndex].children[childIndex]
+          : newItems[childIndex];
+
+      // push then pop, otherwise the index will be off
+      newItems[targetIndex].children.push(childItem);
+      parentIndex >= 0
+        ? newItems[parentIndex].children.splice(childIndex, 1)
+        : newItems.splice(childIndex, 1);
+
+      return newItems;
+    });
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="w-full">
-        {/* <Button variant="ghost" size="icon" className="mr-2 h-6 w-6">
-          <PlusIcon className="h-4 w-4" />
-        </Button> */}
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
           className="h-6 w-fit max-w-[50%] truncate flex justify-start text-xs text-muted px-2"
         >
-          {/* <PlusIcon className="h-4 w-4 mr-1" /> */}
           <span className="w-full truncate">
-            {value >= 0 ? `〉${rootTasks[value].name}` : '〉Assign parent'}
+            {value >= 0 ? `〉${tasks[value].name}` : '〉Assign parent'}
           </span>
         </Button>
       </PopoverTrigger>
@@ -55,14 +72,15 @@ function TaskAssignCombobox({
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {rootTasks.map((task, index) => {
-                if (parentIndex >= 0 && index === parentIndex) return null;
-                if (parentIndex < 0 && index === currIndex) return null;
+              {tasks.map((task, index) => {
+                if (parentIndex >= 0 && index === parentIndex) return null; // is subtask, omit parent
+                if (parentIndex < 0 && index === currIndex) return null; // is parent, omit self
                 return (
                   <CommandItem
                     key={task.id}
                     onSelect={() => {
                       setValue(index);
+                      reassignParent(parentIndex, currIndex, index);
                       setOpen(false);
                     }}
                   >
