@@ -1,7 +1,7 @@
 import os
 import logging
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlite3 import Connection as SQLite3Connection
@@ -33,7 +33,7 @@ log.setLevel(logging.INFO)
 #     log.addHandler(file_handler)
 #     log.addHandler(stream_handler)
 
-load_dotenv(".env.local")
+# load_dotenv(".env.local")
 
 
 def defaultHandler(err):
