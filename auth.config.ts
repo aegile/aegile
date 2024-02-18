@@ -69,6 +69,7 @@ export const authConfig = {
           );
           console.log('Response status:', res.status);
           console.log('Response headers:', res.headers);
+          console.log('Response full:', res);
 
           if (res.status === 400 || res.status === 401) {
             // Handle error
