@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import IconTextTooltip from '@/components/icon-text-tooltip';
+import { Course } from '@/lib/types';
 
 function CourseListCard({ item }: { item: Course }) {
   const {

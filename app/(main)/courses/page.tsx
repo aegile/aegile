@@ -13,6 +13,7 @@ import CoursesCalendar from './_components/courses-calendar';
 import CoursesRecents from './_components/courses-recents';
 import ErrorAlert from '@/components/error-alert';
 import GridListViewCard from '@/components/grid-list-view-card';
+import { Course } from '@/lib/types';
 
 async function getCourses() {
   const res = await fetchServerAPIRequest('/api/v1/courses', 'GET');
@@ -22,85 +23,6 @@ async function getCourses() {
 
   const data = await res.json();
   return data;
-  return [
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-    {
-      id: 'string',
-      term: 'string',
-      code: 'string',
-      name: 'string',
-      member_count: 1,
-    },
-  ];
 }
 
 export const metadata: Metadata = {

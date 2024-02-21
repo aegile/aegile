@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { fetchServerAPIRequest } from '@/lib/server-utils';
 import { CourseNav } from './_components/course-nav';
+import { Course } from '@/lib/types';
 
 async function getCourse(course_id: string) {
   const res = await fetchServerAPIRequest(

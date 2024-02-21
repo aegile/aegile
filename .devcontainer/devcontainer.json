@@ -20,7 +20,8 @@
                 "ChakrounAnas.turbo-console-log",
                 "Orta.vscode-twoslash-queries",
                 "deerawan.vscode-faker",
-                "bradlc.vscode-tailwindcss"
+                "bradlc.vscode-tailwindcss",
+                "wix.glean"
             ],
             "settings": {
                 "terminal.integrated.env.linux": {

@@ -1,5 +1,6 @@
 'use client';
 
+import { Day } from '@/lib/types';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
 

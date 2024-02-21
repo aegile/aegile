@@ -1,6 +1,6 @@
-type Day = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+export type Day = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
 
-type Course = {
+export type Course = {
   id: string;
   term: string;
   code: string;
@@ -10,7 +10,7 @@ type Course = {
   labels?: string[];
 };
 
-type User = {
+export type User = {
   id: string;
   email: string;
   first_name: string;
@@ -20,7 +20,7 @@ type User = {
   role?: string;
 };
 
-type Tutorial = {
+export type Tutorial = {
   id: string;
   name: string;
   capacity: number;
@@ -29,3 +29,24 @@ type Tutorial = {
   times: string;
   location: string;
 };
+
+export type Task = {
+  id: string;
+  name: string;
+  children: Task[];
+  canHaveChildren?: boolean;
+  // description: string;
+  // due_date: string;
+  // course_id: string;
+  // user_id: string;
+  // completed: boolean;
+  // created_at: string;
+  // updated_at: string;
+  // completed_at: string;
+  // labels: string[];
+};
+
+// type MinimalViableProps = {
+//   items: TreeItems<Task>;
+//   setItems: React.Dispatch<SetStateAction<TreeItems<Task>>>;
+// };

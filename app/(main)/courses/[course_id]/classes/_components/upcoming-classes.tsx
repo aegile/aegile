@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import TimelineExcerpt from './class-timeline-excerpt';
+import { Tutorial } from '@/lib/types';
 
 const dayMapping = {
   Mon: 1,

@@ -62,13 +62,14 @@ export const authConfig = {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                Cookie: `_vercel_jwt=${jwtCookie}`,
+                ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
               },
               body: JSON.stringify(validatedFields.data),
             }
           );
           console.log('Response status:', res.status);
           console.log('Response headers:', res.headers);
+          console.log('Response full:', res);
 
           if (res.status === 400 || res.status === 401) {
             // Handle error

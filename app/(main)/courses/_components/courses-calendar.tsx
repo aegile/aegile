@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Course } from '@/lib/types';
 
 export default function CoursesCalendar({ courses }: { courses: Course[] }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());

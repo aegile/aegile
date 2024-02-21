@@ -17,6 +17,7 @@ import Link from 'next/link';
 
 import { User, BookCheck } from 'lucide-react';
 import IconTextTooltip from '@/components/icon-text-tooltip';
+import { Course } from '@/lib/types';
 
 function CourseGridCard({ item }: { item: Course }) {
   const { id, term, code, name, member_count } = item;
