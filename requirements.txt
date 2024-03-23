@@ -11,5 +11,5 @@ psycopg2-binary
 python-dotenv
 uvicorn==0.29.0
 aiosqlite==0.20.0
-passlib 1.7.4
+passlib==1.7.4
 types-passlib==1.7.7.12
