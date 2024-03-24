@@ -66,36 +66,43 @@ class UserSet(Base):
     __tablename__ = "usersets"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
-    members: Mapped[List[User]] = relationship(secondary=userset_association)
+    members: Mapped[List[User]] = relationship(
+        secondary=userset_association, lazy="selectin"
+    )
+
+    def __repr__(self) -> str:
+        return f"UserSet(id={self.id!r})"
+
+
+class UserSetManager:
+    def __init__(self):
+        self.userset: UserSet = None
 
     @property
     def member_count(self) -> int:
-        return len(self.members)
+        return len(self.userset.members)
 
     def member_add_one(self, user: User) -> None:
-        if user in self.members:
+        if user in self.userset.members:
             raise HTTPException(
                 status_code=400,
-                detail=f"User {user.handle} is already in this UserSet.",
+                detail=f"User {user.handle} is already a member.",
             )
-        self.members.append(user)
+        self.userset.members.append(user)
 
     def member_add_many(self, users: List[User]) -> None:
-        if len(set(self.members) & set(users)) > 0:
+        if len(set(self.userset.members) & set(users)) > 0:
             raise HTTPException(
                 status_code=400,
-                detail="Users are already in this UserSet.",
+                detail="Users are already a member.",
             )
-        self.members.extend(users)
+        self.userset.members.extend(users)
 
     def member_remove_one(self, user: User) -> None:
         try:
-            self.members.remove(user)
+            self.userset.members.remove(user)
         except ValueError:
             pass
 
     def member_remove_many(self, users: List[User]) -> None:
-        self.members = list(set(self.members) - set(users))
-
-    def __repr__(self) -> str:
-        return f"UserSet(id={self.id!r})"
+        self.userset.members = list(set(self.userset.members) - set(users))
