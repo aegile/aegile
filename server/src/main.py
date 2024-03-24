@@ -9,6 +9,7 @@ from src.api.routers.users import router as users_router
 from src.api.routers.auth import router as auth_router
 from src.api.routers.courses import router as courses_router
 from src.api.routers.assignments import router as assignments_router
+from src.api.routers.tutorials import router as tutorials_router
 
 # from src.config import settings
 # from src.database import sessionmanager
@@ -35,6 +36,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(courses_router)
 app.include_router(assignments_router)
+app.include_router(tutorials_router)
 
 
 @app.get("/")
