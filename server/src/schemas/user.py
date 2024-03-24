@@ -14,7 +14,7 @@ class UserBase(BaseModel):
 
 
 class UserInfo(UserBase):
-    id: int
+    id: str
     handle: str
     image: Optional[str] = None
     last_login: Optional[str] = None

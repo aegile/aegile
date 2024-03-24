@@ -24,7 +24,7 @@ router = APIRouter(
     response_model=UserInfo,
     dependencies=[Depends(validate_is_authenticated)],
 )
-async def get_user_via_id(user_id: int, db_session: DBSessionDep):
+async def get_user_via_id(user_id: str, db_session: DBSessionDep):
     user = await get_user(db_session, user_id)
     return user
 
@@ -46,12 +46,12 @@ async def create_users(user: UserRegister, db_session: DBSessionDep):
 
 
 @router.put("/{user_id}")
-async def update_user_via_id(user_id: int, data: UserProfile, db_session: DBSessionDep):
+async def update_user_via_id(user_id: str, data: UserProfile, db_session: DBSessionDep):
     await update_user(db_session, user_id, data)
     return {"message": "User updated"}
 
 
 @router.delete("/{user_id}")
-async def delete_user_via_id(user_id: int, db_session: DBSessionDep):
+async def delete_user_via_id(user_id: str, db_session: DBSessionDep):
     await delete_user(db_session, user_id)
     return {"message": "User deleted."}

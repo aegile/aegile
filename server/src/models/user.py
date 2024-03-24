@@ -1,6 +1,7 @@
+from uuid import uuid4
 from typing import List, Optional
 from fastapi import HTTPException
-from sqlalchemy import Table, Column, ForeignKey
+from sqlalchemy import String, Table, Column, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import Base
 
@@ -33,8 +34,12 @@ class User(Base):
     """
 
     __tablename__ = "users"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    id: Mapped[str] = mapped_column(
+        String(18),
+        primary_key=True,
+        default=lambda: "u_" + str(uuid4().hex[:16]),
+        index=True,
+    )
     first_name: Mapped[str]
     last_name: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)

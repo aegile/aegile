@@ -26,7 +26,7 @@ async def get_users(db_session: AsyncSession):
     return (await db_session.scalars(query)).all()
 
 
-async def get_user(db_session: AsyncSession, user_id: int):
+async def get_user(db_session: AsyncSession, user_id: str):
     query = select(User).where(User.id == user_id)
     user = (await db_session.scalars(query)).first()
     if not user:
@@ -35,7 +35,6 @@ async def get_user(db_session: AsyncSession, user_id: int):
 
 
 async def get_user_by_email(db_session: AsyncSession, email: str):
-    print(f"{email=}")
     query = select(User).where(User.email == email)
     user = (await db_session.scalars(query)).first()
     if not user:
@@ -43,7 +42,7 @@ async def get_user_by_email(db_session: AsyncSession, email: str):
     return user
 
 
-async def update_user(db_session: AsyncSession, user_id: int, data: UserProfile):
+async def update_user(db_session: AsyncSession, user_id: str, data: UserProfile):
     query = select(User).where(User.id == user_id)
     db_user = (await db_session.scalars(query)).first()
     if not db_user:
@@ -53,7 +52,7 @@ async def update_user(db_session: AsyncSession, user_id: int, data: UserProfile)
     await db_session.commit()
 
 
-async def delete_user(db_session: AsyncSession, user_id: int):
+async def delete_user(db_session: AsyncSession, user_id: str):
     query = delete(User).where(User.id == user_id)
     await db_session.execute(query)
     await db_session.commit()
