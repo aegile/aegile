@@ -8,9 +8,9 @@ from .user import User
 class Course(Base):
     __tablename__ = "courses"
     id: Mapped[str] = mapped_column(
-        String(18),
+        String(20),
         primary_key=True,
-        default=lambda: "c_" + str(uuid4().hex[:16]),
+        default=lambda: "crs_" + str(uuid4().hex[:16]),
         index=True,
     )
     term: Mapped[str] = mapped_column(String(4))

@@ -35,9 +35,9 @@ class User(Base):
 
     __tablename__ = "users"
     id: Mapped[str] = mapped_column(
-        String(18),
+        String(20),
         primary_key=True,
-        default=lambda: "u_" + str(uuid4().hex[:16]),
+        default=lambda: "usr_" + str(uuid4().hex[:16]),
         index=True,
     )
     first_name: Mapped[str]
@@ -64,8 +64,12 @@ class UserSet(Base):
     """
 
     __tablename__ = "usersets"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    id: Mapped[str] = mapped_column(
+        String(20),
+        primary_key=True,
+        default=lambda: "ust_" + str(uuid4().hex[:16]),
+        index=True,
+    )
     members: Mapped[List[User]] = relationship(
         secondary=userset_association, lazy="selectin"
     )

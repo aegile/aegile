@@ -8,9 +8,9 @@ from .course import Course
 class Assignment(Base):
     __tablename__ = "assignments"
     id: Mapped[str] = mapped_column(
-        String(18),
+        String(20),
         primary_key=True,
-        default=lambda: "a_" + str(uuid4().hex[:16]),
+        default=lambda: "ass_" + str(uuid4().hex[:16]),
         index=True,
     )
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
