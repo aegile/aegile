@@ -17,7 +17,7 @@ class AuthLogin(BaseModel):
 
 
 class AuthRegister(BaseModel):
-    first_name: str
-    last_name: str
-    email: str
-    password: str
+    first_name: str = "Alex"
+    last_name: str = "Xu"
+    email: str = "alex@email.com"
+    password: str = "AlexXu123!"

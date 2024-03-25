@@ -8,11 +8,11 @@ class AssignmentType(str, Enum):
 
 
 class AssignmentBase(BaseModel):
-    name: str
-    deadline: str
-    weighting: float
+    name: str = "Capstone Project"
+    deadline: str = "2022-12-31"
+    weighting: float = 0.3
     variant: AssignmentType = AssignmentType.INDIV
-    description: str = ""
+    description: str = "lorem ipsum"
     file: str = ""
 
 
