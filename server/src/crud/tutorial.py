@@ -4,8 +4,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.tutorial import Tutorial
+from src.models.user import User
 from .user import get_user
-from .util import validate_course_existence
+from .util import validate_course_existence, verify_tutorial_enrolment_eligibility
 
 
 @validate_course_existence
@@ -61,12 +62,11 @@ async def get_enrolled_tutorials(db_session: AsyncSession, user_id: str):
     return (await db_session.scalars(query)).all()
 
 
-async def enrol_user_to_tutorial(
-    db_session: AsyncSession, user_id: str, tutorial_id: str
+@verify_tutorial_enrolment_eligibility
+async def enrol_tutorial_member(
+    db_session: AsyncSession, db_user: User, db_tutorial: Tutorial
 ):
-    db_tut = await get_tutorial(db_session, tutorial_id)
-    db_user = await get_user(db_session, user_id)
-    db_tut.member_add_one(db_user)
+    db_tutorial.member_add_one(db_user)
     await db_session.commit()
     return {"message": "Success!! User enrolled to tutorial."}
 
