@@ -22,7 +22,7 @@ class Assignment(Base):
     deadline: Mapped[str]
     weighting: Mapped[float]
     variant: Mapped[str]
-    __table__args__ = (UniqueConstraint("name", "course_id"),)
+    __table_args__ = (UniqueConstraint("name", "course_id"),)
 
     def __repr__(self) -> str:
         return f"Assignment(id={self.id!r}, course_id={self.course_id!r}, name={self.name!r})"

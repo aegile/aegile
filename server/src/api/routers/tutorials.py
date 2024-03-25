@@ -9,7 +9,7 @@ from src.crud.tutorial import (
     update_tutorial,
     delete_tutorial,
     get_enrolled_tutorials,
-    enrol_user_to_tutorial,
+    enrol_tutorial_member,
     get_tutorial_enrolments,
 )
 from src.schemas.tutorial import TutorialBase, TutorialInfo
@@ -22,9 +22,9 @@ router = APIRouter(
 )
 
 
-@router.get("/{course_id}", response_model=List[TutorialInfo])
-async def get_all_tutorials_via_course(course_id: str, db_session: DBSessionDep):
-    return await get_tutorials_by_course(db_session, course_id)
+# @router.get("/{course_id}", response_model=List[TutorialInfo])
+# async def get_all_tutorials_via_course(course_id: str, db_session: DBSessionDep):
+#     return await get_tutorials_by_course(db_session, course_id)
 
 
 @router.get("/{tutorial_id}", response_model=TutorialInfo)
@@ -63,7 +63,7 @@ async def get_enrolled_tutorials_of_a_user(user_id: str, db_session: DBSessionDe
 async def enrol_a_user_to_a_tutorial(
     tutorial_id: str, user_id: str, db_session: DBSessionDep
 ):
-    await enrol_user_to_tutorial(db_session, user_id, tutorial_id)
+    await enrol_tutorial_member(db_session, user_id, tutorial_id)
     return {"message": "Success!! User enrolled to tutorial."}
 
 

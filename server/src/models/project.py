@@ -3,25 +3,35 @@ from sqlalchemy import ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import Base
 from .user import UserSet, UserSetManager
+from .tutorial import Tutorial
+from .assignment import Assignment
 
 
-class Tutorial(Base, UserSetManager):
-    __tablename__ = "tutorials"
+class Project(Base, UserSetManager):
+    __tablename__ = "projects"
     id: Mapped[str] = mapped_column(
         String(20),
         primary_key=True,
-        default=lambda: "tut_" + str(uuid4().hex[:16]),
+        default=lambda: "prj_" + str(uuid4().hex[:16]),
         index=True,
     )
     # creator_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
-    course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
+    tutorial_id: Mapped[str] = mapped_column(ForeignKey("tutorials.id"))
+    assignment_id: Mapped[str] = mapped_column(ForeignKey("assignments.id"))
+    tutorial: Mapped[Tutorial] = relationship(
+        "Tutorial", uselist=False, lazy="selectin"
+    )
+    assignment: Mapped[Assignment] = relationship(
+        "Assignment", uselist=False, lazy="selectin"
+    )
+
     name: Mapped[str]
-    capacity: Mapped[int]
-    location: Mapped[str]
+    description: Mapped[str]
+
     userset_id: Mapped[str] = mapped_column(ForeignKey("usersets.id"))
     userset: Mapped[UserSet] = relationship("UserSet", uselist=False, lazy="selectin")
 
-    __table_args__ = (UniqueConstraint("course_id", "name"),)
+    __table_args__ = (UniqueConstraint("tutorial_id", "name"),)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,4 +40,4 @@ class Tutorial(Base, UserSetManager):
         # self.member_add_creator(self.creator_id)
 
     def __repr__(self) -> str:
-        return f"Tutorial(id={self.id!r}, course_id={self.course_id!r}, name={self.name!r})"
+        return f"Project(id={self.id!r}, name={self.name!r})"
