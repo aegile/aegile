@@ -21,7 +21,9 @@
                 "Orta.vscode-twoslash-queries",
                 "deerawan.vscode-faker",
                 "bradlc.vscode-tailwindcss",
-                "wix.glean"
+                "wix.glean",
+                "mtxr.sqltools",
+                "mtxr.sqltools-driver-sqlite"
             ],
             "settings": {
                 "terminal.integrated.env.linux": {
@@ -35,6 +37,7 @@
                 "python.formatting.provider": "none",
                 "black-formatter.importStrategy": "fromEnvironment",
                 "source.organizeImports": true,
+                "sqltools.useNodeRuntime": true,
                 "[python]": {
                     "editor.defaultFormatter": "ms-python.black-formatter",
                     "editor.formatOnSave": true,
