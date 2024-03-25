@@ -8,6 +8,7 @@ class AssignmentType(str, Enum):
 
 
 class AssignmentBase(BaseModel):
+    course_id: str
     name: str = "Capstone Project"
     deadline: str = "2022-12-31"
     weighting: float = 0.3
@@ -18,4 +19,3 @@ class AssignmentBase(BaseModel):
 
 class AssignmentInfo(AssignmentBase):
     id: str
-    course_id: str

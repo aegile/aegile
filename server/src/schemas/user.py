@@ -1,6 +1,6 @@
 import math
 import random
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
@@ -32,3 +32,7 @@ class UserRegister(UserBase):
 class UserPrivate(UserBase):
     is_superuser: bool = False
     hashed_password: str
+
+
+class UserEnrol(BaseModel):
+    user_ids: List[str]

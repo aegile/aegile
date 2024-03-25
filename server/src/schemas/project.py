@@ -5,7 +5,7 @@ from .tutorial import TutorialInfo
 
 class ProjectBase(BaseModel):
     name: str = "Dragonfruit"
-    description: "lorem ipsum"
+    description: str = "lorem ipsum"
     assignment_id: str
     tutorial_id: str
 
