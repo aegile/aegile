@@ -11,10 +11,11 @@ from src.crud.project import (
     delete_project,
     get_enrolled_projects,
     enrol_user_to_project,
+    enrol_users_to_project,
 )
 
 from src.schemas.project import ProjectBase, ProjectInfo
-from src.schemas.user import UserInfo
+from src.schemas.user import UserInfo, UserEnrol
 
 router = APIRouter(
     prefix="/api/projects",
@@ -52,6 +53,14 @@ async def enrol_a_user_to_a_project(
 ):
     await enrol_user_to_project(db_session, user_id, project_id)
     return {"message": "Success!! User enrolled to the project."}
+
+
+@router.post("/{project_id}/enrolments")
+async def enrol_multiple_users_to_a_project(
+    project_id: str, user_ids: UserEnrol, db_session: DBSessionDep
+):
+    await enrol_users_to_project(db_session, user_ids.user_ids, project_id)
+    return {"message": "Success!! Users enrolled to the project."}
 
 
 @router.put("/{project_id}")

@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import HTTPException
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
@@ -6,13 +7,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.user import User
 from src.models.project import Project
 from .user import get_user
-from .util import validate_tutorial_existence, verify_project_enrolment_eligibility
+from .util import (
+    validate_tutorial_existence,
+    verify_single_parent_userset_enrolment,
+    verify_multi_parent_userset_enrolment,
+)
 
 
 @validate_tutorial_existence
 async def create_project(
     db_session: AsyncSession, tutorial_id: str, project_form: dict
 ):
+    # TODO - must check that assignment.course_id === tutorial.course_id
     project = Project(**project_form.model_dump())
     try:
         db_session.add(project)
@@ -64,7 +70,25 @@ async def get_enrolled_projects(db_session: AsyncSession, user_id: str):
     return (await db_session.scalars(query)).all()
 
 
-@verify_project_enrolment_eligibility
-async def enrol_user_to_project(db_session: AsyncSession, user: User, project: Project):
-    project.userset.members.append(user)
+async def enrol_user_to_project(
+    db_session: AsyncSession,
+    user_id: str,
+    project_id: str,
+):
+    db_project = await get_project(db_session, project_id)
+    db_user = await get_user(db_session, user_id)
+    await verify_single_parent_userset_enrolment(db_user, db_project.tutorial)
+    db_project.member_add_one(db_user)
+    await db_session.commit()
+
+
+async def enrol_users_to_project(
+    db_session: AsyncSession, user_ids: List[str], project_id: str
+):
+    db_project = await get_project(db_session, project_id)
+    query = select(User).where(User.id.in_(user_ids))
+    db_users = (await db_session.scalars(query)).all()
+
+    await verify_multi_parent_userset_enrolment(db_users, db_project.tutorial)
+    db_project.member_add_many(db_users)
     await db_session.commit()

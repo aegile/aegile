@@ -1,11 +1,31 @@
 from functools import wraps
+from typing import List
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.course import Course, CourseEnrolment
 from src.models.tutorial import Tutorial
 from src.models.project import Project
-from src.models.user import User, UserSetManager
+from src.models.user import User, UserSet, UserSetManager
+
+
+async def fetch_one(db_session: AsyncSession, model, query_id: str):
+    query = select(model).where(model.id == query_id)
+    item = (await db_session.scalars(query)).first()
+    if not item:
+        raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
+    return item
+
+
+async def fetch_many(db_session: AsyncSession, model, query_ids: List[str]):
+    query = select(model).where(model.id.in_(query_ids))
+    items = (await db_session.scalars(query)).first()
+    if len(items) != len(query_ids):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Some or all {model.__name__.lower()}s were not found",
+        )
+    return items
 
 
 def validate_course_existence(func):
@@ -32,68 +52,60 @@ def validate_tutorial_existence(func):
     return wrapper
 
 
-def verify_parent_userset_enrolment(user: User, collection: UserSetManager):
-    if user not in collection.userset.members:
+async def verify_single_course_enrolment(
+    db_session: AsyncSession,
+    user_id: str,
+    course_id: str,
+):
+    query = (
+        select(CourseEnrolment)
+        .where(CourseEnrolment.user_id == user_id)
+        .where(CourseEnrolment.course_id == course_id)
+    )
+    enrolment = (await db_session.scalars(query)).first()
+    if not enrolment:
         raise HTTPException(
             status_code=403,
-            detail=f"User {user.handle} is not a member of this {collection.__class__.__name__.lower()}.",
+            detail="User(s) not enrolled in this course.",
         )
 
 
-def verify_current_userset_enrolment(user: User, collection: UserSetManager):
-    if user in collection.userset.members:
+async def verify_multi_course_enrolment(
+    db_session: AsyncSession,
+    user_ids: List[str],
+    course_id: str,
+):
+    query = (
+        select(CourseEnrolment)
+        .where(CourseEnrolment.user_id.in_(user_ids))
+        .where(CourseEnrolment.course_id == course_id)
+    )
+    enrolments = (await db_session.scalars(query)).all()
+    if len(enrolments) != len(user_ids):
         raise HTTPException(
             status_code=403,
-            detail=f"User {user.handle} is already a member of this {collection.__class__.__name__.lower()}.",
+            detail="Some or all users are not enrolled in this course.",
         )
 
 
-def verify_tutorial_enrolment_eligibility(func):
-    @wraps(func)
-    async def wrapper(
-        db_session: AsyncSession, user_id: str, tutorial_id: str, *args, **kwargs
-    ):
-        db_tutorial = (
-            await db_session.scalars(select(Tutorial).where(Tutorial.id == tutorial_id))
-        ).first()
-        db_user = (
-            await db_session.scalars(select(User).where(User.id == user_id))
-        ).first()
-        query = (
-            select(CourseEnrolment)
-            .where(CourseEnrolment.user_id == user_id)
-            .where(CourseEnrolment.course_id == db_tutorial.course_id)
+def verify_single_parent_userset_enrolment(
+    db_user: User,
+    db_parent: UserSetManager,
+):
+    if db_user not in db_parent.userset.members:
+        raise HTTPException(
+            status_code=403,
+            detail=f"User {db_user.handle} is not a member of this {db_parent.__class__.__name__.lower()}.",
         )
-        enrolment = (await db_session.scalars(query)).first()
-        if not enrolment:
-            raise HTTPException(
-                status_code=403,
-                detail=f"User {db_user.handle} is not enrolled in this course.",
-            )
-        verify_current_userset_enrolment(db_user, db_tutorial)
-        return await func(db_session, db_user, db_tutorial, *args, **kwargs)
-
-    return wrapper
 
 
-def verify_project_enrolment_eligibility(func):
-    @wraps(func)
-    async def wrapper(
-        db_session: AsyncSession, user_id: str, project_id: str, *args, **kwargs
-    ):
-        db_project = (
-            await db_session.scalars(select(Project).where(Project.id == project_id))
-        ).first()
-        db_tutorial = (
-            await db_session.scalars(
-                select(Tutorial).where(Tutorial.id == db_project.tutorial_id)
-            )
-        ).first()
-        db_user = (
-            await db_session.scalars(select(User).where(User.id == user_id))
-        ).first()
-        verify_parent_userset_enrolment(db_user, db_tutorial)
-        verify_current_userset_enrolment(db_user, db_project)
-        return await func(db_session, db_user, db_project, *args, **kwargs)
-
-    return wrapper
+def verify_multi_parent_userset_enrolment(
+    db_users: List[User],
+    db_parent: UserSetManager,
+):
+    # check that db_users list is a subset of db_tutorial.userset.members
+    if not set(db_users).issubset(set(db_parent.userset.members)):
+        raise HTTPException(
+            status_code=403,
+            detail="Some or all users are not enrolled in this tutorial.",
+        )

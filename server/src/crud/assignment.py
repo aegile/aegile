@@ -11,7 +11,7 @@ from .util import validate_course_existence
 async def create_assignment(
     db_session: AsyncSession, course_id: str, assignment_form: dict
 ):
-    db_assignment = Assignment(course_id=course_id, **assignment_form.model_dump())
+    db_assignment = Assignment(**assignment_form.model_dump())
     try:
         db_session.add(db_assignment)
         await db_session.commit()

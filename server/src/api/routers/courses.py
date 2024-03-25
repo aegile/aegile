@@ -50,9 +50,9 @@ async def delete_course_via_id(course_id: str, db_session: DBSessionDep):
     return {"message": "Success!! Course deleted."}
 
 
-@router.get("/enrolments/{user_id}", response_model=List[CourseInfo])
-async def get_enrolled_courses_of_a_user(user_id: str, db_session: DBSessionDep):
-    return await get_enrolled_courses(db_session, user_id)
+# @router.get("/enrolments/{user_id}", response_model=List[CourseInfo])
+# async def get_enrolled_courses_of_a_user(user_id: str, db_session: DBSessionDep):
+#     return await get_enrolled_courses(db_session, user_id)
 
 
 @router.post("/{course_id}/enrolments/{user_id}")

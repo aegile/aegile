@@ -19,17 +19,17 @@ router = APIRouter(
 )
 
 
-@router.post("/{course_id}")
+@router.post("")
 async def create_course_assignment(
-    course_id: str, assignment: AssignmentBase, db_session: DBSessionDep
+    assignment: AssignmentBase, db_session: DBSessionDep
 ):
-    await create_assignment(db_session, course_id, assignment)
+    await create_assignment(db_session, assignment.course_id, assignment)
     return {"message": "Success!! Assignment created."}
 
 
-@router.get("/{course_id}", response_model=List[AssignmentInfo])
-async def get_all_assignments_via_course(course_id: str, db_session: DBSessionDep):
-    return await get_assignments_by_course(db_session, course_id)
+# @router.get("/{course_id}", response_model=List[AssignmentInfo])
+# async def get_all_assignments_via_course(course_id: str, db_session: DBSessionDep):
+#     return await get_assignments_by_course(db_session, course_id)
 
 
 @router.get("/{assignment_id}", response_model=AssignmentInfo)
