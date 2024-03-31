@@ -3,10 +3,8 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.models.course import Course, CourseEnrolment
-from src.models.tutorial import Tutorial
-from src.models.project import Project
-from src.models.user import User, UserSet, UserSetManager
+from src.models.course import CourseEnrolment
+from src.models.user import User, UserSetManager
 
 
 async def fetch_one(db_session: AsyncSession, model, query_id: str):
@@ -28,28 +26,9 @@ async def fetch_many(db_session: AsyncSession, model, query_ids: List[str]):
     return items
 
 
-def validate_course_existence(func):
-    @wraps(func)
-    async def wrapper(db_session: AsyncSession, course_id: str, *args, **kwargs):
-        query = select(Course).where(Course.id == course_id)
-        course = (await db_session.scalars(query)).first()
-        if not course:
-            raise HTTPException(status_code=404, detail="Course not found")
-        return await func(db_session, course_id, *args, **kwargs)
-
-    return wrapper
-
-
-def validate_tutorial_existence(func):
-    @wraps(func)
-    async def wrapper(db_session: AsyncSession, tutorial_id: str, *args, **kwargs):
-        query = select(Tutorial).where(Tutorial.id == tutorial_id)
-        tutorial = (await db_session.scalars(query)).first()
-        if not tutorial:
-            raise HTTPException(status_code=404, detail="Tutorial not found")
-        return await func(db_session, tutorial_id, *args, **kwargs)
-
-    return wrapper
+# =============================================================================
+#                       UserSet Enrolment Validation
+# =============================================================================
 
 
 async def verify_single_course_enrolment(
@@ -109,3 +88,13 @@ def verify_multi_parent_userset_enrolment(
             status_code=403,
             detail="Some or all users are not enrolled in this tutorial.",
         )
+
+
+# POST   - database will encounter FOREIGN KEY error if id doesn't exist
+# GET    - nothing gets returned
+# UPDATE - need to fetch the object first, so will throw error if not found
+# DELETE - nothing gets deleted as nothing is found
+# What we need to check:
+# - is user enrolled in a parent userset or course?
+# - if multiple ids are given, is there a valid relationship?
+# - submission times need to occur before the deadline

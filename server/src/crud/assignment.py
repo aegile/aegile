@@ -4,13 +4,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.assignment import Assignment
-from .util import validate_course_existence
 
 
-@validate_course_existence
-async def create_assignment(
-    db_session: AsyncSession, course_id: str, assignment_form: dict
-):
+async def create_assignment(db_session: AsyncSession, assignment_form: dict):
     db_assignment = Assignment(**assignment_form.model_dump())
     try:
         db_session.add(db_assignment)
@@ -19,11 +15,11 @@ async def create_assignment(
         await db_session.rollback()
         raise HTTPException(
             status_code=400,
-            detail=f"Assignment '{assignment_form.name}' already exists for this course.",
+            detail=exc.orig.args[0]
+            # detail=f"Assignment '{assignment_form.name}' already exists for this course.",
         ) from exc
 
 
-@validate_course_existence
 async def get_assignments_by_course(db_session: AsyncSession, course_id: str):
     query = select(Assignment).where(Assignment.course_id == course_id)
     return (await db_session.scalars(query)).all()

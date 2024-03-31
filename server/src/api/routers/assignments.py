@@ -23,7 +23,7 @@ router = APIRouter(
 async def create_course_assignment(
     assignment: AssignmentBase, db_session: DBSessionDep
 ):
-    await create_assignment(db_session, assignment.course_id, assignment)
+    await create_assignment(db_session, assignment)
     return {"message": "Success!! Assignment created."}
 
 
