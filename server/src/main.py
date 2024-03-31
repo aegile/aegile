@@ -11,6 +11,7 @@ from src.api.routers.courses import router as courses_router
 from src.api.routers.assignments import router as assignments_router
 from src.api.routers.tutorials import router as tutorials_router
 from src.api.routers.projects import router as projects_router
+from src.api.routers.deliverables import router as deliverables_router
 
 # from src.config import settings
 # from src.database import sessionmanager
@@ -39,6 +40,7 @@ app.include_router(courses_router)
 app.include_router(assignments_router)
 app.include_router(tutorials_router)
 app.include_router(projects_router)
+app.include_router(deliverables_router)
 
 
 @app.get("/")
