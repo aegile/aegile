@@ -24,7 +24,7 @@ router = APIRouter(
 
 @router.post("")
 async def create_course_tutorial(tutorial: TutorialBase, db_session: DBSessionDep):
-    await create_tutorial(db_session, tutorial.course_id, tutorial)
+    await create_tutorial(db_session, tutorial)
     return {"message": "Success!! Tutorial created."}
 
 

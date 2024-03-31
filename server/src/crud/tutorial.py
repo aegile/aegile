@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import HTTPException
-from sqlalchemy import select, delete, join
+from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,16 +8,12 @@ from src.models.tutorial import Tutorial
 from src.models.user import User, UserSet
 from .user import get_user
 from .util import (
-    validate_course_existence,
     verify_single_course_enrolment,
     verify_multi_course_enrolment,
 )
 
 
-@validate_course_existence
-async def create_tutorial(
-    db_session: AsyncSession, course_id: str, tutorial_form: dict
-):
+async def create_tutorial(db_session: AsyncSession, tutorial_form: dict):
     tutorial = Tutorial(**tutorial_form.model_dump())
     try:
         db_session.add(tutorial)
@@ -31,7 +27,6 @@ async def create_tutorial(
         ) from exc
 
 
-# @validate_course_existence
 async def get_tutorials(db_session: AsyncSession, user_id: str, course_id: str):
     query = select(Tutorial)
     if user_id:
@@ -82,7 +77,7 @@ async def enrol_tutorial_member(
     db_session: AsyncSession, user_id: str, tutorial_id: str
 ):
     # check if user is enrolled in parent course
-    db_tutorial = await get_tutorial(db_session, tutorial_id)
+    db_tutorial: Tutorial = await get_tutorial(db_session, tutorial_id)
     await verify_single_course_enrolment(db_session, user_id, db_tutorial.course_id)
 
     db_user = await get_user(db_session, user_id)
@@ -94,7 +89,7 @@ async def enrol_tutorial_members(
     db_session: AsyncSession, user_ids: List[str], tutorial_id: str
 ):
     # check if users are enrolled in parent course
-    db_tutorial = await get_tutorial(db_session, tutorial_id)
+    db_tutorial: Tutorial = await get_tutorial(db_session, tutorial_id)
     await verify_multi_course_enrolment(db_session, user_ids, db_tutorial.course_id)
 
     query = select(User).where(User.id.in_(user_ids))
