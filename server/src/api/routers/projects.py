@@ -28,7 +28,7 @@ router = APIRouter(
 async def create_project_for_assignment_in_tutorial(
     project: ProjectBase, db_session: DBSessionDep
 ):
-    await create_project(db_session, project.tutorial_id, project)
+    await create_project(db_session, project)
     return {"message": "Success!! Project created."}
 
 
