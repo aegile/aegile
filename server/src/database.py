@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, select
+
+# from sqlalchemy import create_engine, Column, Integer, String, select
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
@@ -8,6 +11,13 @@ engine = create_async_engine(
     "sqlite+aiosqlite:///db.sqlite3", connect_args={"check_same_thread": False}
 )
 SessionLocal = async_sessionmaker(engine)
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 async def get_db_session():
