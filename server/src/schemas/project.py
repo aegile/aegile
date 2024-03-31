@@ -4,10 +4,10 @@ from .tutorial import TutorialInfo
 
 
 class ProjectBase(BaseModel):
-    name: str = "Dragonfruit"
-    description: str = "lorem ipsum"
     assignment_id: str
     tutorial_id: str
+    name: str = "Dragonfruit"
+    description: str = "lorem ipsum"
 
 
 class ProjectInfo(ProjectBase):
