@@ -8,10 +8,6 @@ from src.models.user import User
 from src.models.project import Project
 from src.schemas.project import ProjectBase
 from .user import get_user
-from .util import (
-    verify_single_parent_userset_enrolment,
-    verify_multi_parent_userset_enrolment,
-)
 
 
 async def create_project(db_session: AsyncSession, project_form: ProjectBase):
@@ -74,8 +70,6 @@ async def enrol_user_to_project(
 ):
     db_project = await get_project(db_session, project_id)
     db_user = await get_user(db_session, user_id)
-    # verify that the user is part of the project's tutorial
-    await verify_single_parent_userset_enrolment(db_user, db_project.tutorial)
     db_project.member_add_one(db_user)
     await db_session.commit()
 
@@ -86,7 +80,5 @@ async def enrol_users_to_project(
     db_project = await get_project(db_session, project_id)
     query = select(User).where(User.id.in_(user_ids))
     db_users = (await db_session.scalars(query)).all()
-    # verify that the users are part of the project's tutorial
-    await verify_multi_parent_userset_enrolment(db_users, db_project.tutorial)
     db_project.member_add_many(db_users)
     await db_session.commit()
