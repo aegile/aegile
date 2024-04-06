@@ -1,7 +1,8 @@
 from uuid import uuid4
 from sqlalchemy import ForeignKey, UniqueConstraint, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from . import Base
+from .course import Course
 from .user import UserSet, UserSetManager
 
 
@@ -15,6 +16,8 @@ class Tutorial(Base, UserSetManager):
     )
     # creator_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
+    course: Mapped[Course] = relationship("Course", uselist=False, lazy="selectin")
+    parent = synonym("course")
     name: Mapped[str]
     capacity: Mapped[int]
     location: Mapped[str]

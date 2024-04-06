@@ -27,6 +27,10 @@ class Course(Base):
     def member_count(self):
         return len(self.enrolments)
 
+    @property
+    def members(self):
+        return [enrolment.user for enrolment in self.enrolments]
+
     def __repr__(self) -> str:
         return f"Course(id={self.id!r}, term={self.term!r}, code={self.code!r}, name={self.name!r})"
 

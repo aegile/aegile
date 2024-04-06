@@ -1,6 +1,6 @@
 from uuid import uuid4
 from sqlalchemy import ForeignKey, UniqueConstraint, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from . import Base
 from .user import UserSet, UserSetManager
 from .tutorial import Tutorial
@@ -21,6 +21,7 @@ class Project(Base, UserSetManager):
     tutorial: Mapped[Tutorial] = relationship(
         "Tutorial", uselist=False, lazy="selectin"
     )
+    parent = synonym("tutorial")
     assignment: Mapped[Assignment] = relationship(
         "Assignment", uselist=False, lazy="selectin"
     )
