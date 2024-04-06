@@ -3,8 +3,6 @@ import sys
 import uvicorn
 
 from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import PlainTextResponse
 from src.api.routers.users import router as users_router
 from src.api.routers.auth import router as auth_router
 from src.api.routers.courses import router as courses_router
