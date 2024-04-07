@@ -90,7 +90,7 @@ app.include_router(projects_router)
 app.include_router(deliverables_router)
 
 
-@app.get("/")
+@app.get("/hello")
 async def root():
     return {"message": "Hello World"}
 

@@ -1,5 +1,6 @@
 pytest
 black==23.11.0
+fastapi==0.110.0
 pydantic==2.6.4
 python-dotenv
 uvicorn==0.29.0

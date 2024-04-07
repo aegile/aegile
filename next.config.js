@@ -7,10 +7,10 @@ const nextConfig = {
         destination: '/api/auth/:path*',
       },
       {
-        source: '/api/:version/:path*',
+        source: '/api/:path*',
         destination:
           process.env.NODE_ENV === 'development'
-            ? 'http://127.0.0.1:5328/api/:version/:path*'
+            ? 'http://127.0.0.1:5328/api/:path*'
             : '/api/',
       },
     ];
@@ -26,10 +26,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       // edit: updated to new key. Was previously `allowedForwardedHosts`
-      allowedOrigins: [
-        'localhost:3000',
-        'aegile.vercel.app',
-      ],
+      allowedOrigins: ['localhost:3000', 'aegile.vercel.app'],
     },
   },
 };
