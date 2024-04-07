@@ -101,9 +101,9 @@
 
 from fastapi import FastAPI
 
-app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
+app = FastAPI(docs_url="/api/py/docs", openapi_url="/api/py/openapi.json")
 
 
-@app.get("/api/python")
+@app.get("/api/py/hello")
 def hello_world():
-    return {"status": "success", "message": "Hello World"}
+    return {"message": "Hello World"}
