@@ -90,10 +90,6 @@ app.include_router(projects_router)
 app.include_router(deliverables_router)
 
 
-@app.get("/hello")
-async def root():
+@app.get("/api/hello")
+async def hello_world():
     return {"message": "Hello World"}
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8000)
