@@ -2,8 +2,6 @@
 
 import { useEffect } from 'react';
 // import { navigate } from './actions';
-
-import { logout } from '@/lib/actions/logout';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -47,9 +45,7 @@ export default function Error({
           >
             Try Again
           </Button>
-          <Button className="w-full" onClick={() => logout()}>
-            Log In
-          </Button>
+          <Button className="w-full">Log In</Button>
         </CardFooter>
       </Card>
     </main>
