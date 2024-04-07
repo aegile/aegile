@@ -47,49 +47,63 @@
 # # @app.route("/api/python")
 # # def hello_world():
 # #     return "<p>Hello, World!</p>"
-import logging
-import sys
-import uvicorn
+
+# ==============================================================================
+
+# import logging
+# import sys
+# import uvicorn
+
+# from fastapi import FastAPI
+# from server.src.api.routers.users import router as users_router
+# from server.src.api.routers.auth import router as auth_router
+# from server.src.api.routers.courses import router as courses_router
+# from server.src.api.routers.assignments import router as assignments_router
+# from server.src.api.routers.tutorials import router as tutorials_router
+# from server.src.api.routers.projects import router as projects_router
+# from server.src.api.routers.deliverables import router as deliverables_router
+
+# # from src.config import settings
+# # from src.database import sessionmanager
+
+# logging.basicConfig(
+#     stream=sys.stdout, level=logging.INFO
+# )  # if settings.debug_logs else logging.INFO)
+
+
+# app = FastAPI(
+#     # lifespan=lifespan,
+#     # title=settings.project_name,
+#     docs_url="/api/docs",
+# )
+
+
+# # @app.exception_handler(RequestValidationError)
+# # async def validation_exception_handler(request, exc):
+# #     print(exc)
+# #     return PlainTextResponse("e", status_code=400)
+
+
+# app.include_router(auth_router)
+# app.include_router(users_router)
+# app.include_router(courses_router)
+# app.include_router(assignments_router)
+# app.include_router(tutorials_router)
+# app.include_router(projects_router)
+# app.include_router(deliverables_router)
+
+
+# @app.get("/api/hello")
+# async def hello_world():
+#     return {"message": "Hello World"}
+
+# ==============================================================================
 
 from fastapi import FastAPI
-from server.src.api.routers.users import router as users_router
-from server.src.api.routers.auth import router as auth_router
-from server.src.api.routers.courses import router as courses_router
-from server.src.api.routers.assignments import router as assignments_router
-from server.src.api.routers.tutorials import router as tutorials_router
-from server.src.api.routers.projects import router as projects_router
-from server.src.api.routers.deliverables import router as deliverables_router
 
-# from src.config import settings
-# from src.database import sessionmanager
-
-logging.basicConfig(
-    stream=sys.stdout, level=logging.INFO
-)  # if settings.debug_logs else logging.INFO)
+app = FastAPI()
 
 
-app = FastAPI(
-    # lifespan=lifespan,
-    # title=settings.project_name,
-    docs_url="/api/docs",
-)
-
-
-# @app.exception_handler(RequestValidationError)
-# async def validation_exception_handler(request, exc):
-#     print(exc)
-#     return PlainTextResponse("e", status_code=400)
-
-
-app.include_router(auth_router)
-app.include_router(users_router)
-app.include_router(courses_router)
-app.include_router(assignments_router)
-app.include_router(tutorials_router)
-app.include_router(projects_router)
-app.include_router(deliverables_router)
-
-
-@app.get("/api/hello")
-async def hello_world():
+@app.get("/api/python")
+def hello_world():
     return {"message": "Hello World"}
