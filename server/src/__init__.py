@@ -22,7 +22,8 @@ async def lifespan(app: FastAPI):
     yield
     if sessionmanager._engine is not None:
         # Close the DB connection
-        await sessionmanager.close()
+        # await sessionmanager.close()
+        sessionmanager.close()
 
 
 def create_app():
