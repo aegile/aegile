@@ -27,7 +27,9 @@ async def get_users(db_session: AsyncSession):
     try:
         return (await db_session.scalars(query)).all()
     except Exception as e:
-        raise HTTPException(status_code=403, detail="\n".join(str(e).splitlines()[:15]))
+        raise HTTPException(
+            status_code=403, detail="\n\n".join(str(e).splitlines()[:50])
+        )
 
 
 async def get_user(db_session: AsyncSession, user_id: str):
