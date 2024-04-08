@@ -58,7 +58,7 @@ import uvicorn
 
 from fastapi import FastAPI
 
-from server.src.database import sessionmanager
+# from server.src.database import sessionmanager
 from server.src.api.routers.users import router as users_router
 from server.src.api.routers.auth import router as auth_router
 from server.src.api.routers.courses import router as courses_router
@@ -75,20 +75,20 @@ logging.basicConfig(
 )  # if settings.debug_logs else logging.INFO)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """
-    Function that handles startup and shutdown events.
-    To understand more, read https://fastapi.tiangolo.com/advanced/events/
-    """
-    yield
-    if sessionmanager._engine is not None:
-        # Close the DB connection
-        await sessionmanager.close()
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     """
+#     Function that handles startup and shutdown events.
+#     To understand more, read https://fastapi.tiangolo.com/advanced/events/
+#     """
+#     yield
+#     if sessionmanager._engine is not None:
+#         # Close the DB connection
+#         await sessionmanager.close()
 
 
 app = FastAPI(
-    lifespan=lifespan,
+    # lifespan=lifespan,
     title="aegile",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
