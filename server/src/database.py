@@ -15,6 +15,7 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
+    AsyncAdaptedQueuePool,
     async_sessionmaker,
     create_async_engine,
 )
@@ -126,7 +127,7 @@ sessionmanager = DatabaseSessionManager(
     os.environ.get("POSTGRES_URL")
     .replace("postgres://", "postgresql+asyncpg://", 1)
     .replace("sslmode", "ssl"),
-    {"poolclass": NullPool},
+    {"poolclass": AsyncAdaptedQueuePool},
 )
 
 
