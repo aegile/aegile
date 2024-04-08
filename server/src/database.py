@@ -8,6 +8,7 @@ from pydantic import BaseModel
 # from sqlalchemy import event
 # from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.pool import NullPool
 
 # from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
@@ -69,7 +70,10 @@ class DatabaseSessionManager:
     def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
         self._engine = create_async_engine(host, **engine_kwargs)
         self._sessionmaker = async_sessionmaker(
-            autocommit=False, bind=self._engine, expire_on_commit=False
+            autocommit=False,
+            bind=self._engine,
+            expire_on_commit=False,
+            poolclass=NullPool,
         )
         # self._logger = logging.getLogger(__name__)
 
