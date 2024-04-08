@@ -18,10 +18,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-# """Toggle comment block to test Postgres connection"""
-# from dotenv import load_dotenv
+"""Toggle comment block to test Postgres connection"""
+from dotenv import load_dotenv
 
-# load_dotenv(".env.local")
+load_dotenv(".env.local")
 
 # """Toggle comment block to switch between local and production databases"""
 # engine = create_async_engine(
@@ -69,7 +69,7 @@ class DatabaseSessionManager:
     def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
         self._engine = create_async_engine(host, **engine_kwargs)
         self._sessionmaker = async_sessionmaker(
-            autocommit=True, bind=self._engine, expire_on_commit=False
+            autocommit=False, bind=self._engine, expire_on_commit=False
         )
         # self._logger = logging.getLogger(__name__)
 
