@@ -1,5 +1,6 @@
 import os
 import contextlib
+import logging
 from typing import Any, AsyncIterator
 from pydantic import BaseModel
 
@@ -17,10 +18,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-"""Toggle comment block to test Postgres connection"""
-from dotenv import load_dotenv
+# """Toggle comment block to test Postgres connection"""
+# from dotenv import load_dotenv
 
-load_dotenv(".env.local")
+# load_dotenv(".env.local")
 
 # """Toggle comment block to switch between local and production databases"""
 # engine = create_async_engine(
@@ -68,6 +69,7 @@ class DatabaseSessionManager:
     def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
         self._engine = create_async_engine(host, **engine_kwargs)
         self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
+        # self._logger = logging.getLogger(__name__)
 
     async def close(self):
         if self._engine is None:
@@ -88,6 +90,17 @@ class DatabaseSessionManager:
             except Exception:
                 await connection.rollback()
                 raise
+
+        # async with self._engine.begin() as connection:
+        #     self._logger.info("Starting new transaction")
+        #     try:
+        #         yield connection
+        #     except Exception as e:
+        #         self._logger.error("Exception occurred: %s", e)
+        #         await connection.rollback()
+        #         raise
+        #     else:
+        #         self._logger.info("Transaction completed")
 
     @contextlib.asynccontextmanager
     async def session(self) -> AsyncIterator[AsyncSession]:
