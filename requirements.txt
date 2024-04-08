@@ -12,3 +12,4 @@ types-passlib==1.7.7.12
 asyncpg==0.26.0
 PyJWT==2.8.0
 Werkzeug==2.2.2
+psycopg2-binary
