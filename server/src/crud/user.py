@@ -23,7 +23,11 @@ async def create_user(db_session: AsyncSession, user: UserRegister):
 
 async def get_users(db_session: AsyncSession):
     query = select(User)
-    return (await db_session.scalars(query)).all()
+    # return (await db_session.scalars(query)).all()
+    try:
+        return (await db_session.scalars(query)).all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 async def get_user(db_session: AsyncSession, user_id: str):
