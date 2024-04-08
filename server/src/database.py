@@ -73,7 +73,6 @@ class DatabaseSessionManager:
             autocommit=False,
             bind=self._engine,
             expire_on_commit=False,
-            poolclass=NullPool,
         )
         # self._logger = logging.getLogger(__name__)
 
@@ -126,7 +125,8 @@ class DatabaseSessionManager:
 sessionmanager = DatabaseSessionManager(
     os.environ.get("POSTGRES_URL")
     .replace("postgres://", "postgresql+asyncpg://", 1)
-    .replace("sslmode", "ssl")
+    .replace("sslmode", "ssl"),
+    {"poolclass": NullPool},
 )
 
 
