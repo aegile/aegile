@@ -38,15 +38,17 @@ class Base(DeclarativeBase):
 # """Toggle comment block to test production Postgres connection"""
 # engine = create_async_engine(url=settings.DATABASE_URL, echo=True)
 
+
 # """Toggle comment block to test local SQLite connection"""
 # engine = create_async_engine(
 #     "sqlite+aiosqlite:///db.sqlite3", connect_args={"check_same_thread": False}
 # )
-# @event.listens_for(Engine, "connect")
-# def set_sqlite_pragma(dbapi_connection, connection_record):
-#     cursor = dbapi_connection.cursor()
-#     cursor.execute("PRAGMA foreign_keys=ON")
-#     cursor.close()
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    if isinstance(dbapi_connection, SQLite3Connection):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 
 
 # ==============================================================================
