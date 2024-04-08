@@ -88,8 +88,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    # lifespan=lifespan,
-    # title=settings.project_name,
+    lifespan=lifespan,
+    title="aegile",
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
