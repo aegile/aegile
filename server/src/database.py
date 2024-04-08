@@ -4,11 +4,9 @@ import logging
 from typing import Any, AsyncIterator
 from pydantic import BaseModel
 
-# from sqlalchemy import create_engine, Column, Integer, String, select
-from sqlalchemy import event
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.pool import NullPool
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -17,18 +15,18 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-# """Toggle comment block to test Postgres connection"""
-# from dotenv import load_dotenv
+"""Toggle comment block to test Postgres connection"""
+from dotenv import load_dotenv
 
-# load_dotenv(".env.local")
+load_dotenv(".env.local")
 
-"""Toggle comment block to switch between local and production databases"""
-engine = create_async_engine(
-    os.environ.get("POSTGRES_URL")
-    .replace("postgres://", "postgresql+asyncpg://", 1)
-    .replace("sslmode", "ssl"),
-    # connect_args={"check_same_thread": False},
-)
+# """Toggle comment block to switch between local and production databases"""
+# engine = create_async_engine(
+#     os.environ.get("POSTGRES_URL")
+#     .replace("postgres://", "postgresql+asyncpg://", 1)
+#     .replace("sslmode", "ssl"),
+#     # connect_args={"check_same_thread": False},
+# )
 
 # """Toggle comment block to test local SQLite connection"""
 # engine = create_async_engine(
@@ -42,6 +40,15 @@ engine = create_async_engine(
 
 
 # ==============================================================================
+
+engine = create_engine(
+    os.environ.get("POSTGRES_URL").replace("postgres://", "postgresql://", 1)
+    # .replace("sslmode", "ssl"),
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+# ==============================================================================
 class Base(DeclarativeBase):
     def update(self, data: BaseModel):
         for field, value in data.model_dump().items():
@@ -49,18 +56,20 @@ class Base(DeclarativeBase):
                 setattr(self, field, value)
 
 
-SessionLocal = async_sessionmaker(engine)
+SessionLocal = sessionmaker(engine)
+
+Base.metadata.create_all(bind=engine)
 
 
-async def get_db_session():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def get_db_session():
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
 
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         yield db
     finally:
-        await db.close()
+        db.close()
 
 
 # class DatabaseSessionManager:
