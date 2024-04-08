@@ -19,6 +19,7 @@ async def create_user(db_session: AsyncSession, user: UserRegister):
     )
     db_session.add(user)
     await db_session.commit()
+    await db_session.close()
 
 
 async def get_users(db_session: AsyncSession):
