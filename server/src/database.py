@@ -9,11 +9,14 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 
 # """Toggle comment block to test Postgres connection"""
 # from dotenv import load_dotenv
+
 # load_dotenv(".env.local")
 
 """Toggle comment block to switch between local and production databases"""
 engine = create_async_engine(
-    os.environ.get("POSTGRES_URL").replace("postgres://", "postgresql+asyncpg://", 1),
+    os.environ.get("POSTGRES_URL")
+    .replace("postgres://", "postgresql+asyncpg://", 1)
+    .replace("sslmode", "ssl"),
     # connect_args={"check_same_thread": False},
 )
 
