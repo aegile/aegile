@@ -14,14 +14,24 @@ import CoursesRecents from './_components/courses-recents';
 import ErrorAlert from '@/components/error-alert';
 import GridListViewCard from '@/components/grid-list-view-card';
 import { Course } from '@/lib/types';
+import { getCookie } from 'cookies-next';
+import { cookies } from 'next/headers';
 
 async function getCourses() {
-  const res = await fetchServerAPIRequest('/api/v1/courses', 'GET');
-  if (res.status === 401)
-    return { error: "You don't have permission to view this page." };
-  // throw new Error("You don't have permission to view this page.");
+  const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`;
+  const accessToken = getCookie('access_token', { cookies });
+  console.log(url);
+  const res = await fetch(`${url}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      // ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+  });
 
+  if (!res.ok) return { error: 'An error occurred while fetching the data.' };
   const data = await res.json();
+  console.log(data);
   return data;
 }
 
@@ -31,13 +41,13 @@ export const metadata: Metadata = {
 
 export default async function CoursesPage() {
   const courses = await getCourses();
-  if (courses.error) return <ErrorAlert error={courses} />;
+  // if (courses.error) return <ErrorAlert error={courses} />;
   return (
     <div className="h-screen flex flex-col p-8 space-y-6 overflow-y-auto">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-semibold tracking-tight">My Courses</h2>
       </div>
-      <div className="flex-grow space-y-5 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:grid-rows-2 gap-5 sm:overflow-y-auto">
+      {/* <div className="flex-grow space-y-5 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:grid-rows-2 gap-5 sm:overflow-y-auto">
         <div className="sm:col-span-2 lg:row-span-2">
           <GridListViewCard<Course>
             dataName="courses"
@@ -49,7 +59,7 @@ export default async function CoursesPage() {
         </div>
         <CoursesCalendar courses={courses} />
         <CoursesRecents courses={courses} />
-      </div>
+      </div> */}
     </div>
   );
 }
