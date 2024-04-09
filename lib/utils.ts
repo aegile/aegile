@@ -27,24 +27,19 @@ export const fetchClientAPIRequest = async (
   }
 
   const session = await getSession();
-  const authToken = session?.accessToken;
+  // const authToken = session?.accessToken;
   // const jwtCookie = getCookie('_vercel_jwt');
   // const authToken = session.data?.accessToken;
-  console.warn('authToken', authToken);
+  // console.warn('authToken', authToken);
 
   options.headers = {
     ...options.headers,
-    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    // ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     // ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
   };
 
-  const routeProtocolPrefix =
-    process.env.NODE_ENV === 'production' &&
-    process.env.NEXT_PUBLIC_LOCAL !== 'true'
-      ? 'https://'
-      : 'http://';
-
-  const url = `${routeProtocolPrefix}${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
+  // const url = `${routeProtocolPrefix}${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
+  const url = `${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
   console.log(
     "🚀 ~ process.env.NODE_ENV === 'production':",
     process.env.NODE_ENV === 'production'
