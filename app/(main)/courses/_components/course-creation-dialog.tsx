@@ -11,14 +11,17 @@ import {
 import { CourseCreationForm } from './course-creation-form';
 
 import { PlusCircle } from 'lucide-react';
+import { TooltipButton } from '@/components/aegile/tooltip-button';
 
 export function CourseCreationDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create Course
+        <Button size="sm" className="h-7 gap-1">
+          <PlusCircle className="h-3.5 w-3.5" />
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            Create Course
+          </span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
