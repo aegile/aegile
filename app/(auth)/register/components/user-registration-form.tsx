@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { fetchClientAPIRequest } from '@/lib/utils';
 
 const nameSchema = z
   .string()
@@ -87,18 +86,13 @@ export function UserRegistrationForm() {
       </div>
     );
     const { confirmPassword, ...bodyData } = data;
-    const res = await fetchClientAPIRequest(
-      '/api/v1/auth/register',
-      'POST',
-      bodyData
-    );
-    // const response = await fetch('/api/v1/auth/register', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(bodyData),
-    // });
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyData),
+    });
 
     if (!res.ok) {
       // Handle error

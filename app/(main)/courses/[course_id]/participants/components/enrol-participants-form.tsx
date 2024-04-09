@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { fetchClientAPIRequest } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useParams } from 'next/navigation';
 import { User } from '@/lib/types';
@@ -68,16 +67,16 @@ export default function EnrolParticipantsForm({
         </pre>
       </div>
     );
-    const res = await fetchClientAPIRequest(
-      `/api/v1/courses/${course_id}/enroll`,
-      'POST',
-      data
-    );
-    if (!res.ok) {
-      const data = await res.json();
-      toast.error(data.message);
-      return;
-    }
+    // const res = await fetchClientAPIRequest(
+    //   `/api/v1/courses/${course_id}/enroll`,
+    //   'POST',
+    //   data
+    // );
+    // if (!res.ok) {
+    //   const data = await res.json();
+    //   toast.error(data.message);
+    //   return;
+    // }
     router.refresh();
   }
 

@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { fetchClientAPIRequest } from '@/lib/utils';
 
 export default function AlertDeleteDialog({
   deleteRoute,
@@ -24,16 +23,16 @@ export default function AlertDeleteDialog({
   setShowDeleteDialog: (showDeleteDialog: boolean) => void;
 }) {
   const router = useRouter();
-  
+
   async function handleDelete(route: string) {
     console.log('🚀 ~ handleDelete ~ route:', route);
 
-    const res = await fetchClientAPIRequest(route, 'DELETE');
-    if (!res.ok) {
-      const data = await res.json();
-      toast.error(data.message);
-      return;
-    }
+    // const res = await fetchClientAPIRequest(route, 'DELETE');
+    // if (!res.ok) {
+    //   const data = await res.json();
+    //   toast.error(data.message);
+    //   return;
+    // }
     toast.info('Deletion successful.');
   }
 

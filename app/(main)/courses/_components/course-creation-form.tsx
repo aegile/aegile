@@ -29,7 +29,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CourseCreationSchema } from '@/lib/schemas';
-import { fetchClientAPIRequest } from '@/lib/utils';
 
 export function CourseCreationForm() {
   const router = useRouter();
@@ -54,16 +53,16 @@ export function CourseCreationForm() {
       </div>
     );
 
-    const res = await fetchClientAPIRequest('/api/v1/courses', 'POST', {
-      ...data,
-    });
-    if (!res.ok) {
-      // Handle error
-      console.error('Course creation failed');
-      const data = await res.json();
-      toast.error(data.message);
-      return;
-    }
+    // const res = await fetchClientAPIRequest('/api/v1/courses', 'POST', {
+    //   ...data,
+    // });
+    // if (!res.ok) {
+    //   // Handle error
+    //   console.error('Course creation failed');
+    //   const data = await res.json();
+    //   toast.error(data.message);
+    //   return;
+    // }
     router.refresh();
   }
   const year = new Date().getFullYear().toString().slice(-2);
