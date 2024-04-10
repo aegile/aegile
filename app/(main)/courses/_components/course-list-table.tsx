@@ -73,9 +73,9 @@ const courses: Course[] = [
     createdAt: '2023-07-12 10:42 AM',
   },
   {
-    id: '21T1-COMP6443',
+    id: '21T1-COMP6441',
     code: 'COMP6441',
-    name: 'Web Security',
+    name: 'Security Engineering and Cyber Security',
     offering: '21T1',
     status: 'active',
     instructors: 'Richard Buckland',
@@ -123,9 +123,9 @@ const courses: Course[] = [
     createdAt: '2023-07-12 10:42 AM',
   },
   {
-    id: '23T1-COMP6443',
+    id: '23T1-COMP6441',
     code: 'COMP6441',
-    name: 'Web Security',
+    name: 'Security Engineering and Cyber Security',
     offering: '23T1',
     status: 'active',
     instructors: 'Richard Buckland',
@@ -173,9 +173,9 @@ const courses: Course[] = [
   //     createdAt: '2023-07-12 10:42 AM',
   //   },
   //   {
-  //     id: '23T1-COMP6443',
+  //     id: '23T1-COMP6441',
   //     code: 'COMP6441',
-  //     name: 'Web Security',
+  //     name: 'Security Engineering and Cyber Security',
   //     offering: '23T1',
   //     status: 'active',
   //     instructors: 'Richard Buckland',
@@ -247,7 +247,11 @@ export default function CourseListTable() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={'courses/' + course.id + '/edit'}>
+                          Edit
+                        </Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
