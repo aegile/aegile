@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 
 export default function BreadcrumbPath() {
   const pathname = usePathname();
@@ -19,8 +20,8 @@ export default function BreadcrumbPath() {
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>
         {breadcrumbPaths.map((path, index) => (
-          <>
-            <BreadcrumbItem key={index}>
+          <React.Fragment key={index}>
+            <BreadcrumbItem>
               <BreadcrumbLink asChild>
                 <Link href={`/${paths.slice(0, index + 1).join('/')}`}>
                   {path}
@@ -28,7 +29,7 @@ export default function BreadcrumbPath() {
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
-          </>
+          </React.Fragment>
         ))}
         <BreadcrumbPage>{paths[paths.length - 1]}</BreadcrumbPage>
       </BreadcrumbList>
