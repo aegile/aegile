@@ -27,7 +27,7 @@
             ],
             "settings": {
                 "terminal.integrated.env.linux": {
-                    "PYTHONPATH": "/workspaces/aegile/backend"
+                    "PYTHONPATH": "/workspaces/aegile/server"
                 },
                 "telemetry.telemetryLevel": "off",
                 "python.defaultInterpreterPath": "./.venv/bin/python",

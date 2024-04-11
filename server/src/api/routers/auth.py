@@ -11,12 +11,24 @@ router = APIRouter(
 
 
 @router.post("/login")
-async def login_existing_user(credentials: AuthLogin, db_session: DBSessionDep):
-    await login_user(db_session, credentials)
+def login_existing_user(credentials: AuthLogin, db_session: DBSessionDep):
+    login_user(db_session, credentials)
     return {"message": "Login success!!"}
 
 
 @router.post("/register")
-async def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
-    await register_user(db_session, credentials)
+def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
+    register_user(db_session, credentials)
     return {"message": "User regsitered successfully!!"}
+
+
+# @router.post("/login")
+# async def login_existing_user(credentials: AuthLogin, db_session: DBSessionDep):
+#     await login_user(db_session, credentials)
+#     return {"message": "Login success!!"}
+
+
+# @router.post("/register")
+# async def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
+#     await register_user(db_session, credentials)
+#     return {"message": "User regsitered successfully!!"}
