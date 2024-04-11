@@ -36,9 +36,9 @@ export default function CourseNavCollapsedMenu({
                     <LogoOutline className="h-6 w-6 transition-all group-hover:scale-110 dark:stroke-white" />
                     <div className="mb-2 mt-4 text-lg font-medium">aegile</div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      An integrated productivity platform centred around
-                      collaborative writing, workflow management and performance
-                      evaluation.
+                      An all-in-one productivity hub, fostering collaborative
+                      writing, streamlining workflow management, and enhancing
+                      performance evaluation.
                     </p>
                   </a>
                 </NavigationMenuLink>
