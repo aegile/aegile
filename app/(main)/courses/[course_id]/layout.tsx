@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import { fetchServerAPIRequest } from '@/lib/server-utils';
 import { CourseNav } from './_components/course-nav';
 import { Course } from '@/lib/types';
+import CourseNavCollapsedMenu from './course-nav-collapsed-menu';
+import Link from 'next/link';
+import CourseNavMenu from './_components/course-nav-menu';
 
 // async function getCourse(course_id: string) {
 //   const res = await fetchServerAPIRequest(
@@ -26,14 +29,10 @@ export default async function CourseLayout({
 }) {
   // const course: Course = await getCourse(params.course_id);
   return (
-    // <div className="h-full flex flex-col p-8 space-y-6 overflow-y-auto">
-    //   <div className="flex items-center justify-between">
-    //     <h2 className="text-3xl font-semibold tracking-tight">
-    //       {/* {course.code}: {course.name} ({course.term}) */}
-    //     </h2>
-    //   </div>
-    //   {/* <CourseNav course_id={params.course_id} /> */}
-    // </div>
-    <>{children}</>
+    <>
+      <CourseNavMenu course_id={params.course_id} />
+      <CourseNavCollapsedMenu course_id={params.course_id} />
+      {children}
+    </>
   );
 }
