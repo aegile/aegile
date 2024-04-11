@@ -248,7 +248,7 @@ export default function CourseListTable() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem asChild>
-                        <Link href={'courses/' + course.id + '/edit'}>
+                        <Link href={'courses/' + course.id + '/settings'}>
                           Edit
                         </Link>
                       </DropdownMenuItem>
