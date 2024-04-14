@@ -19,6 +19,7 @@ import { DataTableViewOptions } from '@/components/data-table/data-table-view-op
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
 
 import { names, roles } from './data';
+import { EnrolParticipantsDialog } from './components/enrol-participants-dialog';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -72,7 +73,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex flex-1 items-center space-x-2">
+        <DataTableViewOptions table={table} />
+        <EnrolParticipantsDialog course_id={'params.course_id'} />
+      </div>
     </div>
   );
 }
