@@ -8,6 +8,7 @@ import {
   Users2,
   User2,
 } from 'lucide-react';
+import { BellIcon, EyeNoneIcon, PersonIcon } from '@radix-ui/react-icons';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,7 @@ import {
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { DemoCookieSettings } from './_components/cookie-settings';
 
 export default function CourseSettingsGeneralPage() {
   // const courseData =  fetch course data
@@ -53,7 +55,7 @@ export default function CourseSettingsGeneralPage() {
   };
   return (
     // <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-    <div className="mx-auto grid max-w-[80rem] flex-1 auto-rows-max gap-4">
+    <div className="mx-auto grid w-full flex-1 auto-rows-max gap-4">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" className="h-7 w-7">
           <ChevronLeft className="h-4 w-4" />
@@ -127,118 +129,6 @@ export default function CourseSettingsGeneralPage() {
               </div>
             </CardContent>
           </Card>
-          <Card x-chunk="dashboard-07-chunk-1">
-            <CardHeader>
-              <CardTitle>Assignments</CardTitle>
-              <CardDescription>
-                Lipsum dolor sit amet, consectetur adipiscing elit
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-auto">Name</TableHead>
-                    <TableHead className="w-[100px]">Weight %</TableHead>
-                    <TableHead className="w-[150px]">Deadline</TableHead>
-                    <TableHead className="w-[100px]">Type</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-semibold">GGPC-001</TableCell>
-                    <TableCell>
-                      <Label htmlFor="stock-1" className="sr-only">
-                        Stock
-                      </Label>
-                      <Input id="stock-1" type="number" defaultValue="100" />
-                    </TableCell>
-                    <TableCell>
-                      <Label htmlFor="price-1" className="sr-only">
-                        Price
-                      </Label>
-                      <Input id="price-1" type="number" defaultValue="99.99" />
-                    </TableCell>
-                    <TableCell>
-                      <ToggleGroup
-                        type="single"
-                        defaultValue="s"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem value="s">
-                          <BookA className="h-4 w-4" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="m">
-                          <User2 className="h-4 w-4" />
-                        </ToggleGroupItem>
-                        <ToggleGroupItem value="l">
-                          <Users2 className="h-4 w-4" />
-                        </ToggleGroupItem>
-                      </ToggleGroup>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-semibold">GGPC-002</TableCell>
-                    <TableCell>
-                      <Label htmlFor="stock-2" className="sr-only">
-                        Stock
-                      </Label>
-                      <Input id="stock-2" type="number" defaultValue="143" />
-                    </TableCell>
-                    <TableCell>
-                      <Label htmlFor="price-2" className="sr-only">
-                        Price
-                      </Label>
-                      <Input id="price-2" type="number" defaultValue="99.99" />
-                    </TableCell>
-                    <TableCell>
-                      <ToggleGroup
-                        type="single"
-                        defaultValue="m"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem value="s">H</ToggleGroupItem>
-                        <ToggleGroupItem value="m">I</ToggleGroupItem>
-                        <ToggleGroupItem value="l">G</ToggleGroupItem>
-                      </ToggleGroup>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-semibold">GGPC-003</TableCell>
-                    <TableCell>
-                      <Label htmlFor="stock-3" className="sr-only">
-                        Stock
-                      </Label>
-                      <Input id="stock-3" type="number" defaultValue="32" />
-                    </TableCell>
-                    <TableCell>
-                      <Label htmlFor="price-3" className="sr-only">
-                        Stock
-                      </Label>
-                      <Input id="price-3" type="number" defaultValue="99.99" />
-                    </TableCell>
-                    <TableCell>
-                      <ToggleGroup
-                        type="single"
-                        defaultValue="s"
-                        variant="outline"
-                      >
-                        <ToggleGroupItem value="s">S</ToggleGroupItem>
-                        <ToggleGroupItem value="m">M</ToggleGroupItem>
-                        <ToggleGroupItem value="l">L</ToggleGroupItem>
-                      </ToggleGroup>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter className="justify-center border-t p-4">
-              <Button size="sm" variant="ghost" className="gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                Add Variant
-              </Button>
-            </CardFooter>
-          </Card>
           <Card x-chunk="dashboard-07-chunk-2">
             <CardHeader>
               <CardTitle>Course Category</CardTitle>
@@ -277,6 +167,33 @@ export default function CourseSettingsGeneralPage() {
               </div>
             </CardContent>
           </Card>
+          <div className="lg:columns-2 gap-4 space-y-4 lg:gap-8 lg:space-y-8 [&>*]:break-inside-avoid">
+            <DemoCookieSettings />
+
+            <Card x-chunk="dashboard-07-chunk-3">
+              <CardHeader>
+                <CardTitle>Course Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="status">Status</Label>
+                    <Select>
+                      <SelectTrigger id="status" aria-label="Select status">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="published">Active</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <DemoNotifications />
+          </div>
         </div>
         <div className="grid auto-rows-max sm:grid-cols-2 xl:grid-cols-1 items-start gap-4 lg:gap-8">
           <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
@@ -323,28 +240,6 @@ export default function CourseSettingsGeneralPage() {
             </CardContent>
           </Card>
           <div className="grid gap-4 lg:gap-8">
-            <Card x-chunk="dashboard-07-chunk-3">
-              <CardHeader>
-                <CardTitle>Course Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="status">Status</Label>
-                    <Select>
-                      <SelectTrigger id="status" aria-label="Select status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Active</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
             <Card x-chunk="dashboard-07-chunk-5">
               <CardHeader>
                 <CardTitle>Archive Course</CardTitle>
@@ -369,5 +264,47 @@ export default function CourseSettingsGeneralPage() {
       </div>
     </div>
     // </main>
+  );
+}
+
+export function DemoNotifications() {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>Notifications</CardTitle>
+        <CardDescription>
+          Choose what you want to be notified about.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-1">
+        <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
+          <BellIcon className="mt-px h-5 w-5" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">Everything</p>
+            <p className="text-sm text-muted-foreground">
+              Email digest, mentions & all activity.
+            </p>
+          </div>
+        </div>
+        <div className="-mx-2 flex items-start space-x-4 rounded-md bg-accent p-2 text-accent-foreground transition-all">
+          <PersonIcon className="mt-px h-5 w-5" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">Available</p>
+            <p className="text-sm text-muted-foreground">
+              Only mentions and comments.
+            </p>
+          </div>
+        </div>
+        <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
+          <EyeNoneIcon className="mt-px h-5 w-5" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">Ignoring</p>
+            <p className="text-sm text-muted-foreground">
+              Turn off all notifications.
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

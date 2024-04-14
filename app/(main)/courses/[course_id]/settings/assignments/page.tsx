@@ -50,7 +50,7 @@ export default function CourseSettingsAssignmentsPage() {
     createdAt: '2023-07-12 10:42 AM',
   };
   return (
-    <div className="mx-auto grid max-w-[80rem] flex-1 auto-rows-max gap-4">
+    <div className="mx-auto grid w-full flex-1 auto-rows-max gap-4">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" className="h-7 w-7">
           <ChevronLeft className="h-4 w-4" />
