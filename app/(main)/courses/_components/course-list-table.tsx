@@ -225,7 +225,14 @@ export default function CourseListTable() {
                     width="64"
                   />
                 </TableCell>
-                <TableCell className="font-medium">{course.name}</TableCell>
+                <TableCell className="font-medium">
+                  <Link
+                    href={`/courses/${course.id}`}
+                    className="hover:underline"
+                  >
+                    {course.name}
+                  </Link>
+                </TableCell>
                 <TableCell>{course.code}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   <Badge variant="outline">{course.status}</Badge>
