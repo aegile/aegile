@@ -11,7 +11,7 @@ export default function CourseSettingsAdminPage() {
           <span className="sr-only">Back</span>
         </Button>
         <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-          Administration
+          Roles
         </h1>
       </div>
     </div>
