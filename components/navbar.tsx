@@ -92,6 +92,7 @@ const linksAnalytics = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const path = '/' + pathname.split('/')[1];
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <TooltipProvider>
@@ -111,7 +112,7 @@ export default function NavBar() {
                   href={link.path}
                   className={cn(
                     'flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8',
-                    link.path === pathname && 'bg-accent text-accent-foreground'
+                    link.path === path && 'bg-accent text-accent-foreground'
                   )}
                 >
                   <link.icon className="h-5 w-5" />
@@ -130,7 +131,7 @@ export default function NavBar() {
                   href={link.path}
                   className={cn(
                     'flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8',
-                    link.path === pathname && 'bg-accent text-accent-foreground'
+                    link.path === path && 'bg-accent text-accent-foreground'
                   )}
                 >
                   <link.icon className="h-5 w-5" />
