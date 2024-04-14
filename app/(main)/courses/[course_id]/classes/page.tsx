@@ -40,7 +40,7 @@ import {
 } from '@/components/ui/table';
 import React from 'react';
 
-export function CardComponent({ children }: { children: React.ReactNode }) {
+function CardComponent({ children }: { children: React.ReactNode }) {
   return (
     <Card>
       <CardHeader className="px-7">
