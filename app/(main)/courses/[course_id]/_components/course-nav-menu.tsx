@@ -13,8 +13,8 @@ const coursePageLinks = [
     href: 'participants',
   },
   {
-    title: 'Assignment',
-    href: 'assignment',
+    title: 'Assignments',
+    href: 'assignments',
   },
   {
     title: 'Grades',
