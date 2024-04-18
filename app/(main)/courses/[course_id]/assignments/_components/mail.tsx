@@ -44,6 +44,10 @@ interface MailProps {
   navCollapsedSize: number;
 }
 
+type MailState = {
+  selected: Mail['id'] | null;
+};
+
 export function Mail({
   accounts,
   mails,
@@ -52,7 +56,9 @@ export function Mail({
   navCollapsedSize,
 }: MailProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
-  const { mail } = useMail();
+  const [mail, setMail] = React.useState<MailState>({
+    selected: mails[0].id,
+  });
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -65,7 +71,7 @@ export function Mail({
         }}
         className="h-full max-h-[800px] items-stretch"
       >
-        <ResizablePanel defaultSize={defaultLayout[0]} minSize={30}>
+        <ResizablePanel defaultSize={445} minSize={30}>
           <Tabs defaultValue="all">
             <div className="flex items-center px-4 py-2">
               <h1 className="text-xl font-bold">Inbox</h1>
@@ -85,24 +91,28 @@ export function Mail({
               </TabsList>
             </div>
             <Separator />
-            <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="p-4 backdrop-blur">
               <form>
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Search" className="pl-8" />
+                  <Input placeholder="Search" className="pl-8 bg-background" />
                 </div>
               </form>
             </div>
             <TabsContent value="all" className="m-0">
-              <MailList items={mails} />
+              <MailList items={mails} mail={mail} setMail={setMail} />
             </TabsContent>
             <TabsContent value="unread" className="m-0">
-              <MailList items={mails.filter((item) => !item.read)} />
+              <MailList
+                items={mails.filter((item) => !item.read)}
+                mail={mail}
+                setMail={setMail}
+              />
             </TabsContent>
           </Tabs>
         </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]}>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={910} minSize={30}>
           <MailDisplay
             mail={mails.find((item) => item.id === mail.selected) || null}
           />

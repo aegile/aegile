@@ -1,33 +1,35 @@
 import { ComponentProps } from 'react';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { formatDistanceToNow } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Mail } from '../data';
-import { useMail } from '../use-mail';
+
+type MailState = {
+  selected: Mail['id'] | null;
+};
 
 interface MailListProps {
   items: Mail[];
+  mail: MailState;
+  setMail: (item: MailState) => void;
 }
 
-export function MailList({ items }: MailListProps) {
-  const { mail, setMail } = useMail();
-
+export function MailList({ items, mail, setMail }: MailListProps) {
   return (
-    <ScrollArea className="h-screen">
+    <ScrollArea className="h-[680px]">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <button
             key={item.id}
             className={cn(
-              'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
-              mail.selected === item.id && 'bg-muted'
+              'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all duration-300 bg-background/80 hover:bg-accent',
+              mail.selected === item.id && 'border-primary'
             )}
             onClick={() =>
               setMail({
-                // ...mail,
                 selected: item.id,
               })
             }
@@ -48,9 +50,9 @@ export function MailList({ items }: MailListProps) {
                       : 'text-muted-foreground'
                   )}
                 >
-                  {/* {formatDistanceToNow(new Date(item.date), {
+                  {formatDistanceToNow(new Date(item.date), {
                     addSuffix: true,
-                  })} */}
+                  })}
                 </div>
               </div>
               <div className="text-xs font-medium">{item.subject}</div>
