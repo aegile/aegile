@@ -95,7 +95,7 @@ export default function NavBar() {
   const path = '/' + pathname.split('/')[1];
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
           <Link
             href="#"
