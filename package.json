@@ -48,7 +48,7 @@
     "cmdk": "^0.2.0",
     "concurrently": "^8.0.1",
     "cookies-next": "^4.1.0",
-    "date-fns": "^3.2.0",
+    "date-fns": "^3.6.0",
     "eslint": "8.40.0",
     "eslint-config-next": "^14.0.4",
     "lucide-react": "^0.304.0",
