@@ -69,7 +69,7 @@ export function Mail({
             sizes
           )}`;
         }}
-        className="h-full max-h-[800px] items-stretch"
+        className="h-full"
       >
         <ResizablePanel defaultSize={445} minSize={30}>
           <Tabs defaultValue="all">

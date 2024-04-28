@@ -19,7 +19,7 @@ interface MailListProps {
 
 export function MailList({ items, mail, setMail }: MailListProps) {
   return (
-    <ScrollArea className="h-[680px]">
+    <ScrollArea className="h-[calc(100vh-16.25rem)]">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <button
