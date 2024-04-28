@@ -40,6 +40,7 @@ import { Input } from '@/components/ui/input';
 import Container from './components/container';
 import Items from './components/item';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 type DNDType = {
   id: UniqueIdentifier;
@@ -54,7 +55,7 @@ export default function DndListContext() {
   const [containers, setContainers] = useState<DNDType[]>([
     {
       id: 'container-0',
-      title: 'hello0',
+      title: 'Backlog',
       items: [
         { id: 'item-0', title: 'there0' },
         { id: 'item-1', title: 'there1' },
@@ -63,19 +64,11 @@ export default function DndListContext() {
         { id: 'item-4', title: 'there4' },
       ],
     },
-    { id: 'container-1', title: 'hello1', items: [] },
-    {
-      id: 'container-2-asglkasghljaksgasgl aslgihashglhasgh  ahsioghoias hoighaios',
-      title: 'hello2',
-      items: [],
-    },
-    { id: 'container-3', title: 'hello3', items: [] },
-    { id: 'container-4', title: 'hello4', items: [] },
-    { id: 'container-5', title: 'hello5', items: [] },
-    { id: 'container-6', title: 'hello6', items: [] },
-    { id: 'container-7', title: 'hello7', items: [] },
-    { id: 'container-8', title: 'hello8', items: [] },
-    { id: 'container-9', title: 'hello9', items: [] },
+    { id: 'container-1', title: 'Todo', items: [] },
+    { id: 'container-2', title: 'In Progress', items: [] },
+    { id: 'container-3', title: 'Done', items: [] },
+    { id: 'container-4', title: 'Canceled', items: [] },
+    { id: 'container-5', title: 'In Review', items: [] },
   ]);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const [currentContainerId, setCurrentContainerId] =
@@ -344,7 +337,7 @@ export default function DndListContext() {
   }
 
   return (
-    <div className="w-full h-full">
+    <div className="h-full flex flex-col">
       <Dialog>
         <DialogTrigger>
           <Button variant="outline">
@@ -404,55 +397,59 @@ export default function DndListContext() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className="h-full p-2 flex overflow-x-auto gap-8 touch-pan-x scroll-auto">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={pointerWithin}
-          onDragStart={handleDragStart}
-          onDragMove={handleDragMove}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={containers.map((container) => container.id)}
-            // strategy={horizontalListSortingStrategy}
+      {/* h-full p-2 flex overflow-x-auto gap-2 touch-pan-x scroll-auto */}
+      <ScrollArea className="h-full [&>*]:[&>*]:h-full w-[calc(100vw-6.5rem)]">
+        <div className="h-full flex p-2 gap-2 touch-pan-x">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={pointerWithin}
+            onDragStart={handleDragStart}
+            onDragMove={handleDragMove}
+            onDragEnd={handleDragEnd}
           >
-            {containers.map((container) => (
-              <Container
-                key={container.id}
-                id={container.id}
-                title={container.title}
-                onAddItem={() => {
-                  setShowAddItemModal(true);
-                  setCurrentContainerId(container.id);
-                }}
-              >
-                <SortableContext
-                  items={container.items.map((i) => i.id)}
-                  // strategy={verticalListSortingStrategy}
+            <SortableContext
+              items={containers.map((container) => container.id)}
+              // strategy={horizontalListSortingStrategy}
+            >
+              {containers.map((container) => (
+                <Container
+                  key={container.id}
+                  id={container.id}
+                  title={container.title}
+                  onAddItem={() => {
+                    setShowAddItemModal(true);
+                    setCurrentContainerId(container.id);
+                  }}
                 >
-                  <div className="flex items-start flex-col gap-y-4 h-full">
-                    {container.items.map((i) => (
-                      <Items title={i.title} id={i.id} key={i.id} />
-                    ))}
-                  </div>
-                </SortableContext>
-              </Container>
-            ))}
-          </SortableContext>
-          <DragOverlay adjustScale={false}>
-            {activeId && activeId.toString().includes('item') && (
-              <Items id={activeId} title={findItemTitle(activeId)} />
-            )}
-            {activeId && activeId.toString().includes('container') && (
-              <Container
-                id={activeId}
-                title={findContainerTitle(activeId)}
-                isOverlay
-              />
-            )}
-          </DragOverlay>
-        </DndContext>
-      </div>
+                  <SortableContext
+                    items={container.items.map((i) => i.id)}
+                    // strategy={verticalListSortingStrategy}
+                  >
+                    <div className="flex items-start flex-col gap-y-4 h-full">
+                      {container.items.map((i) => (
+                        <Items title={i.title} id={i.id} key={i.id} />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </Container>
+              ))}
+            </SortableContext>
+            <DragOverlay adjustScale={false}>
+              {activeId && activeId.toString().includes('item') && (
+                <Items id={activeId} title={findItemTitle(activeId)} />
+              )}
+              {activeId && activeId.toString().includes('container') && (
+                <Container
+                  id={activeId}
+                  title={findContainerTitle(activeId)}
+                  isOverlay
+                />
+              )}
+            </DragOverlay>
+          </DndContext>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 }
