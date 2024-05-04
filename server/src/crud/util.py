@@ -2,28 +2,49 @@ from functools import wraps
 from typing import List
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
+
+# from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.course import CourseEnrolment
 from src.models.user import User, UserSetManager
 
 
-async def fetch_one(db_session: AsyncSession, model, query_id: str):
+def fetch_one(db_session: Session, model, query_id: str):
     query = select(model).where(model.id == query_id)
-    item = (await db_session.scalars(query)).first()
+    item = (db_session.scalars(query)).first()
     if not item:
         raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
     return item
 
 
-async def fetch_many(db_session: AsyncSession, model, query_ids: List[str]):
+def fetch_many(db_session: Session, model, query_ids: List[str]):
     query = select(model).where(model.id.in_(query_ids))
-    items = (await db_session.scalars(query)).first()
+    items = (db_session.scalars(query)).first()
     if len(items) != len(query_ids):
         raise HTTPException(
             status_code=400,
             detail=f"Some or all {model.__name__.lower()}s were not found",
         )
     return items
+
+
+# async def fetch_one(db_session: AsyncSession, model, query_id: str):
+#     query = select(model).where(model.id == query_id)
+#     item = (await db_session.scalars(query)).first()
+#     if not item:
+#         raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
+#     return item
+
+
+# async def fetch_many(db_session: AsyncSession, model, query_ids: List[str]):
+#     query = select(model).where(model.id.in_(query_ids))
+#     items = (await db_session.scalars(query)).first()
+#     if len(items) != len(query_ids):
+#         raise HTTPException(
+#             status_code=400,
+#             detail=f"Some or all {model.__name__.lower()}s were not found",
+#         )
+#     return items
 
 
 # POST   - database will encounter FOREIGN KEY error if id doesn't exist
