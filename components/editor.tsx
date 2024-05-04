@@ -87,7 +87,7 @@ export default function Editor({
         editable={canEdit && isEditable}
         sideMenu={false}
         // theme={customTheme[theme as "light" | "dark"]}
-        theme={blockNoteTheme}
+        theme={blockNoteTheme as "dark" | "light"}
         onChange={() => {
           setBlocks(editor.document);
         }}
