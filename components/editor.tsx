@@ -104,7 +104,6 @@ export default function Editor({
       editor={editor}
       editable={editable}
       sideMenu={false}
-      className="z-50"
       // theme={customTheme[theme as "light" | "dark"]}
       theme={blockNoteTheme as "dark" | "light"}
       onChange={() => {
