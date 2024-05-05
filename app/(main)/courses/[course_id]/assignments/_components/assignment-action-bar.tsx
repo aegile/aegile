@@ -11,6 +11,7 @@ import {
   Trash2,
   ClipboardListIcon,
   PlusIcon,
+  Edit2Icon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -69,22 +70,12 @@ export function AssignmentActionBar({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" disabled={disabled}>
-              <ArchiveX className="h-4 w-4" />
-              <span className="sr-only">Move to junk</span>
+              <Edit2Icon className="h-4 w-4" />
+              <span className="sr-only">Edit assignment</span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Move to junk</TooltipContent>
+          <TooltipContent>Edit assignment</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" disabled={disabled}>
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Move to trash</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Move to trash</TooltipContent>
-        </Tooltip>
-        <Separator orientation="vertical" className="mx-1 h-6" />
         <Tooltip>
           <Popover>
             <PopoverTrigger asChild>
@@ -132,6 +123,16 @@ export function AssignmentActionBar({
           </Popover>
           <TooltipContent>Snooze</TooltipContent>
         </Tooltip>
+        <Separator orientation="vertical" className="mx-1 h-6" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" disabled={disabled}>
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Move to trash</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Move to trash</TooltipContent>
+        </Tooltip>
       </div>
       <div className="ml-auto flex items-center gap-2">
         <Tooltip>
@@ -144,7 +145,7 @@ export function AssignmentActionBar({
                 </Button>
               </TooltipTrigger>
             </DialogTrigger>
-            <DialogContent className="sm:max-h-md">
+            <DialogContent className="max-h-[70%] min-w-fit">
               <DialogHeader>
                 <DialogTitle>Add Deliverable</DialogTitle>
                 <DialogDescription>
