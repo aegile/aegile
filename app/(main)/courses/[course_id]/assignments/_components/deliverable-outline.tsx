@@ -86,7 +86,7 @@ export function DeliverableOutline({
     fetchDescription();
   }, [deliverableId]);
   return (
-    <AccordionItem value={deliverableId}>
+    <AccordionItem value={deliverableId} key={JSON.stringify(description)}>
       <div className="group flex items-center justify-between gap-2 overflow-hidden rounded-lg">
         <AccordionTrigger>
           {deliverableName}
@@ -110,7 +110,10 @@ export function DeliverableOutline({
           <Skeleton className="h-8 w-full rounded-lg" />
         ) : (
           <div>
-            <DeliverableOutlineEditDialog defaultBlocks={description} />
+            <DeliverableOutlineEditDialog
+              defaultBlocks={description}
+              setDescription={setDescription}
+            />
             <Editor defaultBlocks={description} />
           </div>
         )}
@@ -121,8 +124,10 @@ export function DeliverableOutline({
 
 function DeliverableOutlineEditDialog({
   defaultBlocks,
+  setDescription,
 }: {
   defaultBlocks: Object[];
+  setDescription: (description: Object[]) => void;
 }) {
   const [blocks, setBlocks] = useState<Object[]>([]);
   return (
@@ -162,6 +167,7 @@ function DeliverableOutlineEditDialog({
                     </pre>
                   </div>,
                 );
+                if (blocks.length > 0) setDescription(blocks);
               }}
             >
               <SaveIcon className="mr-2 h-4 w-4" /> Save

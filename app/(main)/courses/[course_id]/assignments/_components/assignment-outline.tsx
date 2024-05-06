@@ -84,15 +84,19 @@ export function AssignmentOutline({ assignmentId }: AssignmentOutlineProps) {
 
     fetchDescription();
   }, [assignmentId]);
+
   return (
-    <AccordionItem value={assignmentId}>
+    <AccordionItem value={assignmentId} key={JSON.stringify(description)}>
       <AccordionTrigger>Assignment Outline</AccordionTrigger>
       <AccordionContent>
         {isLoading ? (
-          <Skeleton className="h-8 w-full rounded-lg" />
+          <Skeleton className="h-20 w-full rounded-lg" />
         ) : (
           <div>
-            <AssignmentOutlineEditDialog defaultBlocks={description} />
+            <AssignmentOutlineEditDialog
+              defaultBlocks={description}
+              setDescription={setDescription}
+            />
             <Editor defaultBlocks={description} />
           </div>
         )}
@@ -103,8 +107,10 @@ export function AssignmentOutline({ assignmentId }: AssignmentOutlineProps) {
 
 function AssignmentOutlineEditDialog({
   defaultBlocks,
+  setDescription,
 }: {
   defaultBlocks: Object[];
+  setDescription: (description: Object[]) => void;
 }) {
   const [blocks, setBlocks] = useState<Object[]>([]);
   return (
@@ -144,6 +150,7 @@ function AssignmentOutlineEditDialog({
                     </pre>
                   </div>,
                 );
+                if (blocks.length > 0) setDescription(blocks);
               }}
             >
               <SaveIcon className="mr-2 h-4 w-4" /> Save
