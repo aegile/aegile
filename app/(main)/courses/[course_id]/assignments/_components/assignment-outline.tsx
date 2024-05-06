@@ -112,6 +112,7 @@ function AssignmentOutlineEditDialog({
   defaultBlocks: Object[];
   setDescription: (description: Object[]) => void;
 }) {
+  // blocks is empty whenever the dialog opens. Edits will populate the list
   const [blocks, setBlocks] = useState<Object[]>([]);
   return (
     <Dialog>
@@ -121,7 +122,10 @@ function AssignmentOutlineEditDialog({
           <span className="sr-only">Edit Assignment Outline</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[70%] min-w-fit">
+      <DialogContent
+        className="max-h-[70%] min-w-fit"
+        onInteractOutside={(e) => blocks.length > 0 && e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Edit Assignment Outline</DialogTitle>
           <DialogDescription>
@@ -139,6 +143,7 @@ function AssignmentOutlineEditDialog({
           <DialogClose asChild>
             <Button
               type="button"
+              disabled={blocks.length <= 0}
               onClick={() => {
                 toast(
                   <div className="w-full">
