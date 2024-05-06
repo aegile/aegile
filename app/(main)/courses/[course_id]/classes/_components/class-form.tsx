@@ -30,7 +30,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ClassFormSchema } from '@/lib/schemas';
-import { fetchClientAPIRequest } from '@/lib/utils';
 
 type ClassFormProps = {
   defaultValues: z.infer<typeof ClassFormSchema>;
@@ -63,20 +62,20 @@ export function ClassForm({
       </div>
     );
     const { name, capacity, day, start_time, end_time, location } = data;
-    const res = await fetchClientAPIRequest(fetchRoute, method, {
-      name,
-      capacity,
-      day,
-      times: `${start_time} - ${end_time}`,
-      location,
-    });
-    if (!res.ok) {
-      // Handle error
-      console.error('Class creation failed');
-      const data = await res.json();
-      toast.error(data.message);
-      return;
-    }
+    // const res = await fetchClientAPIRequest(fetchRoute, method, {
+    //   name,
+    //   capacity,
+    //   day,
+    //   times: `${start_time} - ${end_time}`,
+    //   location,
+    // });
+    // if (!res.ok) {
+    //   // Handle error
+    //   console.error('Class creation failed');
+    //   const data = await res.json();
+    //   toast.error(data.message);
+    //   return;
+    // }
     router.refresh();
   }
 

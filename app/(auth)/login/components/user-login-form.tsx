@@ -19,7 +19,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { LoginSchema } from '@/lib/schemas';
-import { login } from '@/lib/actions/login';
 
 export function UserLoginForm() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -43,14 +42,25 @@ export function UserLoginForm() {
       </div>
     );
     setIsLoading(true);
-    login(values).then((data) => {
-      console.log(data);
-      // if (data?.success) toast.success(data.success);
-      data?.error
-        ? toast.error(data.error)
-        : toast.success('Login successful!');
-      setIsLoading(false);
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
     });
+    const data = await res.json();
+    console.log(data);
+    if (data?.access_token) {
+      setCookie('access_token', data.access_token);
+    }
+    if (data?.success) toast.success(data.success);
+    data?.error ? toast.error(data.error) : toast.success('Login successful!');
+    setIsLoading(false);
+
+    // router.push('/dashboard');
+    setIsLoading(false);
+    return;
   }
 
   return (

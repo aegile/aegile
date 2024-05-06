@@ -34,14 +34,15 @@ const Items = ({ id, title }: ItemsType) => {
         transform: CSS.Translate.toString(transform),
       }}
       className={clsx(
-        'px-2 py-4 bg-white shadow-md w-full border cursor-grab',
+        'px-2 py-4 rounded-md bg-white dark:bg-[#1a1c1e] shadow-md w-full cursor-grab',
         isDragging
           ? 'opacity-50 border-primary'
-          : 'border-transparent hover:border-gray-200'
+          : 'hover:bg-[#fbfbfb] hover:dark:bg-[#242629]'
       )}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between text-sm">
         {title}
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit.
         {/* <DragHandleDots2Icon
           className="w-4 h-4 text-muted cursor-grab"
         /> */}

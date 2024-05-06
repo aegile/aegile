@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 
-import { logout } from '@/lib/actions/logout';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -30,9 +29,7 @@ export default function ErrorAlert({ error }: { error: { error: string } }) {
         </CardHeader>
         <CardContent>Please try logging in again.</CardContent>
         <CardFooter className="flex justify-around gap-3">
-          <Button className="w-full" onClick={() => logout()}>
-            Log In
-          </Button>
+          <Button className="w-full">Log In</Button>
         </CardFooter>
       </Card>
     </main>
