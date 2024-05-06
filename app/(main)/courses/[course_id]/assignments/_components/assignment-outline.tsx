@@ -112,7 +112,7 @@ function AssignmentOutlineEditDialog({
   defaultBlocks: Object[];
   setDescription: (description: Object[]) => void;
 }) {
-  // blocks is empty whenever the dialog opens. Edits will populate the list
+  // blocks is empty whenever the dialog opens. Edits will populate the array
   const [blocks, setBlocks] = useState<Object[]>([]);
   return (
     <Dialog>

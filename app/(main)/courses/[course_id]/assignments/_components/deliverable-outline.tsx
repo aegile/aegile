@@ -129,6 +129,7 @@ function DeliverableOutlineEditDialog({
   defaultBlocks: Object[];
   setDescription: (description: Object[]) => void;
 }) {
+  // blocks is empty whenever the dialog opens. Edits will populate the array
   const [blocks, setBlocks] = useState<Object[]>([]);
   return (
     <Dialog>
@@ -138,7 +139,10 @@ function DeliverableOutlineEditDialog({
           <span className="sr-only">Edit Deliverable Outline</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[70%] min-w-fit">
+      <DialogContent
+        className="max-h-[70%] min-w-fit"
+        onInteractOutside={(e) => blocks.length > 0 && e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Edit Deliverable Outline</DialogTitle>
           <DialogDescription>
@@ -156,6 +160,7 @@ function DeliverableOutlineEditDialog({
           <DialogClose asChild>
             <Button
               type="button"
+              disabled={blocks.length <= 0}
               onClick={() => {
                 toast(
                   <div className="w-full">
