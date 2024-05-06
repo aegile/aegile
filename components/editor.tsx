@@ -111,7 +111,7 @@ export default function Editor({
         //   initLoad = false;
         //   return;
         // }
-        // if (isEditable && !hasEdited) setHasEdited(true);
+        if (editable && !hasEdited) setHasEdited(true);
         // setBlocks(editor.document);
         if (editable && setContentCallback) {
           setContentCallback(editor.document);
