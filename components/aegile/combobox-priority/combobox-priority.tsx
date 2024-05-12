@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { PiCellSignalNoneDuotone } from 'react-icons/pi';
-
-import { Button } from '@/components/ui/button';
+import { PiCellSignalNoneDuotone } from "react-icons/pi";
+import { AiOutlineDash } from "react-icons/ai";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -10,63 +10,89 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 
-import { priorities } from './data';
-import { SelectPriority, SelectPriorityProps } from './types';
+import { priorities } from "./data";
+import { SelectPriority, SelectPriorityProps } from "./types";
+import { cn } from "@/lib/utils";
 
 export default function ComboboxPriority({
   selectedPriority,
+  setSelectedPriority,
+  isIcon = false,
 }: SelectPriorityProps) {
   const [open, setOpen] = React.useState(false);
-
   return (
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-center">
-            {selectedPriority && selectedPriority.value.value !== 'none' ? (
-              <>
-                <selectedPriority.value.icon className="mr-1 h-4 w-4 shrink-0" />
-                {selectedPriority.value.label}
-              </>
-            ) : (
-              <div className="flex text-muted-foreground">
-                <PiCellSignalNoneDuotone className="mr-1 h-4 w-4 shrink-0" />
-                Priority
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "h-7 justify-center bg-transparent",
+              isIcon && "w-7",
+              !selectedPriority && "text-muted-foreground",
+            )}
+          >
+            {!selectedPriority ? (
+              <div className="flex">
+                <AiOutlineDash
+                  className={cn("h-4 w-4 shrink-0", !isIcon && "mr-1")}
+                />
+                {!isIcon && "Priority"}
               </div>
+            ) : (
+              <>
+                <selectedPriority.icon
+                  className={cn("h-4 w-4 shrink-0", !isIcon && "mr-1")}
+                />
+                {!isIcon && selectedPriority.label}
+              </>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-fit" side="bottom" align="start">
+        <PopoverContent className="w-fit p-0" side="bottom" align="start">
           <Command>
             <CommandInput placeholder="Change priority..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
-                {priorities.map((priority) => (
+                <CommandItem
+                  value="none"
+                  onSelect={(value) => {
+                    setSelectedPriority(null);
+                    setOpen(false);
+                  }}
+                >
+                  <AiOutlineDash className="mr-2 h-4 w-4" />
+                  None
+                  {!selectedPriority && <span className="ml-auto">✓</span>}
+                </CommandItem>
+                {priorities.map((pty) => (
                   <CommandItem
-                    key={priority.value}
-                    value={priority.value}
+                    key={pty.value}
+                    value={pty.value}
                     onSelect={(value) => {
-                      selectedPriority.value =
-                        priorities.find(
-                          (priority) => priority.value === value
-                        ) || priorities[0];
+                      setSelectedPriority(
+                        priorities.find((pty) => pty.value === value) ||
+                          priorities[0],
+                      );
                       setOpen(false);
                     }}
                   >
-                    <priority.icon className="mr-2 h-4 w-4" />
+                    <pty.icon className="mr-2 h-4 w-4" />
 
-                    {priority.label}
-                    {priority.value === selectedPriority.value.value && (
-                      <span className="ml-auto">✓</span>
-                    )}
+                    {pty.label}
+                    {selectedPriority &&
+                      pty.value === selectedPriority.value && (
+                        <span className="ml-auto">✓</span>
+                      )}
                   </CommandItem>
                 ))}
               </CommandGroup>

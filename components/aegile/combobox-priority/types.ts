@@ -1,7 +1,8 @@
-import { IconType } from 'react-icons';
-import { LucideIcon } from 'lucide-react';
+import { IconType } from "react-icons";
 
-import { Signal } from '@preact/signals-react';
+import { LucideIcon } from "lucide-react";
+
+import { Signal } from "@preact/signals-react";
 
 export type SelectPriority = {
   value: string;
@@ -10,5 +11,7 @@ export type SelectPriority = {
 };
 
 export type SelectPriorityProps = {
-  selectedPriority: Signal<SelectPriority>;
+  selectedPriority: SelectPriority | null;
+  setSelectedPriority: (value: SelectPriority | null) => void;
+  isIcon?: boolean;
 };

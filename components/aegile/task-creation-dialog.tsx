@@ -1,12 +1,12 @@
-'use client';
-import * as React from 'react';
+"use client";
+import * as React from "react";
 
-import { Paperclip } from 'lucide-react';
-import { Signal } from '@preact/signals-react';
-import { useSignal } from '@preact/signals-react';
+import { Paperclip } from "lucide-react";
+import { Signal } from "@preact/signals-react";
+import { useSignal } from "@preact/signals-react";
 
-import { TooltipButton } from '@/components/aegile/tooltip-button';
-import { Button } from '@/components/ui/button';
+import { TooltipButton } from "@/components/aegile/tooltip-button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -16,39 +16,49 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 // import { Separator } from '../ui/separator';
 
 import {
   ComboboxStatus,
   SelectStatus,
   statuses,
-} from '@/components/aegile/combobox-status';
+} from "@/components/aegile/combobox-status";
 import {
   ComboboxPriority,
   SelectPriority,
   priorities,
-} from '@/components/aegile/combobox-priority';
+} from "@/components/aegile/combobox-priority";
 import {
   ComboboxAssignee,
   SelectAssignee,
   assignees,
-} from '@/components/aegile/combobox-assignee';
-import MultiSelectCombobox from './multiselect-combobox/multiselect-combobox';
+} from "@/components/aegile/combobox-assignee";
+import MultiSelectCombobox from "./multiselect-combobox/multiselect-combobox";
+import { ComboboxDatepicker } from "./combobox-datepicker/combobox-datepicker";
 
-export function TaskCreationDialog() {
-  const currStatus: Signal<SelectStatus> = useSignal(statuses[1]);
-  const currPriority: Signal<SelectPriority> = useSignal(priorities[0]);
-  const currAssignee: Signal<SelectAssignee> = useSignal(assignees[0]);
+export function TaskCreationDialog({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  // const currStatus: Signal<SelectStatus> = useSignal(statuses[1]);
+  const [currStatus, setCurrStatus] = React.useState(statuses[1]);
+  // const currPriority: Signal<SelectPriority> = useSignal(priorities[0]);
+  const [currPriority, setCurrPriority] = React.useState<SelectPriority | null>(
+    null,
+  );
+  // const currAssignee: Signal<SelectAssignee> = useSignal(assignees[0]);
+  const [currAssignee, setCurrAssignee] = React.useState<SelectAssignee | null>(
+    null,
+  );
   const currLabels: Signal<SelectStatus[]> = useSignal([]);
-  console.log('RERENDED DIALOG');
+  // console.log("RERENDED DIALOG");
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button>Create New Task</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
       // onInteractOutside={(e) => e.preventDefault()}
       >
@@ -68,18 +78,28 @@ export function TaskCreationDialog() {
           </DialogHeader>
           <Input
             placeholder="Task title"
-            className="text-md font-semibold p-0 border-none shadow-none focus:outline-none focus-visible:ring-0"
+            className="text-md border-none p-0 font-semibold shadow-none focus:outline-none focus-visible:ring-0"
           />
           <Textarea
             id="link"
             placeholder="Add description..."
-            className="p-0 border-none shadow-none focus:outline-none focus-visible:ring-0 max-h-[500px]"
+            className="max-h-[500px] border-none p-0 shadow-none focus:outline-none focus-visible:ring-0"
           />
         </div>
-        <div className="flex gap-2 mr-auto">
-          <ComboboxStatus selectedStatus={currStatus} />
-          <ComboboxPriority selectedPriority={currPriority} />
-          <ComboboxAssignee selectedAssignee={currAssignee} />
+        <div className="mr-auto flex gap-2">
+          <ComboboxStatus
+            selectedStatus={currStatus}
+            setSelectedStatus={setCurrStatus}
+          />
+          <ComboboxPriority
+            selectedPriority={currPriority}
+            setSelectedPriority={setCurrPriority}
+          />
+          <ComboboxAssignee
+            selectedAssignee={currAssignee}
+            setSelectedAssignee={setCurrAssignee}
+          />
+          <ComboboxDatepicker />
           <MultiSelectCombobox
             selectionName="tags"
             selections={statuses}

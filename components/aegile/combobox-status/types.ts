@@ -1,5 +1,5 @@
-import { LucideIcon } from 'lucide-react';
-import { Signal } from '@preact/signals-react';
+import { LucideIcon } from "lucide-react";
+import { Signal } from "@preact/signals-react";
 
 export type SelectStatus = {
   value: string;
@@ -8,5 +8,14 @@ export type SelectStatus = {
 };
 
 export type SelectStatusProps = {
-  selectedStatus: Signal<SelectStatus>;
+  selectedStatus: SelectStatus;
+  setSelectedStatus: (value: SelectStatus) => void;
+  isIcon?: boolean;
+  btnVariant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
 };

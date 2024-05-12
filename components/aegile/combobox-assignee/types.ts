@@ -1,4 +1,4 @@
-import { Signal } from '@preact/signals-react';
+import { Signal } from "@preact/signals-react";
 
 export type SelectAssignee = {
   value: string;
@@ -7,5 +7,7 @@ export type SelectAssignee = {
 };
 
 export type SelectAssigneeProps = {
-  selectedAssignee: Signal<SelectAssignee>;
+  selectedAssignee: SelectAssignee | null;
+  setSelectedAssignee: (value: SelectAssignee | null) => void;
+  isIcon?: boolean;
 };

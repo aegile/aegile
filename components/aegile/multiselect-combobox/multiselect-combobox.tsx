@@ -1,9 +1,9 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Tag } from 'lucide-react';
+import { Tag } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Command,
   CommandEmpty,
@@ -11,14 +11,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Signal } from '@preact/signals-react';
-import { useSignals } from '@preact/signals-react/runtime';
+} from "@/components/ui/popover";
+import { Signal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 
 interface SelectionBase {
   value: string;
@@ -43,7 +43,7 @@ export default function MultiSelectCombobox<T extends SelectionBase>({
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="h-7 bg-transparent">
             {selected.value.length > 0 ? (
               <>
                 {selected.value.length === 1 ? (
@@ -59,7 +59,7 @@ export default function MultiSelectCombobox<T extends SelectionBase>({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-fit" side="bottom" align="start">
+        <PopoverContent className="w-fit p-0" side="bottom" align="start">
           <Command>
             <CommandInput placeholder={`Change ${selectionName}...`} />
             <CommandList>
@@ -68,7 +68,7 @@ export default function MultiSelectCombobox<T extends SelectionBase>({
                 {[
                   ...selected.value,
                   ...selections.filter(
-                    (option) => !selected.value.includes(option)
+                    (option) => !selected.value.includes(option),
                   ),
                 ].map((option) => (
                   //   <div className="flex items-center px-1 rounded-sm hover:bg-zinc-100 dark:hover:bg-zinc-800">
@@ -82,7 +82,7 @@ export default function MultiSelectCombobox<T extends SelectionBase>({
                       selected.value = isSelected
                         ? selected.value.filter(
                             (selectedOption) =>
-                              selectedOption.value !== option.value
+                              selectedOption.value !== option.value,
                           )
                         : [...selected.value, option];
 

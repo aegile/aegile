@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Signal } from '@preact/signals-react';
+import { Signal } from "@preact/signals-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -10,42 +10,54 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 
-import { SelectStatus, SelectStatusProps } from './types';
-import { statuses } from './data';
+import { SelectStatus, SelectStatusProps } from "./types";
+import { statuses } from "./data";
+import { cn } from "@/lib/utils";
 
-export default function ComboboxStatus({ selectedStatus }: SelectStatusProps) {
+export default function ComboboxStatus({
+  selectedStatus,
+  setSelectedStatus,
+  isIcon = false,
+  btnVariant = "outline",
+}: SelectStatusProps) {
   const [open, setOpen] = React.useState(false);
 
-  function setSelectedStatus(status: SelectStatus | null) {
+  function setStatus(status: SelectStatus | null) {
     if (!status) {
       status = statuses[0];
     }
-    selectedStatus.value = status;
+    setSelectedStatus(status);
   }
 
   return (
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="justify-center">
+          <Button
+            variant={btnVariant}
+            size="sm"
+            className={`h-7 justify-center bg-transparent ${isIcon && "mr-1 w-7"}`}
+          >
             {selectedStatus ? (
               <>
-                <selectedStatus.value.icon className="mr-1 h-4 w-4 shrink-0" />
-                {selectedStatus.value.label}
+                <selectedStatus.icon
+                  className={cn("h-4 w-4 shrink-0", !isIcon && "mr-1 px-0")}
+                />
+                {!isIcon && selectedStatus.label}
               </>
             ) : (
               <>+ Set status</>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-fit" side="bottom" align="start">
+        <PopoverContent className="w-fit p-0" side="bottom" align="start">
           <Command>
             <CommandInput placeholder="Change status..." />
             <CommandList>
@@ -55,22 +67,21 @@ export default function ComboboxStatus({ selectedStatus }: SelectStatusProps) {
                   <CommandItem
                     key={status.value}
                     value={status.value}
-                    defaultChecked={
-                      status.value === selectedStatus.value?.value
-                    }
+                    defaultChecked={status.value === selectedStatus.value}
                     onSelect={(value) => {
-                      setSelectedStatus(
+                      console.log("🚀 ~ value:", value);
+                      setStatus(
                         statuses.find((priority) => priority.value === value) ||
-                          null
+                          null,
                       );
                       setOpen(false);
                     }}
                   >
                     <status.icon className="mr-2 h-4 w-4" />
                     {status.label}
-                    {/* {status.value === selectedStatus.value?.value && (
+                    {status.value === selectedStatus.value && (
                       <span className="ml-auto">✓</span>
-                    )} */}
+                    )}
                   </CommandItem>
                 ))}
               </CommandGroup>
