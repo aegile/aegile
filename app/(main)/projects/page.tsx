@@ -1,14 +1,7 @@
-import DndListContext from './DndListContext';
-
 export default async function ProjectsPage() {
   return (
-    // <div className="h-screen flex flex-col p-8 space-y-6 overflow-y-auto">
-    //   <div className="flex items-center justify-between">
-    //     <h2 className="text-3xl font-semibold tracking-tight">My Courses</h2>
-    //   </div>
-    <main className="flex-grow grid items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-      <DndListContext />
+    <main className="grid flex-grow items-start p-4 sm:px-6 sm:py-0">
+      PROJECTS PAGE - list or grid of your current and past project groups.
     </main>
-    // </div>
   );
 }
