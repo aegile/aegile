@@ -19,7 +19,7 @@ import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
 //   return data;
 // }
 
-export default async function ClassLayout({
+export default function ClassLayout({
   params,
   children,
 }: {

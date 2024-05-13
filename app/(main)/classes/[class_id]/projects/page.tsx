@@ -103,7 +103,7 @@ const assignments = [
   },
 ];
 
-export default async function ClassesHomePage() {
+export default function ClassesHomePage() {
   return (
     <main className="grid flex-1 flex-grow gap-4 bg-muted/40 p-4 pb-0 sm:px-6 md:gap-8">
       <ProjectsInbox items={assignments} />

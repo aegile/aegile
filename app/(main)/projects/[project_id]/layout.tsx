@@ -19,7 +19,7 @@ import { Description } from "@radix-ui/react-dialog";
 //   return data;
 // }
 
-export default async function ProjectPageLayout({
+export default function ProjectPageLayout({
   params,
   children,
 }: {
