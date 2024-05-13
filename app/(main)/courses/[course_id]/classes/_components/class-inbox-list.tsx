@@ -1,11 +1,11 @@
-import { ComponentProps } from 'react';
-import { format, formatDistanceToNow } from 'date-fns';
-import { CircleIcon, StarIcon, Presentation } from 'lucide-react';
+import { ComponentProps } from "react";
+import { format, formatDistanceToNow } from "date-fns";
+import { CircleIcon, StarIcon, Presentation } from "lucide-react";
 
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Tutorial } from '../types';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Tutorial } from "../types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ClassInboxListProps {
   items: Tutorial[];
@@ -28,8 +28,8 @@ export function ClassInboxList({
             <button
               key={index}
               className={cn(
-                'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all duration-300 bg-background/80 hover:bg-accent',
-                selected === tut.id && 'border-primary/30 bg-accent'
+                "flex flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:bg-accent",
+                selected === tut.id && "border-primary/30 bg-accent",
               )}
               onClick={() => setSelected(tut.id)}
             >
@@ -45,10 +45,10 @@ export function ClassInboxList({
                   </div>
                 </div>
                 <div className="font-light">
-                  {format(tut.datetime, 'EEEE haaa')}, @ {tut.location}
+                  {format(tut.datetime, "EEEE haaa")}, @ {tut.location}
                 </div>
               </div>
-              <div className="line-clamp-2 text-xs text-muted-foreground flex space-x-2">
+              <div className="line-clamp-2 flex space-x-2 text-xs text-muted-foreground">
                 <div className="flex items-center">
                   <CircleIcon className="mr-1 h-3 w-3 fill-sky-400 text-sky-400" />
                   TypeScript

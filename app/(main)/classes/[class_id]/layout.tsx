@@ -1,3 +1,5 @@
+"use client";
+
 import { Metadata } from "next";
 import { fetchServerAPIRequest } from "@/lib/server-utils";
 import { Course } from "@/lib/types";
@@ -17,37 +19,19 @@ import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
 //   return data;
 // }
 
-export default async function CourseLayout({
+export default function ClassLayout({
   params,
   children,
 }: {
-  params: { course_id: string };
+  params: { class_id: string };
   children: React.ReactNode;
 }) {
   // const course: Course = await getCourse(params.course_id);
-
   const links = [
     {
-      title: "Classes",
-      href: "classes",
-      description:
-        "Get ready to explore all the amazing classes we have lined up for you!",
-    },
-    {
-      title: "Participants",
-      href: "participants",
-      description: "Meet your fellow course participants and start networking!",
-    },
-    {
-      title: "Assignments",
-      href: "assignments",
-      description:
-        "Challenge yourself with our engaging and thought-provoking assignments!",
-    },
-    {
-      title: "Grades",
-      href: "grades",
-      description: "Check out your progress and celebrate your achievements!",
+      title: "Projects",
+      href: "projects",
+      description: "View and manage your class projects for each assignment.",
     },
     {
       title: "Settings",
@@ -56,12 +40,13 @@ export default async function CourseLayout({
         "Customize your course experience to suit your learning style!",
     },
   ];
+
   return (
     <>
-      <NavMenuBar route="courses" page_id={params.course_id} links={links} />
+      <NavMenuBar route="classes" page_id={params.class_id} links={links} />
       <NavCollapsedMenu
-        route="courses"
-        page_id={params.course_id}
+        route="classes"
+        page_id={params.class_id}
         links={links}
       />
       {children}

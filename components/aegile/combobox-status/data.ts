@@ -3,35 +3,41 @@ import {
   Circle,
   CircleDashed,
   CircleDot,
+  Loader2,
   XCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { SelectStatus } from './types';
+import { SelectStatus } from "./types";
 
 export const statuses: SelectStatus[] = [
   {
-    value: 'backlog',
-    label: 'Backlog',
+    value: "backlog",
+    label: "Backlog",
     icon: CircleDashed,
   },
   {
-    value: 'todo',
-    label: 'Todo',
+    value: "todo",
+    label: "Todo",
     icon: Circle,
   },
   {
-    value: 'in progress',
-    label: 'In Progress',
+    value: "in progress",
+    label: "In Progress",
     icon: CircleDot,
   },
   {
-    value: 'done',
-    label: 'Done',
+    value: "in review",
+    label: "In Review",
+    icon: Loader2,
+  },
+  {
+    value: "done",
+    label: "Done",
     icon: CheckCircle,
   },
   {
-    value: 'canceled',
-    label: 'Canceled',
+    value: "canceled",
+    label: "Canceled",
     icon: XCircle,
   },
 ];

@@ -1,4 +1,4 @@
-import { addDays, addHours, format, nextSaturday } from 'date-fns';
+import { addDays, addHours, format, nextSaturday } from "date-fns";
 import {
   Archive,
   ArchiveX,
@@ -10,36 +10,38 @@ import {
   Trash2,
   GraduationCap,
   GraduationCapIcon,
-} from 'lucide-react';
-import Image from 'next/image';
+  ArrowRightIcon,
+} from "lucide-react";
+import Image from "next/image";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Tutorial } from '../types';
+} from "@/components/ui/tooltip";
+import { Tutorial } from "../types";
+import Link from "next/link";
 
 interface ClassInboxDisplayProps {
   item: Tutorial | null;
@@ -49,7 +51,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
   const today = new Date();
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       <div className="flex items-center p-2">
         <div className="flex items-center gap-2">
           <Tooltip>
@@ -63,12 +65,14 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!item}>
-                <ArchiveX className="h-4 w-4" />
-                <span className="sr-only">Move to junk</span>
+              <Button variant="ghost" size="icon" disabled={!item} asChild>
+                <Link href={`/classes/${item?.id}`}>
+                  <ArrowRightIcon className="h-4 w-4" />
+                  <span className="sr-only">View class</span>
+                </Link>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Move to junk</TooltipContent>
+            <TooltipContent>View class</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -98,9 +102,9 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
                       variant="ghost"
                       className="justify-start font-normal"
                     >
-                      Later today{' '}
+                      Later today{" "}
                       <span className="ml-auto text-muted-foreground">
-                        {format(addHours(today, 4), 'E, h:m b')}
+                        {format(addHours(today, 4), "E, h:m b")}
                       </span>
                     </Button>
                     <Button
@@ -109,7 +113,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
                     >
                       Tomorrow
                       <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 1), 'E, h:m b')}
+                        {format(addDays(today, 1), "E, h:m b")}
                       </span>
                     </Button>
                     <Button
@@ -118,7 +122,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
                     >
                       This weekend
                       <span className="ml-auto text-muted-foreground">
-                        {format(nextSaturday(today), 'E, h:m b')}
+                        {format(nextSaturday(today), "E, h:m b")}
                       </span>
                     </Button>
                     <Button
@@ -127,7 +131,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
                     >
                       Next week
                       <span className="ml-auto text-muted-foreground">
-                        {format(addDays(today, 7), 'E, h:m b')}
+                        {format(addDays(today, 7), "E, h:m b")}
                       </span>
                     </Button>
                   </div>
@@ -190,7 +194,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
         <Tabs defaultValue="issues" className="flex-1">
           <div className="flex items-start p-4">
             <div className="flex items-start gap-4 text-sm">
-              <Avatar className="justify-center items-center bg-muted border">
+              <Avatar className="items-center justify-center border bg-muted">
                 <GraduationCapIcon className="h-6 w-6" />
               </Avatar>
               <div className="grid gap-1">
@@ -229,7 +233,7 @@ export function ClassInboxDisplay({ item }: ClassInboxDisplayProps) {
                 <div className="w-full h-[200px] bg-red-100" />
               </div>
             </ScrollArea> */}
-            <div className="h-full w-full flex justify-center">
+            <div className="flex h-full w-full justify-center">
               <Image
                 src="/illustrations/not-found/not-found-empty-box.svg"
                 alt="Data not found."

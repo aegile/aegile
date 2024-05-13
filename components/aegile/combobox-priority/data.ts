@@ -5,44 +5,49 @@ import {
   SignalLow,
   SignalMedium,
   SignalZero,
-} from 'lucide-react';
+} from "lucide-react";
 
 import {
-  PiCellSignalNoneDuotone,
-  PiCellSignalLowDuotone,
-  PiCellSignalMediumDuotone,
-  PiCellSignalFullDuotone,
-  PiWarningCircleDuotone,
-} from 'react-icons/pi';
+  MdSignalCellularAlt,
+  MdSignalCellularAlt1Bar,
+  MdSignalCellularAlt2Bar,
+} from "react-icons/md";
 
-import { LuAlertCircle } from 'react-icons/lu';
+import {
+  PiCellSignalNoneFill,
+  PiCellSignalLowFill,
+  PiCellSignalMediumFill,
+  PiCellSignalFullFill,
+  PiWarningCircleFill,
+} from "react-icons/pi";
+import { AiOutlineDash } from "react-icons/ai";
 
-import { SelectPriority } from './types';
+import { LuAlertCircle } from "react-icons/lu";
+
+import { SelectPriority } from "./types";
 
 export const priorities: SelectPriority[] = [
   {
-    value: 'none',
-    label: 'None',
-    icon: PiCellSignalNoneDuotone,
+    value: "urgent",
+    label: "Urgent",
+    icon: PiWarningCircleFill,
   },
   {
-    value: 'urgent',
-    label: 'Urgent',
-    icon: PiWarningCircleDuotone,
+    value: "high",
+    label: "High",
+    // icon: PiCellSignalFullFill,
+    icon: MdSignalCellularAlt,
   },
   {
-    value: 'high',
-    label: 'High',
-    icon: PiCellSignalFullDuotone,
+    value: "medium",
+    label: "Medium",
+    // icon: PiCellSignalMediumFill,
+    icon: MdSignalCellularAlt2Bar,
   },
   {
-    value: 'medium',
-    label: 'Medium',
-    icon: PiCellSignalMediumDuotone,
-  },
-  {
-    value: 'low',
-    label: 'Low',
-    icon: PiCellSignalLowDuotone,
+    value: "low",
+    label: "Low",
+    // icon: PiCellSignalLowFill,
+    icon: MdSignalCellularAlt1Bar,
   },
 ];
