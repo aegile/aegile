@@ -8,6 +8,12 @@ import {
 } from "lucide-react";
 
 import {
+  MdSignalCellularAlt,
+  MdSignalCellularAlt1Bar,
+  MdSignalCellularAlt2Bar,
+} from "react-icons/md";
+
+import {
   PiCellSignalNoneFill,
   PiCellSignalLowFill,
   PiCellSignalMediumFill,
@@ -29,16 +35,19 @@ export const priorities: SelectPriority[] = [
   {
     value: "high",
     label: "High",
-    icon: PiCellSignalFullFill,
+    // icon: PiCellSignalFullFill,
+    icon: MdSignalCellularAlt,
   },
   {
     value: "medium",
     label: "Medium",
-    icon: PiCellSignalMediumFill,
+    // icon: PiCellSignalMediumFill,
+    icon: MdSignalCellularAlt2Bar,
   },
   {
     value: "low",
     label: "Low",
-    icon: PiCellSignalLowFill,
+    // icon: PiCellSignalLowFill,
+    icon: MdSignalCellularAlt1Bar,
   },
 ];
