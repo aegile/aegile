@@ -53,7 +53,7 @@ export function ProjectsInbox<T extends Assignment>({
         // }}
         className="h-full"
       >
-        <ResizablePanel defaultSize={30} minSize={30}>
+        <ResizablePanel defaultSize={20} minSize={20}>
           <Tabs defaultValue="ongoing">
             <div className="flex items-center p-4 py-2 pl-1">
               <h1 className="text-xl font-bold">Course Assignments</h1>

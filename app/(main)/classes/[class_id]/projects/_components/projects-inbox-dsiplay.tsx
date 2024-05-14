@@ -37,7 +37,8 @@ export function ProjectsInboxDisplay({ item }: ProjectsInboxDisplayProps) {
           </div>
           <Separator />
           <ScrollArea className="h-[calc(100vh-16rem)]">
-            <div className="grid flex-1 grid-flow-row gap-2 p-4 text-sm lg:grid-cols-2 xl:grid-cols-3">
+            <div className="grid flex-1 grid-flow-row gap-4 p-4 text-sm lg:grid-cols-2 xl:grid-cols-3">
+              <ProjectsCard />
               <ProjectsCard />
               <ProjectsCard />
               <ProjectsCard />
