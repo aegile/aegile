@@ -17,16 +17,16 @@ const locale = {
   formatRelative: (token: string | number) => formatRelativeLocale[token],
 };
 
-export function formatDatetimeRelative(date: Date) {
+export function formatDatetimeRelative(date: string | Date) {
   return formatRelative(date, new Date(), { locale });
 }
 
-export function formatDatetimeFormal(date: Date) {
+export function formatDatetimeFormal(date: string | Date) {
   return format(date, "d MMM yyyy, h:mm a");
   return formatRelative(date, new Date(), { locale });
 }
 
-export function formatDatetimeDistance(date: Date) {
+export function formatDatetimeDistance(date: string | Date) {
   return formatDistanceToNow(date, { addSuffix: true });
 }
 // Compare this snippet from node_modules/date-fns/locale/en-AU/_lib/formatRelative/index.js:
