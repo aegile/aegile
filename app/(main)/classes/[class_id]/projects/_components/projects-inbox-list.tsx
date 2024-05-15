@@ -1,7 +1,11 @@
 "use client";
+
 import { ComponentProps } from "react";
+import Link from "next/link";
+
 import { formatDistanceToNow } from "date-fns";
 
+import { formatDatetimeDistance, formatDatetimeFormal } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,7 +24,7 @@ type Assignment = {
 
 interface ProjectsInboxListProps {
   items: Assignment[];
-  selected: string;
+  selected: string | null;
   setSelected: (id: string) => void;
 }
 
@@ -33,13 +37,15 @@ export function ProjectsInboxList({
     <ScrollArea className="h-[calc(100vh-15.5rem)]">
       <div className="flex flex-col gap-2 py-2 pl-1 pr-4">
         {items.map((item) => (
-          <button
+          <Link
+            id={item.id}
             key={item.id}
             className={cn(
               "flex flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:bg-accent",
               selected === item.id && "border-primary/30 bg-accent",
             )}
-            onClick={() => setSelected(item.id)}
+            href={`?ass=${item.id}`}
+            // onClick={() => setSelected(item.id)}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">
@@ -56,16 +62,18 @@ export function ProjectsInboxList({
                       ? "text-foreground"
                       : "text-muted-foreground",
                   )}
+                  suppressHydrationWarning
                 >
-                  {formatDistanceToNow(new Date(item.deadline), {
-                    addSuffix: true,
-                  })}
+                  Due: {formatDatetimeFormal(new Date(item.deadline))}
                 </div>
               </div>
               <div className="text-xs font-medium">{item.variant}</div>
             </div>
             <div className="line-clamp-2 text-xs text-muted-foreground">
-              {item.description.substring(0, 300)}
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
+              nesciunt incidunt perspiciatis suscipit? Adipisci officia
+              praesentium pariatur fugit, autem deserunt explicabo similique
+              tenetur ut aliquam repellendus magni temporibus id. Ut.
             </div>
             {item.labels.length ? (
               <div className="flex items-center gap-2">
@@ -76,7 +84,7 @@ export function ProjectsInboxList({
                 ))}
               </div>
             ) : null}
-          </button>
+          </Link>
         ))}
       </div>
     </ScrollArea>

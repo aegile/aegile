@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useSearchParams } from "next/navigation";
+
 import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -13,8 +15,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ProjectsInboxList } from "./projects-inbox-list";
+
 import { ProjectsInboxDisplay } from "./projects-inbox-dsiplay";
+import { ProjectsInboxList } from "./projects-inbox-list";
+
 // import { AccountSwitcher } from './account-switcher';
 // import { AssignmentInboxDisplay } from "./assignment-inbox-display";
 // import { AssignmentInboxList } from "./assignment-inbox-list";
@@ -40,7 +44,12 @@ interface ProjectsInboxProps<T extends Assignment> {
 export function ProjectsInbox<T extends Assignment>({
   items,
 }: ProjectsInboxProps<T>) {
-  const [selected, setSelected] = React.useState(items[0].id);
+  const searchParams = useSearchParams();
+  const assignment = searchParams.get("ass");
+  const [selected, setSelected] = React.useState(assignment);
+  React.useEffect(() => {
+    setSelected(assignment);
+  }, [assignment]);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -53,7 +62,7 @@ export function ProjectsInbox<T extends Assignment>({
         // }}
         className="h-full"
       >
-        <ResizablePanel defaultSize={20} minSize={20}>
+        <ResizablePanel defaultSize={25} minSize={25}>
           <Tabs defaultValue="ongoing">
             <div className="flex items-center p-4 py-2 pl-1">
               <h1 className="text-xl font-bold">Course Assignments</h1>
@@ -98,7 +107,7 @@ export function ProjectsInbox<T extends Assignment>({
           </Tabs>
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel defaultSize={70} minSize={30}>
+        <ResizablePanel defaultSize={75} minSize={75}>
           <ProjectsInboxDisplay
             item={items.find((item) => item.id === selected) || null}
           />
