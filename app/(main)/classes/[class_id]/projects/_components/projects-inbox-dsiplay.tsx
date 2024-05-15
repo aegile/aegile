@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import { ClipboardListIcon } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Accordion } from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { ClientDateTime } from "@/components/custom/client-datetime";
 
 import { Assignment } from "../data";
 import { ProjectsActionBar } from "./projects-action-bar";
@@ -32,7 +33,11 @@ export function ProjectsInboxDisplay({ item }: ProjectsInboxDisplayProps) {
               </div>
             </div>
             <div className="ml-auto text-xs text-muted-foreground">
-              <p>{item.deadline && format(new Date(item.deadline), "PPpp")}</p>
+              <p>
+                {item.deadline && (
+                  <ClientDateTime datetime={item.deadline} variant="formal" />
+                )}
+              </p>
             </div>
           </div>
           <Separator />

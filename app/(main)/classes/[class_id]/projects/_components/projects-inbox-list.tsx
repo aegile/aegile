@@ -1,6 +1,6 @@
 "use client";
 
-import { ComponentProps } from "react";
+import React, { ComponentProps } from "react";
 import Link from "next/link";
 
 import { formatDistanceToNow } from "date-fns";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { ClientDateTime } from "@/components/custom/client-datetime";
 
 type Assignment = {
   id: string;
@@ -33,6 +34,12 @@ export function ProjectsInboxList({
   selected,
   setSelected,
 }: ProjectsInboxListProps) {
+  const [localDate, setLocalDate] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    const dateTime = formatDatetimeFormal(new Date());
+    setLocalDate(dateTime);
+  }, []);
+
   return (
     <ScrollArea className="h-[calc(100vh-15.5rem)]">
       <div className="flex flex-col gap-2 py-2 pl-1 pr-4">
@@ -62,9 +69,9 @@ export function ProjectsInboxList({
                       ? "text-foreground"
                       : "text-muted-foreground",
                   )}
-                  suppressHydrationWarning
                 >
-                  Due: {formatDatetimeFormal(new Date(item.deadline))}
+                  Due:{" "}
+                  <ClientDateTime datetime={item.deadline} variant="formal" />
                 </div>
               </div>
               <div className="text-xs font-medium">{item.variant}</div>

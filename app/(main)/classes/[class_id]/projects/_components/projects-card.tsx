@@ -1,17 +1,26 @@
 "use client";
 
-import { format, formatRelative, subDays } from "date-fns";
-import { enAU } from "date-fns/locale";
-import { AvatarGroup } from "@/components/custom/avatar-group";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+
 import {
+  CheckCircledIcon,
   ChevronDownIcon,
   CircleIcon,
   PlusIcon,
   StarIcon,
   UpdateIcon,
 } from "@radix-ui/react-icons";
+import { format, formatRelative, subDays, subHours, toDate } from "date-fns";
+import { enAU } from "date-fns/locale";
 
+import {
+  formatDatetimeDistance,
+  formatDatetimeFormal,
+  formatDatetimeRelative,
+} from "@/lib/datetime";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,12 +39,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { formatDatetimeRelative, formatDatetimeFormal } from "@/lib/datetime";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { AvatarGroup } from "@/components/custom/avatar-group";
+import { ClientDateTime } from "@/components/custom/client-datetime";
 
 const users = [
   { name: "Shad", avatar: "" },
@@ -75,13 +82,13 @@ const badges: BadgeType[] = [
 ];
 
 export default function ProjectsCard() {
-  const lastUpdate = subDays(new Date(), 276);
+  const lastUpdate = subHours(toDate(new Date()), 5);
   const randomBadge = badges[Math.floor(Math.random() * badges.length)];
   return (
     <Link
       id={"asgasg"}
       className="rounded-lg border bg-background/80 shadow-sm transition-all duration-300 hover:bg-accent"
-      href={`/projects/${Math.floor(Math.random() * 90 + 10)}`}
+      href={`/projects/1`}
     >
       <CardHeader className="grid grid-cols-[1fr_110px] items-start gap-4 space-y-0 pb-3">
         <div className="space-y-1">
@@ -122,16 +129,25 @@ export default function ProjectsCard() {
         </div>
       </CardHeader>
       <CardContent className="pb-3">
-        <div className="flex items-center justify-between ">
-          <Badge variant={randomBadge.variant} className="mb-2">
+        <div className="flex items-center justify-between space-x-3">
+          {/* <Badge variant={randomBadge.variant} className="mb-2">
             {randomBadge.text}
+          </Badge> */}
+          <Badge variant="destructive" className="mb-2">
+            Pending
           </Badge>
-          Due: {formatDatetimeFormal(lastUpdate)}
+          <div className="truncate">
+            Due: <ClientDateTime datetime={lastUpdate} />
+            {/* {formatDatetimeFormal(lastUpdate)} */}
+          </div>
         </div>
         <div className="flex items-center justify-between">
           <AvatarGroup>
             {users.map((user, index) => (
-              <Avatar className={cn("h-8 w-8", index > 0 && "-ml-2")}>
+              <Avatar
+                className={cn("h-8 w-8", index > 0 && "-ml-2")}
+                key={`avatar-${index}`}
+              >
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>{user.name}</AvatarFallback>
               </Avatar>
@@ -149,17 +165,21 @@ export default function ProjectsCard() {
               <CircleIcon className="mr-1 h-3 w-3 fill-sky-400 text-sky-400" />
               TypeScript
             </div> */}
+          {/* <div className="flex items-center">
+            <CheckCircledIcon className="mr-1 h-3 w-3" />
+            13/76
+          </div> */}
           <div className="flex items-center">
             <StarIcon className="mr-1 h-3 w-3" />2 Disputes
           </div>
           <div className="flex items-center">
             <UpdateIcon className="mr-1 h-3 w-3" />
-            {formatDatetimeRelative(lastUpdate)}
+            <ClientDateTime datetime={lastUpdate} variant="relative" />
           </div>
         </div>
       </CardContent>
       <Separator />
-      <CardFooter className="block py-4 text-muted-foreground">
+      <CardFooter className="block py-3 text-muted-foreground">
         <div className="mb-2 flex items-center justify-between">
           <p>Progress</p>
           <p>33%</p>
