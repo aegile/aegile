@@ -84,6 +84,13 @@ const badges: BadgeType[] = [
 export default function ProjectsCard() {
   const lastUpdate = subHours(toDate(new Date()), 5);
   const randomBadge = badges[Math.floor(Math.random() * badges.length)];
+  const tasksCompleted = 360;
+  const totalTasks = 360;
+  const totalTasksDigits = Math.floor(Math.log10(totalTasks) + 1) - 1;
+  const progressFrac = `${tasksCompleted}/${totalTasks}`;
+  const progressPerc = ((tasksCompleted / totalTasks) * 100).toFixed(
+    totalTasksDigits,
+  );
   return (
     <Link
       id={"asgasg"}
@@ -128,7 +135,7 @@ export default function ProjectsCard() {
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="pb-3">
+      <CardContent className="pb-3 text-xs">
         <div className="flex items-center justify-between space-x-3">
           {/* <Badge variant={randomBadge.variant} className="mb-2">
             {randomBadge.text}
@@ -160,7 +167,7 @@ export default function ProjectsCard() {
             </Avatar>
           </div>
         </div>
-        <div className="mt-2 flex justify-between space-x-4 text-sm text-muted-foreground">
+        <div className="mt-2 flex justify-between space-x-4 text-sm text-muted-foreground text-xs">
           {/* <div className="flex items-center">
               <CircleIcon className="mr-1 h-3 w-3 fill-sky-400 text-sky-400" />
               TypeScript
@@ -179,10 +186,17 @@ export default function ProjectsCard() {
         </div>
       </CardContent>
       <Separator />
-      <CardFooter className="block py-3 text-muted-foreground">
-        <div className="mb-2 flex items-center justify-between">
-          <p>Progress</p>
-          <p>33%</p>
+      <CardFooter className="group gap-x-3 px-5 py-3 text-muted-foreground text-xs">
+        <div className="flex items-center">
+          <CheckCircledIcon className="mr-1 h-3 w-3" />
+          <div className="relative w-fit flex items-center justify-center group">
+            <p className="transition-opacity duration-200 ease-in-out group-hover:opacity-0">
+              {progressFrac}
+            </p>
+            <p className="absolute transition-opacity duration-200 ease-in-out opacity-0 group-hover:opacity-100">
+              {progressPerc}%
+            </p>
+          </div>
         </div>
         <Progress value={33} />
       </CardFooter>
