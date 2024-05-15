@@ -1,7 +1,8 @@
 "use client";
 
-import { format, formatRelative } from "date-fns";
+import { format, formatDistanceToNow, formatRelative } from "date-fns";
 import { enAU } from "date-fns/locale";
+
 const formatRelativeLocale: { [key: string]: string } = {
   lastWeek: "'last' eeee 'at' p",
   yesterday: "'yesterday at' p",
@@ -19,8 +20,13 @@ const locale = {
 export function formatDatetimeRelative(date: Date) {
   return formatRelative(date, new Date(), { locale });
 }
+
 export function formatDatetimeFormal(date: Date) {
-  return format(date, "do MMM yyyy, h:m b");
+  return format(date, "d MMM yyyy, h:mm a");
   return formatRelative(date, new Date(), { locale });
+}
+
+export function formatDatetimeDistance(date: Date) {
+  return formatDistanceToNow(date, { addSuffix: true });
 }
 // Compare this snippet from node_modules/date-fns/locale/en-AU/_lib/formatRelative/index.js:
