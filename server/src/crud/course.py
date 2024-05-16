@@ -106,11 +106,12 @@ def update_course(db_session: Session, course_id: str, update_data: dict):
 
 
 def delete_course(db_session: Session, course_id: str):
+    get_course(db_session, course_id)
     query = delete(Course).where(Course.id == course_id)
     db_session.execute(query)
     db_session.commit()
-    if get_course(db_session, course_id):
-        raise HTTPException(status_code=500, detail="Course not deleted")
+    # if get_course(db_session, course_id): # this function throws 404 because deleted
+    #     raise HTTPException(status_code=500, detail="Course not deleted")
 
 
 def get_enrolled_courses(db_session: Session, user_id: str):
