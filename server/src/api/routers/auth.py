@@ -19,7 +19,7 @@ def login_existing_user(credentials: AuthLogin, db_session: DBSessionDep):
 @router.post("/register")
 def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
     register_user(db_session, credentials)
-    return {"message": "User regsitered successfully!!"}
+    return {"message": "User registered successfully!!"}
 
 
 # @router.post("/login")
@@ -31,4 +31,4 @@ def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
 # @router.post("/register")
 # async def register_a_new_user(credentials: AuthRegister, db_session: DBSessionDep):
 #     await register_user(db_session, credentials)
-#     return {"message": "User regsitered successfully!!"}
+#     return {"message": "User registered successfully!!"}
