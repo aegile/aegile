@@ -16,6 +16,8 @@ class Course(Base):
     term: Mapped[str] = mapped_column(String(4))
     code: Mapped[str] = mapped_column(String(8))
     name: Mapped[str]
+    instructors: Mapped[str]
+    status: Mapped[str]
     description: Mapped[str]
     enrolments: Mapped[list["CourseEnrolment"]] = relationship(
         "CourseEnrolment", back_populates="course", lazy="selectin"
