@@ -5,8 +5,8 @@ from src import create_app, sessionmanager
 
 @pytest.fixture(scope="module")
 def test_client():
-    sessionmanager.drop_tables()
-    sessionmanager.create_tables()
+    # sessionmanager.drop_tables()
+    # sessionmanager.create_tables()
     app = create_app()
     client = TestClient(app)
     yield client
