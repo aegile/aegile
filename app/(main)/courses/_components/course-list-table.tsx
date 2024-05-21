@@ -1,35 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 
+
+
 import { MoreHorizontal } from "lucide-react";
+
+
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+
+
+
 
 type Course = {
   id: string;
@@ -43,9 +29,12 @@ type Course = {
 };
 
 async function getCourses() {
-  let res = await fetch("http://127.0.0.1:8000/api/courses", {
-    cache: "no-store",
-  });
+  let res = await fetch(
+    `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`,
+    {
+      cache: "no-store",
+    },
+  );
   const data = await res.json();
   return data as Course[];
 }
