@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { useRouter } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
+import { CourseCreationSchema } from "@/lib/schemas";
+import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -18,17 +18,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { DialogFooter, DialogClose } from '@/components/ui/dialog';
-
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { CourseCreationSchema } from '@/lib/schemas';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export function CourseCreationForm() {
   const router = useRouter();
@@ -36,12 +35,14 @@ export function CourseCreationForm() {
   const form = useForm<z.infer<typeof CourseCreationSchema>>({
     resolver: zodResolver(CourseCreationSchema),
     defaultValues: {
-      term: '24T0',
-      code: 'COMP1511',
-      name: 'Programming Fundamentals',
-      description: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit.',
+      term: "24T0",
+      code: "COMP1511",
+      name: "Programming Fundamentals",
+      status: "active",
+      instructors: "Marc Chee",
+      description: "An introduction to programming in C.",
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
   async function onSubmit(data: z.infer<typeof CourseCreationSchema>) {
     toast(
@@ -50,19 +51,32 @@ export function CourseCreationForm() {
         <pre className="mt-2 w-full rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
-      </div>
+      </div>,
     );
+    const url = "/api/courses"; // replace with your API endpoint
+    // const data = { /* your data object */ };
 
-    // const res = await fetchClientAPIRequest('/api/v1/courses', 'POST', {
-    //   ...data,
-    // });
-    // if (!res.ok) {
-    //   // Handle error
-    //   console.error('Course creation failed');
-    //   const data = await res.json();
-    //   toast.error(data.message);
-    //   return;
-    // }
+    fetch(url, {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data), // body data type must match "Content-Type" header
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(`Error: ${response.status} - ${text}`);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        toast.success("Success!!");
+      })
+      .catch((error) => {
+        toast.error(error.toString());
+      });
     router.refresh();
   }
   const year = new Date().getFullYear().toString().slice(-2);
@@ -131,6 +145,45 @@ export function CourseCreationForm() {
             </FormItem>
           )}
         /> */}
+        <div className="flex items-start gap-x-4 justify-between">
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem className="w-1/2">
+                <FormLabel>Status</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage className="h-5" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="instructors"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Instructors</FormLabel>
+                <FormControl>
+                  <Input placeholder="Andrew Taylor" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="name"

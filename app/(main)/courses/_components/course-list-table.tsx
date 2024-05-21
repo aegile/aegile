@@ -1,9 +1,10 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { MoreHorizontal } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { MoreHorizontal } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,7 +12,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -20,7 +21,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -28,163 +29,30 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 type Course = {
   id: string;
   code: string;
   name: string;
-  offering: string;
-  status: 'active' | 'ended';
+  term: string;
+  status: "active" | "ended";
   instructors: string;
-  members: number;
+  member_count: number;
   createdAt: string;
 };
 
-const courses: Course[] = [
-  {
-    id: '21T1-COMP1511',
-    code: 'COMP1511',
-    name: 'Programming Fundamentals',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Marc Chee',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP2521',
-    code: 'COMP2521',
-    name: 'Data Structures and Algorithms',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'John Shepherd',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP1531',
-    code: 'COMP1531',
-    name: 'Software Engineering Fundamentals',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Hayden Smith',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP6441',
-    code: 'COMP6441',
-    name: 'Security Engineering and Cyber Security',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Richard Buckland',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP3121',
-    code: 'COMP3121',
-    name: 'Algorithms and Programming Techniques',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Raveen de Silva',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP1511',
-    code: 'COMP1511',
-    name: 'Programming Fundamentals',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Marc Chee',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP2521',
-    code: 'COMP2521',
-    name: 'Data Structures and Algorithms',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'John Shepherd',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP1531',
-    code: 'COMP1531',
-    name: 'Software Engineering Fundamentals',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Hayden Smith',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP6441',
-    code: 'COMP6441',
-    name: 'Security Engineering and Cyber Security',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Richard Buckland',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  //   {
-  //     id: '21T1-COMP3121',
-  //     code: 'COMP3121',
-  //     name: 'Algorithms and Programming Techniques',
-  //     offering: '21T1',
-  //     status: 'active',
-  //     instructors: 'Raveen de Silva',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP1511',
-  //     code: 'COMP1511',
-  //     name: 'Programming Fundamentals',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Marc Chee',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP2521',
-  //     code: 'COMP2521',
-  //     name: 'Data Structures and Algorithms',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'John Shepherd',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP1531',
-  //     code: 'COMP1531',
-  //     name: 'Software Engineering Fundamentals',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Hayden Smith',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP6441',
-  //     code: 'COMP6441',
-  //     name: 'Security Engineering and Cyber Security',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Richard Buckland',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-];
+async function getCourses() {
+  let res = await fetch("http://127.0.0.1:8000/api/courses", {
+    cache: "no-store",
+  });
+  const data = await res.json();
+  return data as Course[];
+}
 
-export default function CourseListTable() {
+export default async function CourseListTable() {
+  let courses = await getCourses();
+
   return (
     <Card x-chunk="dashboard-06-chunk-1">
       <CardHeader>
@@ -203,7 +71,7 @@ export default function CourseListTable() {
               <TableHead>Name</TableHead>
               <TableHead>Code</TableHead>
               <TableHead className="hidden sm:table-cell">Status</TableHead>
-              <TableHead className="hidden md:table-cell">Offering</TableHead>
+              <TableHead className="hidden md:table-cell">Term</TableHead>
               <TableHead className="hidden lg:table-cell">Members</TableHead>
               <TableHead className="hidden xl:table-cell">
                 Instructors
@@ -238,9 +106,11 @@ export default function CourseListTable() {
                   <Badge variant="outline">{course.status}</Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {course.offering}
+                  {course.term}
                 </TableCell>
-                <TableCell className="hidden lg:table-cell">25</TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  {course.member_count}
+                </TableCell>
                 <TableCell className="hidden xl:table-cell">
                   {course.instructors}
                 </TableCell>
@@ -255,7 +125,7 @@ export default function CourseListTable() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem asChild>
-                        <Link href={'courses/' + course.id + '/settings'}>
+                        <Link href={"courses/" + course.id + "/settings"}>
                           Edit
                         </Link>
                       </DropdownMenuItem>
