@@ -45,7 +45,7 @@ type Course = {
 };
 
 async function getCourses() {
-  const url = `http://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`;
+  const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`;
   console.warn(`URL: ${url}`);
   try {
     let res = await fetch(url, {
