@@ -1,6 +1,8 @@
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+import { getCookie } from "cookies-next";
 import { MoreHorizontal } from "lucide-react";
 
 // import { toast } from "sonner";
@@ -47,10 +49,22 @@ type Course = {
 async function getCourses() {
   const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`;
   console.warn(`URL: ${url}`);
+  const jwtCookie = getCookie("_vercel_jwt", { cookies });
+  // const authToken = session?.accessToken;
+  const options: RequestInit = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  };
+  options.headers = {
+    ...options.headers,
+    // ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
+  };
   try {
-    let res = await fetch(url, {
-      cache: "no-store",
-    });
+    let res = await fetch(url, options);
 
     if (!res.ok) {
       const text = await res.text();
