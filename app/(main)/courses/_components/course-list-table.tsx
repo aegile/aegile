@@ -3,12 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { getCookie } from "cookies-next";
-import { MoreHorizontal } from "lucide-react";
 
 // import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,15 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -34,6 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import CourseDropdown from "./course-dropdown";
 
 type Course = {
   id: string;
@@ -68,7 +59,6 @@ async function getCourses() {
 
     if (!res.ok) {
       const text = await res.text();
-      console.log(`RESPONSE ERROR: ${res.status} - ${text}`);
       throw new Error(`Error: ${res.status} - ${text}`);
     }
 
@@ -146,23 +136,7 @@ export default async function CourseListTable() {
                   {course.instructors}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <Link href={"courses/" + course.id + "/settings"}>
-                          Edit
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <CourseDropdown course_id={course.id} />
                 </TableCell>
               </TableRow>
             ))}
