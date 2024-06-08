@@ -138,3 +138,24 @@ export const ClassFormSchema = z
     message: 'Class cannot end before it starts.',
     path: ['start_time'],
   });
+
+  export const AssessmentSchema = z.object({
+    id: z.string(),
+    assessment_name: z.string(),
+    type: z.string(),
+    weighting: z.string(),
+    length: z.string().nullable(),
+    due_date: z.string(),
+  });
+  
+  export type Assessment = z.infer<typeof AssessmentSchema>;
+
+  export const WeeklyContentSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    dates: z.string(),
+    tasks: z.string(),
+    status: z.number(),
+  })
+
+  export type WeeklyContent = z.infer<typeof WeeklyContentSchema>
