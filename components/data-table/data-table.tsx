@@ -31,12 +31,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   DataTableToolbar: React.ComponentType<any>;
+  togglePagination: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   DataTableToolbar,
+  togglePagination,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -71,8 +73,8 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} />
-      <div className="rounded-md border">
-        <Table className="bg-background">
+      <div className="rounded-xl border">
+        <Table className="bg-background rounded-xl">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -121,7 +123,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {togglePagination && (
+        <DataTablePagination table={table} />
+      )}
     </div>
   );
 }
