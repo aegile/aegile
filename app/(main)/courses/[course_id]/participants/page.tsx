@@ -88,6 +88,7 @@ export default async function CourseParticipantsPage({
           columns={columns}
           data={members}
           DataTableToolbar={DataTableToolbar}
+          togglePagination={true}
         />
       </div>
     </main>
