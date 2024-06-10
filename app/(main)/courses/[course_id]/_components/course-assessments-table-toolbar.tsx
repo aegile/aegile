@@ -66,10 +66,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      {/* <div className="flex flex-1 items-center space-x-2">
+      <div className="flex flex-1 items-center space-x-2">
         <DataTableViewOptions table={table} />
-        <EnrolParticipantsDialog course_id={'params.course_id'} />
-      </div> */}
+        {/* <EnrolParticipantsDialog course_id={'params.course_id'} /> */}
+      </div>
     </div>
   );
 }

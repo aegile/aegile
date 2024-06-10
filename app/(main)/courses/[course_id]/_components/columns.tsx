@@ -99,6 +99,12 @@ export const columns: ColumnDef<Assessment>[] = [
         {row.getValue('due_date')}
       </div>
     ),
+    filterFn: (row, id, value) => {
+      const rowValue: string = row.getValue(id);
+      return value.some((letter: string) =>
+        rowValue.toLowerCase().startsWith(letter.toLowerCase())
+      );
+    },
   },
   {
     id: 'actions',
