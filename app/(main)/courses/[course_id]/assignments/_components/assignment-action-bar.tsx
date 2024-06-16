@@ -1,17 +1,16 @@
 import { addDays, addHours, format, nextSaturday } from "date-fns";
-
 import {
   Archive,
   ArchiveX,
+  ClipboardListIcon,
   Clock,
+  Edit2Icon,
   Forward,
   MoreVertical,
+  PlusIcon,
   Reply,
   ReplyAll,
   Trash2,
-  ClipboardListIcon,
-  PlusIcon,
-  Edit2Icon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +42,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 import { DeliverableCreationForm } from "./deliverable-creation-form";
 
 interface AssignmentActionBarProps {
@@ -56,9 +56,9 @@ export function AssignmentActionBar({
 }: AssignmentActionBarProps) {
   const today = new Date();
   return (
-    <div className="flex items-center p-2">
+    <div className="flex h-[52px] items-center p-2">
       <div className="flex items-center gap-2">
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" disabled={disabled}>
               <Archive className="h-4 w-4" />
@@ -132,10 +132,10 @@ export function AssignmentActionBar({
             </Button>
           </TooltipTrigger>
           <TooltipContent>Move to trash</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </div>
       <div className="ml-auto flex items-center gap-2">
-        <Tooltip>
+        {/* <Tooltip>
           <Dialog>
             <DialogTrigger asChild>
               <TooltipTrigger asChild>
@@ -154,13 +154,13 @@ export function AssignmentActionBar({
               </DialogHeader>
 
               <DeliverableCreationForm assignmentId={assignmentId} />
-              {/* <DialogFooter className="sm:justify-start">
-                                <DialogClose asChild>
-                                <Button type="button" variant="secondary">
-                                    Close
-                                </Button>
-                                </DialogClose>
-                            </DialogFooter> */}
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Close
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
           <TooltipContent>New Deliverable</TooltipContent>
@@ -182,10 +182,10 @@ export function AssignmentActionBar({
             </Button>
           </TooltipTrigger>
           <TooltipContent>Forward</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
       </div>
-      <Separator orientation="vertical" className="mx-2 h-6" />
-      <DropdownMenu>
+      {/* <Separator orientation="vertical" className="mx-2 h-6" /> */}
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" disabled={disabled}>
             <MoreVertical className="h-4 w-4" />
@@ -198,7 +198,7 @@ export function AssignmentActionBar({
           <DropdownMenuItem>Add label</DropdownMenuItem>
           <DropdownMenuItem>Mute thread</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </div>
   );
 }
