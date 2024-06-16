@@ -1,13 +1,8 @@
-import { notFound } from "next/navigation";
-
-
+// import { notFound } from "next/navigation";
 
 import { Separator } from "@/components/ui/separator";
 
-
-
 import { CourseInfoForm } from "./course-info-form";
-
 
 async function getCourseData(courseId: string) {
   const response = await fetch(
@@ -27,9 +22,9 @@ export default async function SettingsCourseGeneralPage({
 }) {
   const courseData = await getCourseData(params.course_id);
 
-  if (!courseData) {
-    notFound();
-  }
+  // if (!courseData) {
+  //   notFound();
+  // }
 
   return (
     <div className="space-y-6">
