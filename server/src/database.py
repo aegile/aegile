@@ -5,7 +5,7 @@ from typing import Any, AsyncIterator, Iterator
 from pydantic import BaseModel
 
 # from sqlalchemy import create_engine, Column, Integer, String, select
-from sqlalchemy import event, create_engine
+from sqlalchemy import event, create_engine, inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 from sqlalchemy.pool import NullPool
@@ -167,6 +167,12 @@ class DatabaseSessionManager:
             raise
         finally:
             session.close()
+
+    def check_tables(self):
+        inspector = inspect(self._engine)
+        tables = inspector.get_table_names()
+        if len(tables) <= 0:
+            Base.metadata.create_all(self._engine)
 
     def create_tables(self):
         Base.metadata.create_all(self._engine)
