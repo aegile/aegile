@@ -1,83 +1,68 @@
-"use client";
+import { Metadata } from "next";
+import Image from "next/image";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { SidebarNav } from "@/components/sidebar-nav";
 
-const courseSettingsNavItems = [
-  {
-    title: "General",
-    href: "/settings",
-    suffix: "settings",
-  },
-  {
-    title: "Administration",
-    href: "/settings/admin",
-    suffix: "admin",
-  },
-  {
-    title: "Roles & Permissions",
-    href: "/settings/roles",
-    suffix: "roles",
-  },
-  {
-    title: "Assignments",
-    href: "/settings/assignments",
-    suffix: "assignments",
-  },
-  {
-    title: "Advanced",
-    href: "/settings/advanced",
-    suffix: "advanced",
-  },
-];
+export const metadata: Metadata = {
+  title: "Forms",
+  description: "Advanced form example using react-hook-form and Zod.",
+};
 
-interface CourseSettingsLayoutProps {
+interface SettingsLayoutProps {
+  params: { course_id: string };
   children: React.ReactNode;
 }
 
-export default function CourseSettingsLayout({
+export default function SettingsLayout({
+  params,
   children,
-}: CourseSettingsLayoutProps) {
-  const pathname = usePathname();
-  const selectedSettingsPage = pathname.split("/").pop();
-  const coursePath = pathname.split("/").slice(0, 3).join("/");
+}: SettingsLayoutProps) {
+  const sidebarNavItems = [
+    {
+      title: "General",
+      href: `/courses/${params.course_id}/settings`,
+    },
+    {
+      title: "Permissions",
+      href: `/courses/${params.course_id}/settings/permissions`,
+    },
+  ];
   return (
-    <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40 p-4 sm:px-6 ">
-      {/* <div className="mx-auto grid w-full max-w-6xl gap-2"> */}
-      <div className="space-y-0.5">
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">
-          Manage course settings and preferences.
-        </p>
+    <>
+      {/* <div className="md:hidden">
+        <Image
+          src="/examples/forms-light.png"
+          width={1280}
+          height={791}
+          alt="Forms"
+          className="block dark:hidden"
+        />
+        <Image
+          src="/examples/forms-dark.png"
+          width={1280}
+          height={791}
+          alt="Forms"
+          className="hidden dark:block"
+        />
+      </div> */}
+      <div className="space-y-6 px-10 py-4 pb-16">
+        <div className="space-y-0.5">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Course Settings
+          </h2>
+          <p className="text-muted-foreground">
+            Manage settings and preferences related to this course.
+          </p>
+        </div>
+        <Separator className="my-6" />
+        <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+          <aside className="-mx-4 lg:w-1/5">
+            <SidebarNav items={sidebarNavItems} />
+          </aside>
+          <div className="flex-1 lg:max-w-2xl">{children}</div>
+        </div>
       </div>
-      <Separator className="my-6" />
-      {/* <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]"> */}
-      <div className="grid w-full items-start gap-6 md:grid-cols-[125px_1fr] lg:grid-cols-[200px_1fr]">
-        <nav
-          className="grid gap-4 text-sm text-muted-foreground"
-          x-chunk="dashboard-04-chunk-0"
-        >
-          {/* <Link href="#" className="font-semibold text-primary">
-            General
-          </Link> */}
-
-          {courseSettingsNavItems.map((item) => (
-            <Link
-              key={item.title}
-              href={coursePath + item.href}
-              className={cn(
-                selectedSettingsPage === item.suffix &&
-                  "font-semibold text-primary",
-              )}
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-        {children}
-      </div>
-    </main>
+    </>
   );
 }
