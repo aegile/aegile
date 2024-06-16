@@ -1,6 +1,10 @@
 "use client";
-import React from "react";
 
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,11 +13,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-
-import { cn } from "@/lib/utils";
 import LogoOutline from "@/components/aegile/logo-outline";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 type pageLinks = {
   title: string;
@@ -34,7 +34,7 @@ export function NavMenuBar({
   const path = pathname.split("/").pop();
 
   return (
-    <nav className="hidden flex-col gap-6 px-4 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
+    <nav className="hidden flex-col gap-6 border-b px-4 pb-3 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
       <Link
         href={`/${route}/${page_id}`}
         key={page_id}
