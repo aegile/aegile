@@ -1,6 +1,5 @@
 import os
 import contextlib
-import logging
 from sqlite3 import Connection as SQLite3Connection
 from typing import Any, AsyncIterator, Iterator
 from pydantic import BaseModel
@@ -168,6 +167,12 @@ class DatabaseSessionManager:
             raise
         finally:
             session.close()
+
+    def create_tables(self):
+        Base.metadata.create_all(self._engine)
+
+    def drop_tables(self):
+        Base.metadata.drop_all(self._engine)
 
 
 print(settings.DATABASE_URL)

@@ -1,9 +1,12 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { MoreHorizontal } from 'lucide-react';
+import { cookies } from "next/headers";
+import Image from "next/image";
+import Link from "next/link";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { getCookie } from "cookies-next";
+
+// import { toast } from "sonner";
+
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -11,16 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -28,163 +22,58 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
+
+import CourseDropdown from "./course-dropdown";
 
 type Course = {
   id: string;
   code: string;
   name: string;
-  offering: string;
-  status: 'active' | 'ended';
+  term: string;
+  status: "active" | "ended";
   instructors: string;
-  members: number;
+  member_count: number;
   createdAt: string;
 };
 
-const courses: Course[] = [
-  {
-    id: '21T1-COMP1511',
-    code: 'COMP1511',
-    name: 'Programming Fundamentals',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Marc Chee',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP2521',
-    code: 'COMP2521',
-    name: 'Data Structures and Algorithms',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'John Shepherd',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP1531',
-    code: 'COMP1531',
-    name: 'Software Engineering Fundamentals',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Hayden Smith',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP6441',
-    code: 'COMP6441',
-    name: 'Security Engineering and Cyber Security',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Richard Buckland',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '21T1-COMP3121',
-    code: 'COMP3121',
-    name: 'Algorithms and Programming Techniques',
-    offering: '21T1',
-    status: 'active',
-    instructors: 'Raveen de Silva',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP1511',
-    code: 'COMP1511',
-    name: 'Programming Fundamentals',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Marc Chee',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP2521',
-    code: 'COMP2521',
-    name: 'Data Structures and Algorithms',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'John Shepherd',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP1531',
-    code: 'COMP1531',
-    name: 'Software Engineering Fundamentals',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Hayden Smith',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  {
-    id: '23T1-COMP6441',
-    code: 'COMP6441',
-    name: 'Security Engineering and Cyber Security',
-    offering: '23T1',
-    status: 'active',
-    instructors: 'Richard Buckland',
-    members: 100,
-    createdAt: '2023-07-12 10:42 AM',
-  },
-  //   {
-  //     id: '21T1-COMP3121',
-  //     code: 'COMP3121',
-  //     name: 'Algorithms and Programming Techniques',
-  //     offering: '21T1',
-  //     status: 'active',
-  //     instructors: 'Raveen de Silva',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP1511',
-  //     code: 'COMP1511',
-  //     name: 'Programming Fundamentals',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Marc Chee',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP2521',
-  //     code: 'COMP2521',
-  //     name: 'Data Structures and Algorithms',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'John Shepherd',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP1531',
-  //     code: 'COMP1531',
-  //     name: 'Software Engineering Fundamentals',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Hayden Smith',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-  //   {
-  //     id: '23T1-COMP6441',
-  //     code: 'COMP6441',
-  //     name: 'Security Engineering and Cyber Security',
-  //     offering: '23T1',
-  //     status: 'active',
-  //     instructors: 'Richard Buckland',
-  //     members: 100,
-  //     createdAt: '2023-07-12 10:42 AM',
-  //   },
-];
+async function getCourses() {
+  const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses`;
+  console.warn(`URL: ${url}`);
+  const jwtCookie = getCookie("_vercel_jwt", { cookies });
+  // const authToken = session?.accessToken;
+  const options: RequestInit = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  };
+  options.headers = {
+    ...options.headers,
+    // ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
+  };
+  try {
+    let res = await fetch(url, options);
 
-export default function CourseListTable() {
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Error: ${res.status} - ${text}`);
+    }
+
+    const data = await res.json();
+    // toast.success("Success!!");
+    return data as Course[];
+  } catch (err) {
+    const error = err as Error;
+    console.error(error.toString());
+  }
+}
+
+export default async function CourseListTable() {
+  let courses = await getCourses();
+
   return (
     <Card x-chunk="dashboard-06-chunk-1">
       <CardHeader>
@@ -203,7 +92,7 @@ export default function CourseListTable() {
               <TableHead>Name</TableHead>
               <TableHead>Code</TableHead>
               <TableHead className="hidden sm:table-cell">Status</TableHead>
-              <TableHead className="hidden md:table-cell">Offering</TableHead>
+              <TableHead className="hidden md:table-cell">Term</TableHead>
               <TableHead className="hidden lg:table-cell">Members</TableHead>
               <TableHead className="hidden xl:table-cell">
                 Instructors
@@ -214,7 +103,7 @@ export default function CourseListTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <TableRow key={course.id}>
                 <TableCell className="hidden sm:table-cell">
                   <Image
@@ -238,30 +127,16 @@ export default function CourseListTable() {
                   <Badge variant="outline">{course.status}</Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">
-                  {course.offering}
+                  {course.term}
                 </TableCell>
-                <TableCell className="hidden lg:table-cell">25</TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  {course.member_count}
+                </TableCell>
                 <TableCell className="hidden xl:table-cell">
                   {course.instructors}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem asChild>
-                        <Link href={'courses/' + course.id + '/settings'}>
-                          Edit
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <CourseDropdown course_id={course.id} />
                 </TableCell>
               </TableRow>
             ))}

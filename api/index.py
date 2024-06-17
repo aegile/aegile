@@ -48,10 +48,11 @@
 # # def hello_world():
 # #     return "<p>Hello, World!</p>"
 
-from server.src import create_app
-import uvicorn
+from server.src import app
 
-app = create_app()
+# import uvicorn
 
-if __name__ == "__main__":
-    uvicorn.run(app="src:app", port=8000, reload=True)
+# app = create_app()
+
+# if __name__ == "__main__":
+#     uvicorn.run(app="src:app", port=8000, reload=True)

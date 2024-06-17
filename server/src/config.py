@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     VERSION: str = "v1"
     DATABASE_URL: str
     SECRET_KEY: str
-    echo_sql: bool = True
+    echo_sql: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

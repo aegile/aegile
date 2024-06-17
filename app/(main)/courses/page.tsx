@@ -1,6 +1,8 @@
-import { File, ListFilter, PlusCircle } from 'lucide-react';
+import { Suspense } from "react";
 
-import { Button } from '@/components/ui/button';
+import { File, ListFilter, PlusCircle } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -9,11 +11,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import CourseListTable from './_components/course-list-table';
-import { CourseCreationDialog } from './_components/course-creation-dialog';
+import { CourseCreationDialog } from "./_components/course-creation-dialog";
+import CourseListTable from "./_components/course-list-table";
 
 export default function CoursesPage() {
   return (
@@ -58,7 +61,62 @@ export default function CoursesPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <CourseListTable />
+          <Suspense
+            fallback={
+              <div className="w-full border border-red-500">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[250px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                </div>
+                <div className="flex items-center justify-between space-x-4 mt-10 w-full">
+                  <Skeleton className="ml-4 h-4 w-[550px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[130px]" />
+                  <Skeleton className="h-4 w-[210px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                </div>
+                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                  <Skeleton className="h-24 w-24 rounded-lg" />
+                  <Skeleton className="h-4 w-[550px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[130px]" />
+                  <Skeleton className="h-4 w-[210px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                </div>
+                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                  <Skeleton className="h-24 w-24 rounded-lg" />
+                  <Skeleton className="h-4 w-[550px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[130px]" />
+                  <Skeleton className="h-4 w-[210px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                </div>
+                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                  <Skeleton className="h-24 w-24 rounded-lg" />
+                  <Skeleton className="h-4 w-[550px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[130px]" />
+                  <Skeleton className="h-4 w-[210px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                </div>
+                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                  <Skeleton className="h-24 w-24 rounded-lg" />
+                  <Skeleton className="h-4 w-[550px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-4 w-[130px]" />
+                  <Skeleton className="h-4 w-[210px]" />
+                  <Skeleton className="h-4 w-[230px]" />
+                </div>
+              </div>
+            }
+          >
+            <CourseListTable />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </main>
