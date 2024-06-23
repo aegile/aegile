@@ -41,6 +41,7 @@ async function getParticipants(courseId: string) {
 async function getEnrollableUsers(courseId: string | string[]) {
   const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrollable`;
   const jwtCookie = getCookie("_vercel_jwt");
+  console.log("🚀 ~ getEnrollableUsers ~ url:", url);
   const options: RequestInit = {
     method: "GET",
     headers: {
@@ -53,6 +54,7 @@ async function getEnrollableUsers(courseId: string | string[]) {
     ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
   };
   const res = await fetch(url, options);
+  console.log("🚀 ~ getEnrollableUsers ~ res:", res);
   if (res.status === 401)
     throw new Error("You don't have permission to view this page.");
   if (res.status === 403)
