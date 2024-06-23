@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.course import Course, CourseEnrolment
+from src.models.user import User
 from .user import get_user
 
 
@@ -133,6 +134,34 @@ def enrol_user_to_course(db_session: Session, user_id: str, course_id: str):
     except IntegrityError as exc:
         db_session.rollback()
         raise HTTPException(status_code=400, detail="User already enrolled") from exc
+
+
+def get_course_participants(db_session: Session, course_id: str):
+    query = select(CourseEnrolment).where(CourseEnrolment.course_id == course_id)
+    db_enrolments = (db_session.scalars(query)).all()
+    return [enrolment.user for enrolment in db_enrolments]
+
+
+def remove_user_from_course(db_session: Session, user_id: str, course_id: str):
+    query = (
+        delete(CourseEnrolment)
+        .where(CourseEnrolment.user_id == user_id)
+        .where(CourseEnrolment.course_id == course_id)
+    )
+    db_session.execute(query)
+    db_session.commit()
+    if get_user(db_session, user_id) in get_course_participants(db_session, course_id):
+        raise HTTPException(status_code=500, detail="User not kicked")
+
+
+def get_course_enrollable_users(db_session: Session, course_id: str):
+    subquery = (
+        select(CourseEnrolment.user_id)
+        .where(CourseEnrolment.course_id == course_id)
+        .subquery()
+    )
+    query = select(User).where(User.id.not_in(select(subquery.c.user_id)))
+    return db_session.scalars(query).all()
 
 
 def get_course_enrolments(db_session: Session, course_id: str):
