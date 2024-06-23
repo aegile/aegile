@@ -24,6 +24,7 @@ async function getParticipants(courseId: string) {
     ...options.headers,
     ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
   };
+  console.log("🚀 ~ getParticipants ~ options:", options);
 
   try {
     const response = await fetch(url, options);
@@ -53,6 +54,7 @@ async function getEnrollableUsers(courseId: string | string[]) {
     ...options.headers,
     ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
   };
+  console.log("🚀 ~ getEnrollableUsers ~ options:", options);
   const res = await fetch(url, options);
   console.log("🚀 ~ getEnrollableUsers ~ res:", res);
   if (res.status === 401)
