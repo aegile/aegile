@@ -1,6 +1,9 @@
-import { Users } from 'lucide-react';
+import { getCookie } from "cookies-next";
+import { Users } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { fetchServerAPIRequest } from "@/lib/server-utils";
+import { User } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,7 +11,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,37 +20,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { fetchServerAPIRequest } from '@/lib/server-utils';
-import { User } from '@/lib/types';
+import EnrolParticipantsForm from "./enrol-participants-form";
 
-import EnrolParticipantsForm from './enrol-participants-form';
-
-// async function getEnrollableUsers(course_id: string) {
-//   const res = await fetchServerAPIRequest(
-//     `/api/v1/courses/${course_id}/enrollable-users`,
-//     'GET'
-//   );
-//   if (res.status === 401)
-//     throw new Error("You don't have permission to view this page.");
-//   if (res.status === 403)
-//     throw new Error('You are not authorized to view this page.');
-
-//   const data = await res.json();
-//   return data;
-// }
-
-export function EnrolParticipantsDialog({ course_id }: { course_id: string }) {
-  // const enrollableUsers = await getEnrollableUsers(course_id);
-  const enrollableUsers: User[] = [];
+export function EnrolParticipantsDialog({
+  enrollableUsers,
+}: {
+  enrollableUsers: User[];
+}) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="default" size="sm">
-          <Users className="h-4 w-4 mr-2" />
+          <Users className="mr-2 h-4 w-4" />
           Enrol Participants
         </Button>
       </DialogTrigger>

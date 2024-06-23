@@ -1,95 +1,80 @@
-import { columns } from './columns';
-import { DataTable } from '@/components/data-table/data-table';
-import { Participant } from '@/lib/schemas';
-import { DataTableToolbar } from './course-participants-table-toolbar';
-import { EnrolParticipantsDialog } from './components/enrol-participants-dialog';
+import { cookies } from "next/headers";
 
-// async function getParticipants(course_id: string) {
-//   const res = await fetchServerAPIRequest(
-//     `/api/v1/courses/${course_id}/members`,
-//     'GET'
-//   );
-//   if (res.status === 401)
-//     throw new Error("You don't have permission to view this page.");
-//   if (res.status === 403)
-//     throw new Error('You are not authorized to view this page.');
+import { getCookie } from "cookies-next";
 
-//   const data = await res.json();
-//   return data;
-// }
+import { Participant } from "@/lib/schemas";
+import { User } from "@/lib/types";
+
+import { columns } from "./columns";
+import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
+import { DataTableToolbar } from "./course-participants-table-toolbar";
+import { DataTable } from "./data-table";
+
+async function getParticipants(courseId: string) {
+  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrolments`;
+  const jwtCookie = getCookie("_vercel_jwt", { cookies });
+  const options: RequestInit = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  };
+  options.headers = {
+    ...options.headers,
+    ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`Error fetching users: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+}
+
+async function getEnrollableUsers(courseId: string | string[]) {
+  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrollable`;
+  const jwtCookie = getCookie("_vercel_jwt");
+  const options: RequestInit = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  };
+  options.headers = {
+    ...options.headers,
+    ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
+  };
+  const res = await fetch(url, options);
+  if (res.status === 401)
+    throw new Error("You don't have permission to view this page.");
+  if (res.status === 403)
+    throw new Error("You are not authorized to view this page.");
+
+  const data = await res.json();
+  return data;
+}
 
 export default async function CourseParticipantsPage({
   params,
 }: {
   params: { course_id: string };
 }) {
-  // const members: Participant[] = await getParticipants(params.course_id);
-  const members: Participant[] = [
-    {
-      id: 'usr_as9gyagya089ygss',
-      email: 'alex@email.com',
-      first_name: 'Alex',
-      last_name: 'Xu',
-      handle: 'alexxu123',
-      image: null,
-      role: 'student',
-    },
-    {
-      id: 'usr_7yA7g65h8sfmuts6',
-      email: 'sam@emial.com',
-      first_name: 'Sam',
-      last_name: 'Smith',
-      handle: 'samsmith',
-      image: null,
-      role: 'tutor',
-    },
-    {
-      id: 'usr_1a2b3c4d5e6f7g8h',
-      email: 'john@email.com',
-      first_name: 'John',
-      last_name: 'Doe',
-      handle: 'johndoe',
-      image: null,
-      role: 'admin',
-    },
-    {
-      id: 'usr_9i8j7k6l5m4n3o2p',
-      email: 'jane@email.com',
-      first_name: 'Jane',
-      last_name: 'Doe',
-      handle: 'janedoe',
-      image: null,
-      role: 'tutor',
-    },
-    {
-      id: 'usr_q1w2e3r4t5y6u7i8',
-      email: 'bob@email.com',
-      first_name: 'Bob',
-      last_name: 'Smith',
-      handle: 'bobsmith',
-      image: null,
-      role: 'student',
-    },
-    {
-      id: 'usr_z1x2c3v4b5n6m7l8',
-      email: 'alice@email.com',
-      first_name: 'Alice',
-      last_name: 'Johnson',
-      handle: 'alicejohnson',
-      image: null,
-      role: 'tutor',
-    },
-  ];
-
+  const members: Participant[] = await getParticipants(params.course_id);
+  const enrollables: User[] = await getEnrollableUsers(params.course_id);
   return (
-    <main className="grid min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 lg:grid-cols-3 xl:grid-cols-3 grid-flow-row">
-      <div className="col-span-3">
-        <DataTable
-          columns={columns}
-          data={members}
-          DataTableToolbar={DataTableToolbar}
-        />
+    <main className="min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 ">
+      <div className="mb-2">
+        <EnrolParticipantsDialog enrollableUsers={enrollables} />
       </div>
+      <DataTable columns={columns} data={members} />
     </main>
   );
 }

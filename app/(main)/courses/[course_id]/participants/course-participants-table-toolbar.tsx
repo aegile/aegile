@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ArrowDownIcon,
@@ -6,20 +6,20 @@ import {
   ArrowUpIcon,
   CheckCircledIcon,
   CircleIcon,
+  Cross2Icon,
   CrossCircledIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
-} from '@radix-ui/react-icons';
-import { Cross2Icon } from '@radix-ui/react-icons';
-import { Table } from '@tanstack/react-table';
+} from "@radix-ui/react-icons";
+import { Table } from "@tanstack/react-table";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
-import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 
-import { names, roles } from './data';
-import { EnrolParticipantsDialog } from './components/enrol-participants-dialog';
+import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
+import { names, roles } from "./data";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -35,29 +35,29 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table.getColumn("email")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px] bg-background"
+          className="h-8 w-[150px] bg-background lg:w-[250px]"
         />
-        {table.getColumn('first_name') && (
+        {table.getColumn("first_name") && (
           <DataTableFacetedFilter
-            column={table.getColumn('first_name')}
+            column={table.getColumn("first_name")}
             title="First Name"
             options={names}
           />
         )}
-        {table.getColumn('last_name') && (
+        {table.getColumn("last_name") && (
           <DataTableFacetedFilter
-            column={table.getColumn('last_name')}
+            column={table.getColumn("last_name")}
             title="Last Name"
             options={names}
           />
         )}
-        {table.getColumn('role') && (
+        {table.getColumn("role") && (
           <DataTableFacetedFilter
-            column={table.getColumn('role')}
+            column={table.getColumn("role")}
             title="Role"
             options={roles}
           />
@@ -75,7 +75,6 @@ export function DataTableToolbar<TData>({
       </div>
       <div className="flex flex-1 items-center space-x-2">
         <DataTableViewOptions table={table} />
-        <EnrolParticipantsDialog course_id={'params.course_id'} />
       </div>
     </div>
   );

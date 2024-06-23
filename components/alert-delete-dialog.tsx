@@ -1,17 +1,18 @@
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import React from "react";
+import { useRouter } from "next/navigation";
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+
+
+import { toast } from "sonner";
+
+
+
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
+
+
+
 
 export default function AlertDeleteDialog({
   deleteRoute,
@@ -25,15 +26,25 @@ export default function AlertDeleteDialog({
   const router = useRouter();
 
   async function handleDelete(route: string) {
-    console.log('🚀 ~ handleDelete ~ route:', route);
-
+    console.log("🚀 ~ handleDelete ~ route:", route);
+    const response = await fetch(deleteRoute, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      toast.info("Deletion successful.");
+    } else {
+      toast.error("Failed to delete user.");
+    }
+    router.refresh();
     // const res = await fetchClientAPIRequest(route, 'DELETE');
     // if (!res.ok) {
     //   const data = await res.json();
     //   toast.error(data.message);
     //   return;
     // }
-    toast.info('Deletion successful.');
   }
 
   return (
