@@ -31,15 +31,21 @@ export function NavMenuBar({
   links: pageLinks[];
 }) {
   const pathname = usePathname();
-  const path = pathname.split("/").pop();
+  const pathSegments = pathname.split("/");
+  const pageIdIndex = pathSegments.findIndex((segment) => segment === page_id);
+  const path = pathSegments[pageIdIndex + 1] || "";
+  // const path = pathname.split("/").pop();
 
   return (
-    <nav className="hidden flex-col gap-6 border-b px-4 pb-3 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
+    // <nav className="-mb-px hidden flex-col gap-6 px-4 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
+    <nav className="sticky top-0 -mb-px hidden px-4 text-sm font-medium leading-5 backdrop-blur-xl sm:flex sm:border-b">
       <Link
         href={`/${route}/${page_id}`}
         key={page_id}
-        className={`transition-colors hover:text-foreground ${
-          path === page_id ? "text-foreground" : "text-muted-foreground"
+        className={`p-3 transition-colors hover:text-foreground ${
+          path === page_id
+            ? "border-b-2 border-black text-foreground dark:border-white"
+            : "border-transparent text-muted-foreground"
         }`}
       >
         Home
@@ -48,8 +54,10 @@ export function NavMenuBar({
         <Link
           href={`/${route}/${page_id}/${href}`}
           key={href}
-          className={`transition-colors hover:text-foreground ${
-            path === href ? "text-foreground" : "text-muted-foreground"
+          className={`p-3 transition-colors hover:text-foreground ${
+            path === href
+              ? "border-b-2 border-black text-foreground  dark:border-white"
+              : "border-transparent text-muted-foreground"
           }`}
         >
           {title}

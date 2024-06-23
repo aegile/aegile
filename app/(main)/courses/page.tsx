@@ -20,7 +20,7 @@ import CourseListTable from "./_components/course-list-table";
 
 export default function CoursesPage() {
   return (
-    <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+    <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 md:gap-8">
       <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
@@ -68,7 +68,7 @@ export default function CoursesPage() {
                   <Skeleton className="h-4 w-[250px]" />
                   <Skeleton className="h-4 w-[200px]" />
                 </div>
-                <div className="flex items-center justify-between space-x-4 mt-10 w-full">
+                <div className="mt-10 flex w-full items-center justify-between space-x-4">
                   <Skeleton className="ml-4 h-4 w-[550px]" />
                   <Skeleton className="h-4 w-[230px]" />
                   <Skeleton className="h-4 w-[200px]" />
@@ -76,7 +76,7 @@ export default function CoursesPage() {
                   <Skeleton className="h-4 w-[210px]" />
                   <Skeleton className="h-4 w-[230px]" />
                 </div>
-                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                <div className="mt-5 flex w-full items-center justify-between space-x-4">
                   <Skeleton className="h-24 w-24 rounded-lg" />
                   <Skeleton className="h-4 w-[550px]" />
                   <Skeleton className="h-4 w-[230px]" />
@@ -85,7 +85,7 @@ export default function CoursesPage() {
                   <Skeleton className="h-4 w-[210px]" />
                   <Skeleton className="h-4 w-[230px]" />
                 </div>
-                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                <div className="mt-5 flex w-full items-center justify-between space-x-4">
                   <Skeleton className="h-24 w-24 rounded-lg" />
                   <Skeleton className="h-4 w-[550px]" />
                   <Skeleton className="h-4 w-[230px]" />
@@ -94,7 +94,7 @@ export default function CoursesPage() {
                   <Skeleton className="h-4 w-[210px]" />
                   <Skeleton className="h-4 w-[230px]" />
                 </div>
-                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                <div className="mt-5 flex w-full items-center justify-between space-x-4">
                   <Skeleton className="h-24 w-24 rounded-lg" />
                   <Skeleton className="h-4 w-[550px]" />
                   <Skeleton className="h-4 w-[230px]" />
@@ -103,7 +103,7 @@ export default function CoursesPage() {
                   <Skeleton className="h-4 w-[210px]" />
                   <Skeleton className="h-4 w-[230px]" />
                 </div>
-                <div className="flex items-center justify-between space-x-4 mt-5 w-full">
+                <div className="mt-5 flex w-full items-center justify-between space-x-4">
                   <Skeleton className="h-24 w-24 rounded-lg" />
                   <Skeleton className="h-4 w-[550px]" />
                   <Skeleton className="h-4 w-[230px]" />

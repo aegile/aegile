@@ -1,11 +1,7 @@
-{
-  /* <TaskCreationDialog /> */
-}
-import { TaskCreationDialog } from '@/components/aegile/task-creation-dialog';
+import * as React from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-import * as React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import {
   ChevronLeft,
   ChevronRight,
@@ -15,10 +11,10 @@ import {
   ListFilter,
   MoreVertical,
   Truck,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -26,7 +22,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -35,14 +31,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-} from '@/components/ui/pagination';
-import { Separator } from '@/components/ui/separator';
-
+} from "@/components/ui/pagination";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -50,9 +45,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import AnalyticsDeltaCard from '@/components/aegile/analytics-delta-card/analytics-delta-card';
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AnalyticsDeltaCard from "@/components/aegile/analytics-delta-card/analytics-delta-card";
+import { TaskCreationDialog } from "@/components/aegile/task-creation-dialog";
+
+{
+  /* <TaskCreationDialog /> */
+}
 
 export default async function Dashboard() {
   return (
@@ -60,7 +60,7 @@ export default async function Dashboard() {
       {/* <h1 className="mx-auto text-lg font-semibold md:text-2xl sm:px-6 sm:py-0">
         My Dashboard
       </h1> */}
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
             <Card className="sm:col-span-2" x-chunk="dashboard-05-chunk-0">

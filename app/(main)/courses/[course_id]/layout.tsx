@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+
 import { fetchServerAPIRequest } from "@/lib/server-utils";
 import { Course } from "@/lib/types";
 import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
