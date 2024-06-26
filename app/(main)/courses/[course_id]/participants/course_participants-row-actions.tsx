@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
-import { Row } from '@tanstack/react-table';
+import React from "react";
+import { useParams } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { Row } from "@tanstack/react-table";
+
+import { courseEnrolmentSchema } from "@/lib/schemas";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +20,11 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import AlertDeleteDialog from '@/components/alert-delete-dialog';
-import { courseEnrolmentSchema } from '@/lib/schemas';
-import { useParams } from 'next/navigation';
+} from "@/components/ui/dropdown-menu";
+import AlertDeleteDialog from "@/components/alert-delete-dialog";
 
-import { roles } from './data';
+import { roles } from "./data";
+
 // import { taskSchema } from '../data/schema';
 
 interface DataTableRowActionsProps<TData> {
@@ -41,7 +43,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted ml-auto"
+            className="ml-auto flex h-8 w-8 p-0 data-[state=open]:bg-muted"
           >
             <DotsHorizontalIcon className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
@@ -71,12 +73,12 @@ export function DataTableRowActions<TData>({
             onSelect={() => setShowDeleteDialog(true)}
             className="text-red-400"
           >
-            Delete
+            Kick
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <AlertDeleteDialog
-        deleteRoute={`/api/v1/courses/${course_id}/kick/${user.handle}`}
+        deleteRoute={`/api/courses/${course_id}/enrolments/${user.id}`}
         showDeleteDialog={showDeleteDialog}
         setShowDeleteDialog={setShowDeleteDialog}
       />

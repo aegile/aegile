@@ -1,9 +1,11 @@
-import * as React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Search } from 'lucide-react';
+import * as React from "react";
+import { cookies } from "next/headers";
+import Image from "next/image";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button';
+import { Search } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,14 +14,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { MenuBar } from "@/components/menu-bar";
+import NavBar from "@/components/navbar";
+import NavBarMobile from "@/components/navbar-mobile";
 
-import { cookies } from 'next/headers';
-import { MenuBar } from '@/components/menu-bar';
-import NavBar from '@/components/navbar';
-import NavBarMobile from '@/components/navbar-mobile';
-import BreadcrumbPath from './breadcrumb-path';
+import BreadcrumbPath from "./breadcrumb-path";
 
 export default function MainLayout({
   children,
@@ -34,7 +35,7 @@ export default function MainLayout({
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <NavBar />
-      <div className="flex flex-grow flex-col sm:gap-4 sm:pt-4 sm:pl-14">
+      <div className="flex flex-grow flex-col sm:pl-14 sm:pt-4">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
           <NavBarMobile />
           <BreadcrumbPath />

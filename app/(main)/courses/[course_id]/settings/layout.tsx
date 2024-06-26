@@ -46,18 +46,18 @@ export default function SettingsLayout({
           className="hidden dark:block"
         />
       </div> */}
-      <div className="space-y-6 px-10 py-4 pb-16">
+      <div className="space-y-6 bg-muted/30 px-10 pb-16 pt-6">
         <div className="space-y-0.5">
-          <h2 className="text-2xl font-semibold tracking-tight">
+          <h2 className="text-xl font-medium tracking-tight">
             Course Settings
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Manage settings and preferences related to this course.
           </p>
         </div>
         <Separator className="my-6" />
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-          <aside className="-mx-4 lg:w-1/5">
+          <aside className="sticky top-16 -mx-4 self-start lg:w-1/5">
             <SidebarNav items={sidebarNavItems} />
           </aside>
           <div className="flex-1 lg:max-w-2xl">{children}</div>
