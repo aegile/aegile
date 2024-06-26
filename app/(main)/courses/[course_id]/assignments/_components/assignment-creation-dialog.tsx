@@ -1,15 +1,4 @@
-import {
-  Archive,
-  ArchiveX,
-  Clock,
-  Forward,
-  MoreVertical,
-  Reply,
-  ReplyAll,
-  Trash2,
-  ClipboardListIcon,
-  PlusIcon,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,13 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import { AssignmentCreationForm } from "./assignment-creation-form";
 
 export default function AssignmentCreationDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="w-full">
           <PlusIcon className="mr-1 h-4 w-4" />
           <span className="">New</span>
         </Button>

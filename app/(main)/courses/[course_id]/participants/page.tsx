@@ -4,6 +4,7 @@ import { getCookie } from "cookies-next";
 
 import { Participant } from "@/lib/schemas";
 import { User } from "@/lib/types";
+import { Separator } from "@/components/ui/separator";
 
 import { columns } from "./columns";
 import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
@@ -70,11 +71,22 @@ export default async function CourseParticipantsPage({
   const members: Participant[] = await getParticipants(params.course_id);
   const enrollables: User[] = await getEnrollableUsers(params.course_id);
   return (
-    <main className="min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 ">
+    <div className="bg-muted/20 px-4 py-6 md:px-10">
+      <div className="space-y-0.5">
+        <h2 className="text-xl font-medium tracking-tight">
+          Course Participants
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Manage users and roles of course participants.
+        </p>
+      </div>
+      <Separator className="my-6" />
       <div className="mb-2">
         <EnrolParticipantsDialog enrollableUsers={enrollables} />
       </div>
       <DataTable columns={columns} data={members} />
-    </main>
+    </div>
+    // <main className="min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 ">
+    // </main>
   );
 }
