@@ -61,7 +61,7 @@ export function AssignmentInboxList({
             {item.description.substring(0, 300)}
           </div>
           <div className="flex w-full flex-nowrap items-center justify-between">
-            {item.labels.length ? (
+            {item?.labels.length ? (
               <div className="flex flex-wrap items-center gap-2">
                 {item.labels.map((label) => (
                   <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
@@ -70,7 +70,12 @@ export function AssignmentInboxList({
                 ))}
               </div>
             ) : null}
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto shrink-0"
+              asChild
+            >
               <Link href={`/assignments/${item.id}`}>
                 <ArrowRightIcon className="h-4 w-4" />
               </Link>
