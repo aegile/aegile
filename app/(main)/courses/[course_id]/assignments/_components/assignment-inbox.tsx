@@ -20,7 +20,7 @@ interface AssignmentInboxProps {
 
 export function AssignmentInbox({ items }: AssignmentInboxProps) {
   const [collapsed, setCollapsed] = React.useState(false);
-  const [selected, setSelected] = React.useState(items[0].id);
+  const [selected, setSelected] = React.useState(items[0]?.id);
 
   return (
     <div className="flex ">
