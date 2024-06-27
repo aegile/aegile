@@ -29,6 +29,11 @@ export default async function CourseLayout({
 
   const links = [
     {
+      title: "Home",
+      href: "",
+      description: "Start here to get an overview of this course.",
+    },
+    {
       title: "Classes",
       href: "classes",
       description:

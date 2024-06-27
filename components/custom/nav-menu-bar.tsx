@@ -39,7 +39,7 @@ export function NavMenuBar({
   return (
     // <nav className="-mb-px hidden flex-col gap-6 px-4 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
     <nav className="sticky top-0 -mb-px hidden px-4 text-sm font-medium leading-5 backdrop-blur-xl sm:flex sm:border-b">
-      <Link
+      {/* <Link
         href={`/${route}/${page_id}`}
         key={page_id}
         className={`p-3 transition-colors hover:text-foreground ${
@@ -49,7 +49,7 @@ export function NavMenuBar({
         }`}
       >
         Home
-      </Link>
+      </Link> */}
       {links.map(({ title, href }) => (
         <Link
           href={`/${route}/${page_id}/${href}`}
@@ -101,9 +101,9 @@ export function NavCollapsedMenu({
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem href={`/${route}/${page_id}`} title="Home">
+              {/* <ListItem href={`/${route}/${page_id}`} title="Home">
                 Start here to get an overview of your {route}!
-              </ListItem>
+              </ListItem> */}
               {links.map(({ title, href, description }) => (
                 <ListItem
                   key={href}
