@@ -21,6 +21,15 @@ def create_assignment(db_session: Session, assignment_form: dict):
         ) from exc
 
 
+def get_assignments_with_filter(
+    db_session: Session, course_id: str, deadline: str, status: str
+):
+    query = select(Assignment)
+    if course_id:
+        query = query.where(Assignment.course_id == course_id)
+    return (db_session.scalars(query)).all()
+
+
 def get_assignments_by_course(db_session: Session, course_id: str):
     query = select(Assignment).where(Assignment.course_id == course_id)
     return (db_session.scalars(query)).all()

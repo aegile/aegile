@@ -1,11 +1,19 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { convertUTCDateLocalTimeToISO } from "@/lib/datetime";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -16,6 +24,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -37,32 +50,79 @@ const assigmentCreationFormSchema = z.object({
     .min(5, {
       message: "Assignment name must be at least 5 characters.",
     })
+    .max(120, {
+      message: "Assignment name must not exceed 120 characters.",
+    })
     .nonempty("assigment name is required."),
   type: z.string().nonempty("Assignment type is required."),
-  deadline: z.string(),
+  dueDate: z.date({
+    required_error: "A deadline is required.",
+  }),
+  dueTime: z
+    .string()
+    .regex(
+      /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])(:[0-5]?[0-9])?$/,
+      "Due Time must be in HH:mm or HH:mm:ss format.",
+    ),
 });
 
 export function AssignmentCreationForm() {
+  const { course_id } = useParams();
+  const router = useRouter();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof assigmentCreationFormSchema>>({
     resolver: zodResolver(assigmentCreationFormSchema),
     defaultValues: {
-      name: "Captstone Project",
-      type: "",
-      deadline: "",
+      name: "Capstone Project",
+      type: "individual",
+      dueDate: new Date(),
+      dueTime: "23:59",
     },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof assigmentCreationFormSchema>) {
+    const submittedValues = {
+      course_id,
+      deadline: convertUTCDateLocalTimeToISO(values.dueDate, values.dueTime),
+      name: values.name,
+      type: values.type,
+    };
+
     toast(
       <div className="w-full">
         <p>You submitted the following values:</p>
         <pre className="mt-2 w-full overflow-x-auto rounded-md bg-slate-900 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+          <code className="text-white">
+            {JSON.stringify(submittedValues, null, 2)}
+          </code>
         </pre>
       </div>,
     );
+
+    fetch("/api/assignments", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submittedValues), // body data type must match "Content-Type" header
+    })
+      .then((response) => {
+        if (!response.ok) {
+          return response.text().then((text) => {
+            throw new Error(`Error: ${response.status} - ${text}`);
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        toast.success("Success!!");
+      })
+      .catch((error) => {
+        toast.error(error.toString());
+      });
+    router.refresh();
   }
 
   return (
@@ -78,7 +138,7 @@ export function AssignmentCreationForm() {
             <FormItem>
               <FormLabel>Assignment Name</FormLabel>
               <FormControl>
-                <Input placeholder="Captstone Project" {...field} />
+                <Input placeholder="Capstone Project" {...field} />
               </FormControl>
               {/* <FormDescription>
                 assigment name.
@@ -87,73 +147,100 @@ export function AssignmentCreationForm() {
             </FormItem>
           )}
         />
-        <div className="justify-between sm:flex sm:space-x-2">
+        <div className="flex space-x-2">
           <FormField
             control={form.control}
-            name="type"
+            name="dueDate"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Assignment Type</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a submission type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="individual">Individual</SelectItem>
-                    <SelectItem value="group">Group</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  Individual or group submission?{" "}
-                  {/* <Link href="/examples/forms">email settings</Link>. */}
-                </FormDescription>
+              <FormItem className="flex flex-col">
+                <FormLabel>Due Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[200px] pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                {/* <FormDescription>When is this due?</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="deadline"
+            name="dueTime"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Deadline</FormLabel>
+              <FormItem className="flex flex-col">
+                <FormLabel>Due Time</FormLabel>
                 <FormControl>
                   <Input
-                    defaultValue={"2024-05-04T15:28"}
-                    type="datetime-local"
+                    // defaultValue={"2024-05-04T15:28"}
+                    type="time"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>When is this due?</FormDescription>
+                {/* <FormDescription>When is this due?</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        {/* <FormField
+        <FormField
           control={form.control}
-          name="description"
+          name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Editor />
-              </FormControl>
+              <FormLabel>Assignment Type</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a submission type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="individual">Individual</SelectItem>
+                  <SelectItem value="group">Group</SelectItem>
+                  <SelectItem value="homework">Homework</SelectItem>
+                </SelectContent>
+              </Select>
               <FormDescription>
-                This is your public display name.
+                Individual or group submission?{" "}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
-        /> */}
-        <Button type="submit" className="ml-auto mt-2">
-          Submit
-        </Button>
+        />
+        <DialogFooter className="sm:justify-start">
+          <DialogClose asChild>
+            <Button type="submit" className="ml-auto mt-2">
+              Submit
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </form>
     </Form>
   );
