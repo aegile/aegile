@@ -180,7 +180,7 @@ export const assignments = [
     description:
       "Develop a text-based version of the classic game Minesweeper using your chosen programming language.",
     deadline: "2023-10-22T09:00:00",
-    labels: ["C", "arrays", "pointers"],
+    labels: ["C", "arrays", "pointers", "programming", "beginner", "memory"],
     archived: false,
   },
   {
