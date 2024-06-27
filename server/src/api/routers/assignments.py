@@ -50,7 +50,6 @@ def get_assignment_via_id(assignment_id: str, db_session: DBSessionDep):
 def update_assignment_via_id(
     assignment_id: str, data: AssignmentEdit, db_session: DBSessionDep
 ):
-    print("data", data)
     update_assignment(db_session, assignment_id, data)
     return {"message": "Success!! Assignment updated."}
 
