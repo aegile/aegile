@@ -2,36 +2,20 @@ import { cookies } from "next/headers";
 
 import { getCookie } from "cookies-next";
 
+import { serverFetch } from "@/lib/server-utils";
 import { Separator } from "@/components/ui/separator";
 
 import { AssignmentInbox } from "./_components/assignment-inbox";
 
 async function getAssignments(courseId: string) {
-  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/assignments?course_id=${courseId}`;
-  const jwtCookie = getCookie("_vercel_jwt", { cookies });
-  const options: RequestInit = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  };
-  options.headers = {
-    ...options.headers,
-    ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
-  };
-
   try {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error(`Error fetching users: ${response.statusText}`);
-    }
-    const data = await response.json();
-    console.log("🚀 ~ getAssignments ~ data:", data);
+    const data = await serverFetch(
+      `api/assignments?course_id=${courseId}`,
+      "GET",
+    );
     return data;
   } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error;
+    console.error(error);
   }
 }
 
