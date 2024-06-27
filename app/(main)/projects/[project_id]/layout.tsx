@@ -1,23 +1,10 @@
 import { Metadata } from "next";
-import { fetchServerAPIRequest } from "@/lib/server-utils";
-import { Course } from "@/lib/types";
 import Link from "next/link";
-import { NavMenuBar, NavCollapsedMenu } from "@/components/custom/nav-menu-bar";
+
 import { Description } from "@radix-ui/react-dialog";
 
-// async function getCourse(course_id: string) {
-//   const res = await fetchServerAPIRequest(
-//     `/api/v1/courses/${course_id}`,
-//     'GET'
-//   );
-//   if (res.status === 401)
-//     throw new Error("You don't have permission to view this page.");
-//   if (res.status === 403)
-//     throw new Error('You are not authorized to view this page.');
-
-//   const data = await res.json();
-//   return data;
-// }
+import { Course } from "@/lib/types";
+import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
 
 export default function ProjectPageLayout({
   params,

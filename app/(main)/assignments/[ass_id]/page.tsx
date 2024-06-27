@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator";
 async function getAssignmentData(assignmentId: string) {
   try {
     const data = await serverFetch(`api/assignments/${assignmentId}`, "GET");
-    console.log("Data fetched successfully:", data);
     return data;
   } catch (error) {
     console.error("Failed to fetch data:", error);
