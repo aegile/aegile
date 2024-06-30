@@ -1,4 +1,6 @@
-"use client"; // this registers <Editor> as a Client Component
+"use client";
+
+// this registers <Editor> as a Client Component
 import React, { useEffect } from "react";
 
 import {
@@ -8,32 +10,36 @@ import {
   uploadToTmpFilesDotOrg_DEV_ONLY,
 } from "@blocknote/core";
 import {
-  darkDefaultTheme,
-  lightDefaultTheme,
-  Theme,
   BlockNoteView,
+  // darkDefaultTheme,
+  // lightDefaultTheme,
+  // Theme,
+} from "@blocknote/mantine";
+import {
   DragHandleButton,
   SideMenu,
   SideMenuController,
   useCreateBlockNote,
 } from "@blocknote/react";
-import "@blocknote/react/style.css";
-import { SaveIcon } from "lucide-react";
 
+import "@blocknote/mantine/style.css";
+
+import { SaveIcon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 
 // Our <Editor> component we can reuse later
 export default function Editor({
-  setContentCallback,
-  defaultBlocks,
+  setContentCallback = () => {},
+  defaultBlocks = null,
   editable = false,
 }: {
   setContentCallback?: (content: Object[]) => void;
-  defaultBlocks?: Object[];
+  defaultBlocks?: Object[] | null;
   editable?: boolean;
 }) {
   const { theme, systemTheme } = useTheme();

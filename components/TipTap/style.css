@@ -1,0 +1,6 @@
+.tiptap {
+    border: 1px solid rgb(228 228 231);
+}
+.dark .tiptap {
+    border: 1px solid rgb(59, 59, 65);
+}
