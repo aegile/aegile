@@ -4,16 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format, setHours, setMinutes } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import {
-  convertUTCDateLocalTimeToISO,
-  getDateAndTimeFromISO,
-} from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -41,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { TimePickerFields } from "@/components/datetime-picker/time-picker-fields";
 
 const assignmentInfoFormSchema = z.object({
   name: z
@@ -54,15 +51,9 @@ const assignmentInfoFormSchema = z.object({
     .nonempty("assigment name is required."),
   archived: z.boolean(),
   variant: z.string().nonempty("Assignment type is required."),
-  dueDate: z.date({
-    required_error: "A deadline is required.",
+  deadline: z.date({
+    required_error: "A date & time is required.",
   }),
-  dueTime: z
-    .string()
-    .regex(
-      /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])(:[0-5]?[0-9])?$/,
-      "Due Time must be in HH:mm or HH:mm:ss format.",
-    ),
   weighting: z.string().refine(
     (value) => {
       const numberValue = Number(value);
@@ -105,15 +96,13 @@ export function AssignmentInfoForm({
   assignmentId: string;
 }) {
   const router = useRouter();
-  const { date, time } = getDateAndTimeFromISO(initialData.deadline);
 
   const form = useForm<AssignmentInfoFormValues>({
     resolver: zodResolver(assignmentInfoFormSchema),
     defaultValues: {
       ...initialData,
       ...defaultValues,
-      dueDate: date,
-      dueTime: time,
+      deadline: new Date(initialData.deadline),
       weighting: (Number(initialData.weighting) * 100).toString(),
     },
     mode: "onChange",
@@ -125,11 +114,10 @@ export function AssignmentInfoForm({
   // });
 
   async function onSubmit(data: AssignmentInfoFormValues) {
-    const { dueDate, dueTime, ...remainder } = data;
+    const { weighting, ...remainder } = data;
     const submittedValues = {
-      deadline: convertUTCDateLocalTimeToISO(dueDate, dueTime),
       ...remainder,
-      weighting: Number(remainder.weighting) / 100,
+      weighting: Number(weighting) / 100,
     };
 
     toast(
@@ -206,60 +194,44 @@ export function AssignmentInfoForm({
         <div className="space-y-6 sm:flex sm:space-x-2 sm:space-y-0">
           <FormField
             control={form.control}
-            name="dueDate"
+            name="deadline"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Due Date</FormLabel>
+              <FormItem className="flex w-full flex-col">
+                <FormLabel className="text-left">Deadline</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
+                  <FormControl>
+                    <PopoverTrigger asChild>
                       <Button
-                        variant={"outline"}
+                        variant="outline"
                         className={cn(
-                          "w-[220px] pl-3 text-left font-normal",
+                          "h-9 min-w-[280px] justify-start text-left font-normal",
                           !field.value && "text-muted-foreground",
                         )}
                       >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "eee, dd MMM, yyy  ->  hh:mm a")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Pick a date & time</span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                    </PopoverTrigger>
+                  </FormControl>
+                  <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date() || date < new Date("1900-01-01")
-                      }
                       initialFocus
                     />
+                    <div className="border-t border-border p-3">
+                      <TimePickerFields
+                        setDate={field.onChange}
+                        date={field.value}
+                      />
+                    </div>
                   </PopoverContent>
                 </Popover>
-                {/* <FormDescription>When is this due?</FormDescription> */}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dueTime"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Due Time</FormLabel>
-                <FormControl>
-                  <Input
-                    // defaultValue={"2024-05-04T15:28"}
-                    type="time"
-                    {...field}
-                  />
-                </FormControl>
-                {/* <FormDescription>When is this due?</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -300,6 +272,7 @@ export function AssignmentInfoForm({
                 <Textarea
                   placeholder="Tell us a little bit about the assignment"
                   // className="resize-none"
+                  rows={5}
                   {...field}
                 />
               </FormControl>

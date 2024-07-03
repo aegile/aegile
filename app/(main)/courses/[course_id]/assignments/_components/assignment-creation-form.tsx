@@ -3,13 +3,12 @@
 import { useParams, useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, setHours, setMinutes, setSeconds } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { convertUTCDateLocalTimeToISO } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TimePickerFields } from "@/components/datetime-picker/time-picker-fields";
 
 // {
 //   "assignment_id": "string",
@@ -55,15 +55,9 @@ const assigmentCreationFormSchema = z.object({
     })
     .nonempty("assigment name is required."),
   type: z.string().nonempty("Assignment type is required."),
-  dueDate: z.date({
-    required_error: "A deadline is required.",
+  deadline: z.date({
+    required_error: "A date & time is required.",
   }),
-  dueTime: z
-    .string()
-    .regex(
-      /^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])(:[0-5]?[0-9])?$/,
-      "Due Time must be in HH:mm or HH:mm:ss format.",
-    ),
 });
 
 export function AssignmentCreationForm() {
@@ -76,8 +70,7 @@ export function AssignmentCreationForm() {
     defaultValues: {
       name: "Capstone Project",
       type: "individual",
-      dueDate: new Date(),
-      dueTime: "23:59",
+      deadline: setSeconds(setMinutes(setHours(new Date(), 0), 0), 0),
     },
   });
 
@@ -85,9 +78,7 @@ export function AssignmentCreationForm() {
   function onSubmit(values: z.infer<typeof assigmentCreationFormSchema>) {
     const submittedValues = {
       course_id,
-      deadline: convertUTCDateLocalTimeToISO(values.dueDate, values.dueTime),
-      name: values.name,
-      type: values.type,
+      ...values,
     };
 
     toast(
@@ -147,93 +138,77 @@ export function AssignmentCreationForm() {
             </FormItem>
           )}
         />
-        <div className="flex space-x-2">
+        <div className="items-center space-x-2 md:flex">
           <FormField
             control={form.control}
-            name="dueDate"
+            name="deadline"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel className="text-left">Deadline</FormLabel>
                 <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
+                  <FormControl>
+                    <PopoverTrigger asChild>
                       <Button
-                        variant={"outline"}
+                        variant="outline"
                         className={cn(
-                          "w-[200px] pl-3 text-left font-normal",
+                          "h-9 w-[280px] justify-start text-left font-normal",
                           !field.value && "text-muted-foreground",
                         )}
                       >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "eee, dd MMM, yyy  ->  hh:mm a")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>Pick a date & time</span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                    </PopoverTrigger>
+                  </FormControl>
+                  <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date() || date < new Date("1900-01-01")
-                      }
                       initialFocus
                     />
+                    <div className="border-t border-border p-3">
+                      <TimePickerFields
+                        setDate={field.onChange}
+                        date={field.value}
+                      />
+                    </div>
                   </PopoverContent>
                 </Popover>
-                {/* <FormDescription>When is this due?</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="dueTime"
+            name="type"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Due Time</FormLabel>
-                <FormControl>
-                  <Input
-                    // defaultValue={"2024-05-04T15:28"}
-                    type="time"
-                    {...field}
-                  />
-                </FormControl>
-                {/* <FormDescription>When is this due?</FormDescription> */}
+              <FormItem className="flex w-full flex-col">
+                <FormLabel>Assignment Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a submission type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="individual">Individual</SelectItem>
+                    <SelectItem value="group">Group</SelectItem>
+                    <SelectItem value="homework">Homework</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Assignment Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a submission type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="individual">Individual</SelectItem>
-                  <SelectItem value="group">Group</SelectItem>
-                  <SelectItem value="homework">Homework</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Individual or group submission?{" "}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
             <Button type="submit" className="ml-auto mt-2">
