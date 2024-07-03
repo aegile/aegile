@@ -42,7 +42,7 @@ def get_deliverable_via_id(db_session: DBSessionDep, deliverable_id: str):
 
 
 @router.get("", response_model=List[DeliverableInfo])
-def get_all_deliverables(
+def get_all_deliverables_with_optional_filters(
     db_session: DBSessionDep,
     assignment_id: Optional[str] = None,
 ):

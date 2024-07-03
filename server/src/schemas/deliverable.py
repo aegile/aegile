@@ -1,18 +1,28 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import List
 from pydantic import BaseModel
 
 
 class DeliverableBase(BaseModel):
     assignment_id: str
     name: str = "Milestone 1"
-    description: str = "UML diagrams + model and API tests using pytest"
-    deadline: datetime = datetime.now() + timedelta(days=7)
+    weighting: int = 0
+    description: str = "Enter short description here."
+    deadline: str = (datetime.now(timezone.utc) + timedelta(days=7)).replace(
+        tzinfo=None
+    ).isoformat() + "Z"
 
     # TODO - validate that the deadline is in the future
 
 
-class DeliverableInfo(DeliverableBase):
+class DeliverableInfo(BaseModel):
     id: str
+    name: str
+    weighting: int
+    description: str = " Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maxime doloribus rem beatae dignissimos ipsa ea provident ad exercitationem nemo aut. Commodi temporibus illum iusto atque praesentium, vitae nihil. Sint, libero."
+    deadline: datetime
+    status: str = "active"
+    files: List[str] = []
 
 
 class SubmissionBase(BaseModel):

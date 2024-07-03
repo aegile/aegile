@@ -18,7 +18,8 @@ class Deliverable(Base):
     assignment_id: Mapped[str] = mapped_column(ForeignKey("assignments.id"))
     name: Mapped[str]
     description: Mapped[str]
-    deadline: Mapped[datetime]
+    deadline: Mapped[str]
+    weighting: Mapped[int]
 
     __table_args__ = (UniqueConstraint("assignment_id", "name"),)
 
@@ -31,7 +32,7 @@ class DeliverableSubmission(Base):
     deliverable_id: Mapped[str] = mapped_column(ForeignKey("deliverables.id"))
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"))
     file: Mapped[str]
-    submission_time: Mapped[datetime]
+    submission_time: Mapped[str]
 
     __table_args__ = (
         PrimaryKeyConstraint("deliverable_id", "project_id", "submission_time"),
