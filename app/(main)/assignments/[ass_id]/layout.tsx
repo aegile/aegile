@@ -5,7 +5,7 @@ import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
 
 async function getAssignmentData(assignmentId: string) {
   try {
-    const data = await serverFetch(`api/assignments/${assignmentId}`, "GET");
+    const data = await serverFetch(`/api/assignments/${assignmentId}`, "GET");
     return data;
   } catch (error) {
     console.error("Failed to fetch data:", error);

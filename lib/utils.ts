@@ -32,7 +32,7 @@ export async function clientFetch(
     if (!response.ok) {
       const errorDetails = await response.json();
       throw new Error(
-        `Error ${response.status}: ${errorDetails.message || response.statusText}`,
+        `${response.status}: ${errorDetails.message || response.statusText}`,
       );
     }
     return await response.json();

@@ -8,7 +8,7 @@ export async function serverFetch(
   method: string,
   bodyData: object = {},
 ) {
-  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/${route}`;
+  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
   const jwtCookie = getCookie("_vercel_jwt", { cookies });
   const options: RequestInit = {
     method,

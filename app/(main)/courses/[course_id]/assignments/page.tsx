@@ -10,7 +10,7 @@ import { AssignmentInbox } from "./_components/assignment-inbox";
 async function getAssignments(courseId: string) {
   try {
     const data = await serverFetch(
-      `api/assignments?course_id=${courseId}`,
+      `/api/assignments?course_id=${courseId}`,
       "GET",
     );
     return data;
