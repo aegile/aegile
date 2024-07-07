@@ -28,7 +28,7 @@ export function formatDatetimeRelative(date: string | Date) {
 }
 
 export function formatDatetimeFormal(date: string | Date) {
-  return format(date, "d MMM yyyy, h:mm a");
+  return format(date, "EEEE, do MMMM yyyy, h:mm a");
   return formatRelative(date, new Date(), { locale });
 }
 
