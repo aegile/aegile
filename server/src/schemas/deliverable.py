@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -23,6 +23,13 @@ class DeliverableInfo(BaseModel):
     deadline: datetime
     status: str = "active"
     files: List[str] = []
+
+
+class DeliverableEdit(BaseModel):
+    name: str
+    weighting: int
+    description: Optional[str]
+    deadline: str
 
 
 class SubmissionBase(BaseModel):

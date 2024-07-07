@@ -17,6 +17,7 @@ from src.crud.deliverable import (
 from src.schemas.deliverable import (
     DeliverableBase,
     DeliverableInfo,
+    DeliverableEdit,
     SubmissionBase,
     SubmissionInfo,
 )
@@ -51,7 +52,7 @@ def get_all_deliverables_with_optional_filters(
 
 @router.put("/{deliverable_id}")
 def update_deliverable_via_id(
-    db_session: DBSessionDep, deliverable_id: str, deliverable_form: DeliverableBase
+    db_session: DBSessionDep, deliverable_id: str, deliverable_form: DeliverableEdit
 ):
     update_deliverable(db_session, deliverable_id, deliverable_form)
     return {"message": "Success!! Deliverable updated."}
