@@ -25,16 +25,6 @@ export type User = {
   role?: string;
 };
 
-export type Tutorial = {
-  id: string;
-  name: string;
-  capacity: number;
-  member_count: number;
-  day: Day;
-  times: string;
-  location: string;
-};
-
 export type Task = {
   id: string;
   name: string;
