@@ -83,9 +83,13 @@ const Button = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
+    const expandIconStyle = "group relative";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          Icon && expandIconStyle,
+        )}
         ref={ref}
         {...props}
       >
