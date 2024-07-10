@@ -4,9 +4,13 @@ from pydantic import BaseModel
 
 class TutorialBase(BaseModel):
     course_id: str
-    name: str = "H11A"
-    capacity: int = 25
-    location: str = "Quad 1043"
+    name: str
+    capacity: int
+    start_time: str
+    end_time: str
+    day: str
+    location: str = "Online"
+
     # datetimes: List[str]
 
 
