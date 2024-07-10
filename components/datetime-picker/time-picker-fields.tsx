@@ -14,7 +14,9 @@ interface TimePickerDemoProps {
 }
 
 export function TimePickerFields({ date, setDate }: TimePickerDemoProps) {
-  const [meridiem, setMeridiem] = React.useState<Meridiem>("AM");
+  const [meridiem, setMeridiem] = React.useState<Meridiem>(
+    date ? (date.getHours() >= 12 ? "PM" : "AM") : "AM",
+  );
 
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
