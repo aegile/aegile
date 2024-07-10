@@ -20,7 +20,7 @@ export default async function CourseLayout({
     },
     {
       title: "Classes",
-      href: "classes",
+      href: "classes?days=All",
       description:
         "Get ready to explore all the amazing classes we have lined up for you!",
     },
