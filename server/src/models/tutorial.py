@@ -1,4 +1,5 @@
 from uuid import uuid4
+from typing import Optional
 from sqlalchemy import ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from . import Base
@@ -20,7 +21,11 @@ class Tutorial(Base, UserSetManager):
     parent = synonym("course")
     name: Mapped[str]
     capacity: Mapped[int]
-    location: Mapped[str]
+    day: Mapped[str]
+    start_time: Mapped[str]
+    end_time: Mapped[str]
+
+    location: Mapped[Optional[str]]
     userset_id: Mapped[str] = mapped_column(ForeignKey("usersets.id"))
     userset: Mapped[UserSet] = relationship("UserSet", uselist=False, lazy="selectin")
 
