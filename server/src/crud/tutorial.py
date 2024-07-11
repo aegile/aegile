@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.tutorial import Tutorial
 from src.models.user import User, UserSet
 from .user import get_user
+from .course import get_course_participants
 
 
 def create_tutorial(db_session: Session, tutorial_form: dict):
@@ -89,9 +90,26 @@ def enrol_tutorial_members(db_session: Session, user_ids: List[str], tutorial_id
     db_session.commit()
 
 
-def get_tutorial_enrolments(db_session: Session, tutorial_id: str):
+def get_tutorial_members(db_session: Session, tutorial_id: str):
     db_tutorial = get_tutorial(db_session, tutorial_id)
     return db_tutorial.userset.members
+
+
+def get_tutorial_enrollable(db_session: Session, tutorial_id: str):
+    db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
+    course_participants = get_course_participants(db_session, db_tutorial.parent.id)
+
+    return list(set(course_participants) - set(db_tutorial.userset.members))
+
+
+def remove_tutorial_member(db_session: Session, user_id: str, tutorial_id: str):
+    # check if user is enrolled in parent tutorial
+    db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
+    # verify_single_course_enrolment(db_session, user_id, db_tutorial.course_id)
+
+    db_user = get_user(db_session, user_id)
+    db_tutorial.member_remove_one(db_user)  # handles user already in userset
+    db_session.commit()
 
 
 # async def create_tutorial(db_session: AsyncSession, tutorial_form: dict):

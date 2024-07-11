@@ -10,7 +10,10 @@ from src.crud.tutorial import (
     delete_tutorial,
     get_enrolled_tutorials,
     enrol_tutorial_members,
-    get_tutorial_enrolments,
+    enrol_tutorial_member,
+    get_tutorial_members,
+    get_tutorial_enrollable,
+    remove_tutorial_member,
 )
 from src.schemas.tutorial import TutorialBase, TutorialInfo
 from src.schemas.user import UserInfo, UserEnrol
@@ -66,7 +69,15 @@ def delete_tutorial_via_id(tutorial_id: str, db_session: DBSessionDep):
 #     return get_enrolled_tutorials(db_session, user_id)
 
 
-@router.post("/{tutorial_id}/enrolments")
+@router.post("/{tutorial_id}/members/{user_id}")
+def enrol_a_single_user_to_a_given_tutorial(
+    tutorial_id: str, user_id: str, db_session: DBSessionDep
+):
+    enrol_tutorial_member(db_session, user_id, tutorial_id)
+    return {"message": "Success!! Users enrolled to tutorial."}
+
+
+@router.post("/{tutorial_id}/members")
 def enrol_users_to_tutorial(
     tutorial_id: str, user_ids: UserEnrol, db_session: DBSessionDep
 ):
@@ -74,9 +85,24 @@ def enrol_users_to_tutorial(
     return {"message": "Success!! Users enrolled to tutorial."}
 
 
-@router.get("/{tutorial_id}/enrolments", response_model=List[UserInfo])
-def get_users_enrolled_in_tutorial(tutorial_id: str, db_session: DBSessionDep):
-    return get_tutorial_enrolments(db_session, tutorial_id)
+@router.get("/{tutorial_id}/members", response_model=List[UserInfo])
+def get_all_members_of_a_given_tutorial(tutorial_id: str, db_session: DBSessionDep):
+    return get_tutorial_members(db_session, tutorial_id)
+
+
+@router.get("/{tutorial_id}/enrollable", response_model=List[UserInfo])
+def get_all_users_not_enrolled_in_a_given_tutorial(
+    tutorial_id: str, db_session: DBSessionDep
+):
+    return get_tutorial_enrollable(db_session, tutorial_id)
+
+
+@router.delete("/{tutorial_id}/members/{user_id}")
+def remove_a_single_user_from_a_given_tutorial(
+    tutorial_id: str, user_id: str, db_session: DBSessionDep
+):
+    remove_tutorial_member(db_session, user_id, tutorial_id)
+    return {"message": "Success!! User removed from tutorial."}
 
 
 # @router.post("")
