@@ -5,6 +5,7 @@ import { ArrowRightIcon } from "@radix-ui/react-icons";
 
 import { ISOTimeToLocalTime } from "@/lib/datetime";
 import { Button } from "@/components/ui/button";
+import { ClientDateTime } from "@/components/custom/client-datetime";
 
 interface TutorialCardProps {
   id: string;
@@ -47,8 +48,11 @@ export function TutorialCard({
           {member_count}/{capacity} students
         </p>
         <p className="mb-4 text-sm text-muted-foreground">
-          <b>{day}</b> {ISOTimeToLocalTime(start_time)}-
-          {ISOTimeToLocalTime(end_time)}
+          <b>{day}</b>
+          {", "}
+          <ClientDateTime datetime={start_time} variant="ISO" />
+          {" - "}
+          <ClientDateTime datetime={end_time} variant="ISO" />
         </p>
         <Button
           variant="outline"
