@@ -38,7 +38,7 @@ export function NavMenuBar({
 
   return (
     // <nav className="-mb-px hidden flex-col gap-6 px-4 text-lg font-medium sm:flex sm:flex-row sm:items-center sm:gap-5 sm:px-6 sm:text-sm lg:gap-6">
-    <nav className="sticky top-0 -mb-px hidden px-4 text-sm font-medium leading-5 backdrop-blur-xl sm:flex sm:border-b">
+    <nav className="sticky top-0 z-10 -mb-px hidden px-4 text-sm font-medium leading-5 backdrop-blur-xl sm:flex sm:border-b">
       {/* <Link
         href={`/${route}/${page_id}`}
         key={page_id}
