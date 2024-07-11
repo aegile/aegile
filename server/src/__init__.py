@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
 def create_app():
     # sessionmanager.drop_tables()
     # sessionmanager.create_tables()
-    sessionmanager.check_tables()
+    sessionmanager.sync_tables()
     app = FastAPI(
         lifespan=lifespan,
         version=settings.VERSION,
