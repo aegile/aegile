@@ -110,11 +110,11 @@ export default function TutorialCreator() {
     resolver: zodResolver(tutorialCreationFormSchema),
     defaultValues: {
       course_id: Array.isArray(course_id) ? undefined : course_id,
-      name: "T14A",
+      name: "T10A",
       capacity: 25,
       start_time: new Date(tempDate.setHours(10, 0, 0, 0)),
       end_time: new Date(tempDate.setHours(12, 0, 0, 0)),
-      day: "Wednesday",
+      day: "Tuesday",
       location: "Online",
     },
   });
@@ -273,66 +273,6 @@ export default function TutorialCreator() {
                 )}
               />
             </div>
-            {/* <FormField
-              control={form.control}
-              name="dates"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>
-                    Tutorial dates ({field.value?.length || 0})
-                  </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "h-fit whitespace-pre-wrap pl-3 text-left font-normal",
-                            !field.value?.length && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value?.length ? (
-                            field.value
-                              .map((date) =>
-                                format(
-                                  date,
-                                  "dd MMM" +
-                                    (date.getFullYear() ==
-                                    new Date().getFullYear()
-                                      ? ""
-                                      : " yyyy"),
-                                ),
-                              )
-                              .join(", ")
-                          ) : (
-                            <span>Pick dates</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="multiple"
-                        selected={field.value}
-                        weekStartsOn={1}
-                        onSelect={(selectedDates) =>
-                          field.onChange(selectedDates)
-                        }
-                        disabled={(date) =>
-                          date < new Date() || date < new Date("1900-01-01")
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    Your dates of birth are used to calculate your age.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <Button type="submit">Submit</Button>
           </form>
         </Form>
