@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 
-import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
 import { names, roles } from "./data";
+import { EnrolParticipantsDialog } from "./enrol-participants-dialog";
 
 interface DataTableToolbarProps<TData> {
   table?: Table<TData>;
@@ -22,6 +22,7 @@ export function DataTableToolbar<TData>({
   candidate,
 }: DataTableToolbarProps<TData>) {
   if (!table) return null;
+
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
@@ -67,7 +68,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex items-center space-x-2">
         <DataTableViewOptions table={table} />
         <EnrolParticipantsDialog enrollableUsers={candidate as User[]} />
       </div>

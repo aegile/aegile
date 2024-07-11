@@ -33,7 +33,7 @@ export function EnrolParticipantsDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default" size="sm">
+        <Button variant="default" size="xs">
           <Users className="mr-2 h-4 w-4" />
           Enrol Participants
         </Button>

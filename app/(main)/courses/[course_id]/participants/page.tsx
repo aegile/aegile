@@ -5,11 +5,11 @@ import { getCookie } from "cookies-next";
 import { Participant } from "@/lib/schemas";
 import { User } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
+import { DataTable } from "@/components/data-table/data-table";
 
 import { columns } from "./columns";
 import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
 import { DataTableToolbar } from "./course-participants-table-toolbar";
-import { DataTable } from "./data-table";
 
 async function getParticipants(courseId: string) {
   const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrolments`;
@@ -81,12 +81,9 @@ export default async function CourseParticipantsPage({
         </p>
       </div>
       <Separator className="my-6" />
-      <div className="mb-2">
-        <EnrolParticipantsDialog enrollableUsers={enrollables} />
-      </div>
-      <DataTable columns={columns} data={members} />
+      <DataTable columns={columns} data={members}>
+        <DataTableToolbar candidate={enrollables} />
+      </DataTable>
     </div>
-    // <main className="min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 ">
-    // </main>
   );
 }
