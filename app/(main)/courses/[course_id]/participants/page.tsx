@@ -69,7 +69,6 @@ export default async function CourseParticipantsPage({
 }) {
   const members: User[] = await getParticipants(params.course_id);
   const enrollableUsers: User[] = await getEnrollableUsers(params.course_id);
-  console.log("🚀 ~ enrollableUsers:", enrollableUsers);
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">
       <div className="space-y-0.5">
