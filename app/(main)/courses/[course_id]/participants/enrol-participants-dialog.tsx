@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { Users } from "lucide-react";
 import { toast } from "sonner";
+import * as z from "zod";
 
 import { User } from "@/lib/types";
 import { clientFetch } from "@/lib/utils";
@@ -12,7 +13,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -29,7 +29,7 @@ export function EnrolParticipantsDialog({
   enrollableUsers: User[];
 }) {
   const router = useRouter();
-  const { tut_id } = useParams();
+  const { course_id } = useParams();
 
   const [searchTerm, setSearchTerm] = React.useState("");
   const filteredUsers = enrollableUsers.filter((user: User) => {
@@ -40,8 +40,8 @@ export function EnrolParticipantsDialog({
     );
   });
 
-  async function enrolUsers(userId: string) {
-    await clientFetch(`/api/tutorials/${tut_id}/members/${userId}`, "POST")
+  async function enrolUser(userId: string) {
+    await clientFetch(`/api/courses/${course_id}/enrolments/${userId}`, "POST")
       .then((data) => {
         toast.success("Member enrolled successfully!");
         router.refresh();
@@ -52,18 +52,19 @@ export function EnrolParticipantsDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="xs">
+        <Button variant="default" size="xs">
           <Users className="mr-2 h-4 w-4" />
-          Enrol
+          Enrol Participants
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Enrol Members</DialogTitle>
+          <DialogTitle>Enrol Participants</DialogTitle>
           <DialogDescription>
-            Enrol existing and verified users to this tutorial.
+            Enrol existing and verified users to this course.
           </DialogDescription>
         </DialogHeader>
+
         <Input
           type="search"
           placeholder="Search users..."
@@ -77,12 +78,9 @@ export function EnrolParticipantsDialog({
             </div>
           )}
           {filteredUsers.map((user) => (
-            <div
-              className="flex items-center space-y-0 rounded-md p-2 hover:bg-muted/60"
-              key={user.id}
-            >
+            <div className="flex items-center space-y-0 rounded-md p-2 hover:bg-muted/60">
               <Avatar className="border">
-                <AvatarImage src={user.image} alt="@shadcn" />
+                <AvatarImage src={user?.image} alt="@shadcn" />
                 <AvatarFallback>
                   {user.first_name.charAt(0)}
                   {user.last_name.charAt(0)}
@@ -94,7 +92,7 @@ export function EnrolParticipantsDialog({
               <Button
                 variant="outline"
                 className="ml-auto"
-                onClick={() => enrolUsers(user.id)}
+                onClick={() => enrolUser(user.id)}
               >
                 Add
               </Button>

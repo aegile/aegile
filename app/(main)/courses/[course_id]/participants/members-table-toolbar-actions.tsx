@@ -7,7 +7,7 @@ import { Participant } from "@/lib/schemas";
 import { User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
-import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
+import { EnrolParticipantsDialog } from "./enrol-participants-dialog";
 
 // import { CreateTaskDialog } from "./create-task-dialog";
 // import { DeleteTasksDialog } from "./delete-tasks-dialog";
