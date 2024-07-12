@@ -215,6 +215,66 @@ class DatabaseSessionManager:
                 "email": "sam@email.com",
                 "password": "SamYu123!",
             },
+            {
+                "first_name": "Tom",
+                "last_name": "Wu",
+                "email": "tom@email.com",
+                "password": "TomWu123!",
+            },
+            {
+                "first_name": "Sara",
+                "last_name": "Li",
+                "email": "sara@email.com",
+                "password": "SaraLi123!",
+            },
+            {
+                "first_name": "Linda",
+                "last_name": "Zhang",
+                "email": "linda@email.com",
+                "password": "LindaZhang123!",
+            },
+            {
+                "first_name": "Mike",
+                "last_name": "Chen",
+                "email": "mike@email.com",
+                "password": "MikeChen123!",
+            },
+            {
+                "first_name": "Eva",
+                "last_name": "Wang",
+                "email": "eva@email.com",
+                "password": "EvaWang123!",
+            },
+            {
+                "first_name": "Gary",
+                "last_name": "Zhao",
+                "email": "gary@email.com",
+                "password": "GaryZhao123!",
+            },
+            {
+                "first_name": "Grace",
+                "last_name": "Liu",
+                "email": "grace@email.com",
+                "password": "GraceLiu123!",
+            },
+            {
+                "first_name": "Tony",
+                "last_name": "Hu",
+                "email": "tony@email.com",
+                "password": "TonyHu123!",
+            },
+            {
+                "first_name": "Frodo",
+                "last_name": "Baggins",
+                "email": "frodobaggins@shire.com",
+                "password": "OneRingToRuleThemAll",
+            },
+            {
+                "first_name": "Samwise",
+                "last_name": "Gamgee",
+                "email": "samwisegamgee@shire.com",
+                "password": "Potatoes!",
+            },
         ]
 
         with self.session() as session:
