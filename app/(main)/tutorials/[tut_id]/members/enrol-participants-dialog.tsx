@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function EnrolParticipantsDialog({
@@ -53,7 +54,6 @@ export function EnrolParticipantsDialog({
 }) {
   const router = useRouter();
   const { tut_id } = useParams();
-  const [open, setOpen] = React.useState(false);
 
   const [searchTerm, setSearchTerm] = React.useState("");
   const filteredUsers = enrollableUsers.filter((user: User) => {
@@ -67,19 +67,18 @@ export function EnrolParticipantsDialog({
   async function enrolUsers(userId: string) {
     await clientFetch(`/api/tutorials/${tut_id}/members/${userId}`, "POST")
       .then((data) => {
-        toast.success("Tutorial created successfully!");
-        setOpen(false);
+        toast.success("Member enrolled successfully!");
         router.refresh();
       })
       .catch((error) => toast.error(error.message));
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default" size="xs">
+        <Button variant="outline" size="xs">
           <Users className="mr-2 h-4 w-4" />
-          Enrol Members
+          Enrol
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -89,13 +88,13 @@ export function EnrolParticipantsDialog({
             Enrol existing and verified users to this tutorial.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <Input
-            type="search"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
+        <Input
+          type="search"
+          placeholder="Search users..."
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
+        <ScrollArea className="max-h-[calc(100dvh-18rem)] pr-1">
           <div className="">
             {!filteredUsers.length && (
               <div className="flex items-center justify-center">
@@ -108,7 +107,7 @@ export function EnrolParticipantsDialog({
                 key={user.id}
               >
                 <Avatar className="border">
-                  <AvatarImage src={user?.image} alt="@shadcn" />
+                  <AvatarImage src={user.image} alt="@shadcn" />
                   <AvatarFallback>
                     {user.first_name.charAt(0)}
                     {user.last_name.charAt(0)}
@@ -127,7 +126,7 @@ export function EnrolParticipantsDialog({
               </div>
             ))}
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

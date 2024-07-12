@@ -1,5 +1,6 @@
 // lib/types/index.ts
 export * from "./api";
+export * from "./ui";
 
 // TODO: Clean up the following into their own folders
 
@@ -21,8 +22,8 @@ export type User = {
   first_name: string;
   last_name: string;
   handle: string;
-  image?: string;
-  role?: string;
+  role: string;
+  image: string;
 };
 
 export type Task = {

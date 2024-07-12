@@ -1,15 +1,14 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 
 import { getCookie } from "cookies-next";
 
-import { Participant } from "@/lib/schemas";
 import { User } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/data-table/data-table";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { Shell } from "@/components/shell";
 
-import { columns } from "./columns";
-import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
-import { DataTableToolbar } from "./course-participants-table-toolbar";
+import MembersTable from "./members-table";
 
 async function getParticipants(courseId: string) {
   const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrolments`;
@@ -68,8 +67,9 @@ export default async function CourseParticipantsPage({
 }: {
   params: { course_id: string };
 }) {
-  const members: Participant[] = await getParticipants(params.course_id);
-  const enrollables: User[] = await getEnrollableUsers(params.course_id);
+  const members: User[] = await getParticipants(params.course_id);
+  const enrollableUsers: User[] = await getEnrollableUsers(params.course_id);
+  console.log("🚀 ~ enrollableUsers:", enrollableUsers);
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">
       <div className="space-y-0.5">
@@ -81,9 +81,21 @@ export default async function CourseParticipantsPage({
         </p>
       </div>
       <Separator className="my-6" />
-      <DataTable columns={columns} data={members}>
-        <DataTableToolbar candidate={enrollables} />
-      </DataTable>
+      <Shell className="gap-2">
+        <Suspense
+          fallback={
+            <DataTableSkeleton
+              columnCount={5}
+              searchableColumnCount={1}
+              filterableColumnCount={2}
+              cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem"]}
+              shrinkZero
+            />
+          }
+        >
+          <MembersTable members={members} candidates={enrollableUsers} />
+        </Suspense>
+      </Shell>
     </div>
   );
 }
