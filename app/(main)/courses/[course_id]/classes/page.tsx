@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { serverFetch } from "@/lib/server-utils";
 import { Tutorial } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
+import { Shell } from "@/components/shell";
 
 import { TutorialCard } from "./tutorial-card";
 import TutorialCreator from "./tutorial-creator";
@@ -42,39 +43,41 @@ export default async function CourseClassesPage({
         </p>
       </div>
       <Separator className="my-6" />
-      <section className="w-full py-6 md:py-8 lg:py-10">
-        <div className="container space-y-10 px-4 md:px-6 xl:space-y-16">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <div className="space-y-2">
-              <h3 className="text-3xl font-semibold tracking-tighter md:text-3xl lg:text-4xl/none">
-                Manage Your Classes
-              </h3>
-              <p className="mx-auto max-w-[700px] text-muted-foreground ">
-                Oversee and organize your tutorials with ease. Add new
-                tutorials, edit existing ones, and keep track of your students'
-                progress.
-              </p>
+      <Shell className="gap-2">
+        <section className="w-full py-6 md:py-8 lg:py-10">
+          <div className="container space-y-10 px-4 md:px-6 xl:space-y-16">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h3 className="text-3xl font-semibold tracking-tighter md:text-3xl lg:text-4xl/none">
+                  Manage Your Classes
+                </h3>
+                <p className="mx-auto max-w-[700px] text-muted-foreground ">
+                  Oversee and organize your tutorials with ease. Add new
+                  tutorials, edit existing ones, and keep track of your
+                  students' progress.
+                </p>
+              </div>
+              <TutorialCreator />
             </div>
-            <TutorialCreator />
           </div>
+        </section>
+        <div className="container grid grid-cols-1 gap-8 py-12 md:grid-cols-[200px_1fr] md:py-4">
+          <TutorialFilterByDay />
+          <Suspense fallback={<div>Loading...</div>}>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
+              {tutorials
+                .filter(
+                  (tutorial) =>
+                    selectedDays.includes(tutorial.day) ||
+                    selectedDays.includes("All"),
+                )
+                .map((tutorial) => (
+                  <TutorialCard key={tutorial.id} {...tutorial} />
+                ))}
+            </div>
+          </Suspense>
         </div>
-      </section>
-      <div className="container grid grid-cols-1 gap-8 py-12 md:grid-cols-[200px_1fr] md:py-4">
-        <TutorialFilterByDay />
-        <Suspense fallback={<div>Loading...</div>}>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-            {tutorials
-              .filter(
-                (tutorial) =>
-                  selectedDays.includes(tutorial.day) ||
-                  selectedDays.includes("All"),
-              )
-              .map((tutorial) => (
-                <TutorialCard key={tutorial.id} {...tutorial} />
-              ))}
-          </div>
-        </Suspense>
-      </div>
+      </Shell>
     </div>
   );
 }
