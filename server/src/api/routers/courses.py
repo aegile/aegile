@@ -10,12 +10,14 @@ from src.crud.course import (
     delete_course,
     get_enrolled_courses,
     enrol_user_to_course,
+    update_user_enrolment,
     get_course_participants,
     remove_user_from_course,
     get_course_enrollable_users,
 )
 from src.schemas.course import CourseBase, CourseInfo
 from src.schemas.user import UserInfo
+from src.schemas.membership import CourseMembership, CourseMembershipUpdate
 
 router = APIRouter(
     prefix="/api/courses",
@@ -107,7 +109,7 @@ def get_list_of_enrollable_users_not_in_given_course(
     return get_course_enrollable_users(db_session, course_id)
 
 
-@router.get("/{course_id}/enrolments", response_model=List[UserInfo])
+@router.get("/{course_id}/enrolments", response_model=List[CourseMembership])
 def get_all_course_participants(course_id: str, db_session: DBSessionDep):
     return get_course_participants(db_session, course_id)
 
@@ -116,6 +118,14 @@ def get_all_course_participants(course_id: str, db_session: DBSessionDep):
 def enrol_a_user_to_a_course(course_id: str, user_id: str, db_session: DBSessionDep):
     enrol_user_to_course(db_session, user_id, course_id)
     return {"message": "Success!! User has been enrolled."}
+
+
+@router.put("/{course_id}/enrolments/{user_id}")
+def update_a_user_enrolment(
+    course_id: str, user_id: str, data: CourseMembershipUpdate, db_session: DBSessionDep
+):
+    update_user_enrolment(db_session, user_id, course_id, data)
+    return {"message": "Success!! User enrolment updated."}
 
 
 @router.delete("/{course_id}/enrolments/{user_id}")
