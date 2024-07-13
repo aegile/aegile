@@ -8,3 +8,13 @@ export interface Tutorial {
   end_time: string;
   location: string;
 }
+
+export interface TutorialMember {
+  id: string;
+  first_name: string;
+  last_name: string;
+  handle: string;
+  email: string;
+  role: string;
+  group: string;
+}
