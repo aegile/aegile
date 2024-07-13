@@ -4,8 +4,8 @@ import React from "react";
 
 import { ShieldCheckIcon, UserIcon, UserPlusIcon } from "lucide-react";
 
-import { Participant } from "@/lib/schemas";
 import { DataTableFilterField, User } from "@/lib/types";
+import { CourseMember } from "@/lib/types/api";
 import { useDataTable } from "@/hooks/use-data-table";
 import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
@@ -14,7 +14,7 @@ import { getColumns } from "./columns";
 import { MembersTableToolbarActions } from "./members-table-toolbar-actions";
 
 interface MembersTableProps {
-  members: User[];
+  members: CourseMember[];
   candidates: User[];
 }
 
@@ -41,7 +41,7 @@ export default function MembersTable({
   candidates,
 }: MembersTableProps) {
   const columns = React.useMemo(() => getColumns(), []);
-  const filterFields: DataTableFilterField<Participant>[] = [
+  const filterFields: DataTableFilterField<CourseMember>[] = [
     {
       label: "Email",
       value: "email",

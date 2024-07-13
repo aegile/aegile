@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { getCookie } from "cookies-next";
 
-import { User } from "@/lib/types";
+import { CourseMember, User } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { Shell } from "@/components/shell";
@@ -67,7 +67,7 @@ export default async function CourseParticipantsPage({
 }: {
   params: { course_id: string };
 }) {
-  const members: User[] = await getParticipants(params.course_id);
+  const members: CourseMember[] = await getParticipants(params.course_id);
   const enrollableUsers: User[] = await getEnrollableUsers(params.course_id);
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">

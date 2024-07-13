@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 // import { labels, priorities, statuses } from '../data/data';
-import { User } from "@/lib/types";
+import { CourseMember } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
@@ -11,7 +11,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { DataTableRowActions } from "./course_participants-row-actions";
 import { roles } from "./data";
 
-export function getColumns(): ColumnDef<User>[] {
+export function getColumns(): ColumnDef<CourseMember>[] {
   return [
     {
       id: "select",
@@ -40,7 +40,7 @@ export function getColumns(): ColumnDef<User>[] {
     // {
     //   accessorKey: "id",
     //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="User" />
+    //     <DataTableColumnHeader column={column} title="CourseMember" />
     //   ),
     //   cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
     //   enableSorting: false,
@@ -117,7 +117,7 @@ export function getColumns(): ColumnDef<User>[] {
         return (
           <div className="flex w-[100px] items-center">
             {role.icon && (
-              <role.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              <role.icon className="mr-1 h-4 w-4 text-muted-foreground" />
             )}
             <span>{role.label}</span>
           </div>

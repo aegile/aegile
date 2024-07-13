@@ -7,7 +7,7 @@ import { Users } from "lucide-react";
 import { toast } from "sonner";
 import * as z from "zod";
 
-import { User } from "@/lib/types";
+import { CourseMember, User } from "@/lib/types";
 import { clientFetch } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export function EnrolParticipantsDialog({
   const { course_id } = useParams();
 
   const [searchTerm, setSearchTerm] = React.useState("");
-  const filteredUsers = enrollableUsers.filter((user: User) => {
+  const filteredUsers = enrollableUsers.filter((user: CourseMember) => {
     return (
       user.first_name.toLowerCase().includes(searchTerm) ||
       user.last_name.toLowerCase().includes(searchTerm) ||
@@ -78,7 +78,10 @@ export function EnrolParticipantsDialog({
             </div>
           )}
           {filteredUsers.map((user) => (
-            <div className="flex items-center space-y-0 rounded-md p-2 hover:bg-muted/60">
+            <div
+              key={user.id}
+              className="flex items-center space-y-0 rounded-md p-2 hover:bg-muted/60"
+            >
               <Avatar className="border">
                 <AvatarImage src={user?.image} alt="@shadcn" />
                 <AvatarFallback>

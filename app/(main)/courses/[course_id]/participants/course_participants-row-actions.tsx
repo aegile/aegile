@@ -1,12 +1,14 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-import { courseEnrolmentSchema } from "@/lib/schemas";
+import { CourseMember } from "@/lib/types";
+import { clientFetch } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,9 +36,25 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const user = courseEnrolmentSchema.parse(row.original);
+  const router = useRouter();
+
+  const user = row.original as CourseMember;
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const { course_id } = useParams();
+
+  async function switchRole(role: string) {
+    await clientFetch(
+      `/api/courses/${course_id}/enrolments/${user.id}`,
+      "PUT",
+      { role },
+    )
+      .then((data) => {
+        toast.success("Member role changed successfully!");
+        router.refresh();
+      })
+      .catch((error) => toast.error(error.message));
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -59,8 +77,9 @@ export function DataTableRowActions<TData>({
                 {roles.map((role) => (
                   <DropdownMenuRadioItem
                     key={role.value}
-                    value={role.value}
+                    value={role.value ? role.value : ""}
                     className="justify-start"
+                    onSelect={() => switchRole(role.value)}
                   >
                     {role.label}
                   </DropdownMenuRadioItem>
