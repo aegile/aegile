@@ -1,11 +1,10 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends
 from src.api.dependencies.auth import validate_is_authenticated
 from src.api.dependencies.core import DBSessionDep
 from src.crud.project import (
     create_project,
-    get_projects_by_tutorial,
-    get_projects_by_assignment,
+    get_projects,
     get_project,
     update_project,
     delete_project,
@@ -14,7 +13,7 @@ from src.crud.project import (
     enrol_users_to_project,
 )
 
-from src.schemas.project import ProjectBase, ProjectInfo
+from src.schemas.project import ProjectBase, ProjectInfo, ProjectOverview
 from src.schemas.user import UserInfo, UserEnrol
 
 router = APIRouter(
@@ -32,9 +31,14 @@ def create_project_for_assignment_in_tutorial(
     return {"message": "Success!! Project created."}
 
 
-# @router.get("/{tutorial_id}", response_model=List[ProjectInfo])
-# def get_all_projects_via_tutorial(tutorial_id: str, db_session: DBSessionDep):
-#     return get_projects_by_tutorial(db_session, tutorial_id)
+@router.get("", response_model=List[ProjectOverview])
+def get_all_projects_with_filter(
+    db_session: DBSessionDep,
+    user_id: Optional[str] = None,
+    tutorial_id: Optional[str] = None,
+    assignment_id: Optional[str] = None,
+):
+    return get_projects(db_session, user_id, tutorial_id, assignment_id)
 
 
 @router.get("/{project_id}", response_model=ProjectInfo)

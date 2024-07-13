@@ -5,8 +5,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.user import User
+from src.models.user import User, UserSet
 from src.models.project import Project
+from src.models.membership import TutorialProjectMembership
 from src.schemas.project import ProjectBase
 from .user import get_user
 
@@ -26,8 +27,18 @@ def create_project(db_session: Session, project_form: ProjectBase):
         ) from exc
 
 
-def get_projects_by_tutorial(db_session: Session, tutorial_id: str):
-    query = select(Project).where(Project.tutorial_id == tutorial_id)
+def get_projects(
+    db_session: Session, user_id: str, tutorial_id: str, assignment_id: str
+):
+    query = select(Project)
+    if user_id:
+        query = (
+            query.join(Project.userset).join(UserSet.members).where(User.id == user_id)
+        )
+    if tutorial_id:
+        query = query.where(Project.tutorial_id == tutorial_id)
+    if assignment_id:
+        query = query.where(Project.assignment_id == assignment_id)
     return (db_session.scalars(query)).all()
 
 
@@ -64,14 +75,14 @@ def get_enrolled_projects(db_session: Session, user_id: str):
     return (db_session.scalars(query)).all()
 
 
-def enrol_user_to_project(
-    db_session: Session,
-    user_id: str,
-    project_id: str,
-):
+def enrol_user_to_project(db_session: Session, user_id: str, project_id: str):
     db_project = get_project(db_session, project_id)
     db_user = get_user(db_session, user_id)
-    db_project.member_add_one(db_user)
+    db_tut_project_membership = TutorialProjectMembership(
+        user_id=user_id, project_id=project_id, tutorial_id=db_project.tutorial_id
+    )
+    db_session.add(db_tut_project_membership)
+    # db_project.member_add_one(db_user)
     db_session.commit()
 
 
