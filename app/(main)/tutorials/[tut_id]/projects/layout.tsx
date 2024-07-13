@@ -8,10 +8,10 @@ export const metadata = {
 
 export default function TutorialProjectsLayout({
   children,
-  group,
+  // group,
 }: {
   children: React.ReactNode;
-  group: React.ReactNode;
+  // group: React.ReactNode;
 }) {
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">
