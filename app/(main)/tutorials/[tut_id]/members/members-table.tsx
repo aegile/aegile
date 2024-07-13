@@ -41,7 +41,7 @@ export default function MembersTable({
   candidates,
 }: MembersTableProps) {
   const columns = React.useMemo(() => getColumns(), []);
-  const filterFields: DataTableFilterField<Participant>[] = [
+  const filterFields: DataTableFilterField<User>[] = [
     {
       label: "Email",
       value: "email",
