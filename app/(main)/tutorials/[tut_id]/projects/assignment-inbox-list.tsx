@@ -1,5 +1,6 @@
 import { ComponentProps } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { formatDistanceToNow } from "date-fns";
 import { ArrowRightIcon } from "lucide-react";
@@ -22,6 +23,10 @@ export function AssignmentInboxList({
   selected,
   setSelected,
 }: AssignmentInboxListProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selectedId = searchParams.get("ass_id");
   return (
     <div className="flex w-full flex-col gap-2 py-2">
       {items.map((item) => (
@@ -29,22 +34,22 @@ export function AssignmentInboxList({
           key={item.id}
           className={cn(
             "flex w-full flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:shadow-md",
-            selected === item.id && "border-primary/30 shadow-md",
+            selectedId === item.id && "border-primary/30 shadow-md",
           )}
-          onClick={() => setSelected(item.id)}
+          // href={`/groups/${item.id}`}
+          // passHref
+          onClick={() => router.push(`${pathname}?ass_id=${item.id}`)}
+          // onClick={() => setSelected(item.id)}
         >
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center">
               <div className="flex items-center gap-2">
                 <div className="font-semibold">{item.name}</div>
-                {/* {!item.read && (
-                    <span className="flex h-2 w-2 rounded-full bg-blue-600" />
-                  )} */}
               </div>
               <div
                 className={cn(
                   "ml-auto text-xs",
-                  selected === item.id
+                  selectedId === item.id
                     ? "text-foreground"
                     : "text-muted-foreground",
                 )}
