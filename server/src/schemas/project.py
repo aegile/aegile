@@ -24,5 +24,5 @@ class ProjectOverview(BaseModel):
     description: str = "lorem ipsum"
     next_deadline: str = "N/A"
     next_deliverable: str = "N/A"
-    member_count: int
+    member_count: int = 0
     members: list[UserProfile] = []

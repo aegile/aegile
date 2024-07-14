@@ -1,8 +1,9 @@
 from uuid import uuid4
+from typing import List
 from sqlalchemy import ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from . import Base
-from .user import UserSet, UserSetManager
+from .user import User, UserSet, UserSetManager
 from .tutorial import Tutorial
 from .assignment import Assignment
 
@@ -29,6 +30,8 @@ class Project(Base, UserSetManager):
     name: Mapped[str]
     description: Mapped[str]
 
+    members = relationship("User", secondary="project_memberships")
+
     userset_id: Mapped[str] = mapped_column(ForeignKey("usersets.id"))
     userset: Mapped[UserSet] = relationship("UserSet", uselist=False, lazy="selectin")
 
@@ -41,4 +44,4 @@ class Project(Base, UserSetManager):
         # self.member_add_creator(self.creator_id)
 
     def __repr__(self) -> str:
-        return f"Project(id={self.id!r}, name={self.name!r})"
+        return f"Project(id={self.id!r}, name={self.name!r}, members={self.members!r})"

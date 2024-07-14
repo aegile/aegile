@@ -7,6 +7,24 @@ from .tutorial import Tutorial
 from .project import Project
 
 
+class TutorialMembership(Base):
+    __tablename__ = "tutorial_memberships"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    tutorial_id: Mapped[str] = mapped_column(ForeignKey("tutorials.id"))
+
+    # user: Mapped[User] = relationship("User", uselist=False)
+    # tutorial: Mapped[Tutorial] = relationship("Tutorial", uselist=False)
+
+    __table_args__ = (PrimaryKeyConstraint("user_id", "tutorial_id"),)
+
+    def __repr__(self) -> str:
+        return f"""\nTutorialMembership(
+            \n\tuser={self.user!r},
+            \n\ttutorial={self.tutorial!r}\n
+        )"""
+
+
 class TutorialProjectMembership(Base):
     __tablename__ = "tutorial_project_memberships"
 
@@ -16,14 +34,35 @@ class TutorialProjectMembership(Base):
 
     user: Mapped[User] = relationship("User", uselist=False)
     tutorial: Mapped[Tutorial] = relationship("Tutorial", uselist=False)
-    project: Mapped[Project] = relationship("Project", uselist=False)
+    project: Mapped[Project] = relationship("Project", uselist=True)
 
     # TODO - Add roles
     __table_args__ = (PrimaryKeyConstraint("user_id", "tutorial_id"),)
 
-    def __repr__(self) -> str:
-        return f"""TutorialProjectMembership(
-            \n\tuser_id={self.user!r}, 
-            \n\tutorial_id={self.tutorial!r}, 
-            \n\tproject_id={self.project!r}\n
-        )"""
+    # def __repr__(self) -> str:
+    #     return f"""TutorialProjectMembership(
+    #         \n\tuser={self.user!r},
+    #         \n\tutorial={self.tutorial!r},
+    #         \n\tproject={self.project!r}\n
+    #     )"""
+
+
+class ProjectMembership(Base):
+    __tablename__ = "project_memberships"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"))
+
+    # user: Mapped[User] = relationship("User", back_populates="projects", uselist=False)
+    # project: Mapped[Project] = relationship(
+    #     "Project", back_populates="members", uselist=False
+    # )
+
+    __table_args__ = (PrimaryKeyConstraint("user_id", "project_id"),)
+
+    # def __repr__(self) -> str:
+    #     return f"""ProjectGroupMembership(
+    #         \n\tuser={self.user!r},
+    #         \n\tproject={self.project!r},
+    #         \n\tgroup={self.group!r}\n
+    #     )"""

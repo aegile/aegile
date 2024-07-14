@@ -1,14 +1,21 @@
 from typing import List
 from fastapi import HTTPException
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.tutorial import Tutorial
 from src.models.user import User, UserSet
+from src.models.course import CourseEnrolment
+from src.models.assignment import Assignment
+from src.models.membership import (
+    TutorialMembership,
+    ProjectMembership,
+)
+from src.models.project import Project
+from pprint import pprint
 from .user import get_user
-from .course import get_course_participants
 
 
 def create_tutorial(db_session: Session, tutorial_form: dict):
@@ -75,7 +82,11 @@ def enrol_tutorial_member(db_session: Session, user_id: str, tutorial_id: str):
     # verify_single_course_enrolment(db_session, user_id, db_tutorial.course_id)
 
     db_user = get_user(db_session, user_id)
-    db_tutorial.member_add_one(db_user)  # handles user already in userset
+    db_tutorial_membership = TutorialMembership(
+        tutorial_id=tutorial_id, user_id=user_id
+    )
+    db_session.add(db_tutorial_membership)
+    # db_tutorial.member_add_one(db_user)  # handles user already in userset
     db_session.commit()
 
 
@@ -90,26 +101,100 @@ def enrol_tutorial_members(db_session: Session, user_ids: List[str], tutorial_id
     db_session.commit()
 
 
-def get_tutorial_members(db_session: Session, tutorial_id: str):
+def get_tutorial_members(db_session: Session, tutorial_id: str, assignment_id: str):
     db_tutorial = get_tutorial(db_session, tutorial_id)
-    return db_tutorial.userset.members
+    user_ids = [user.id for user in db_tutorial.members]
+
+    if not assignment_id:
+        query = select(CourseEnrolment).where(
+            and_(
+                CourseEnrolment.course_id == db_tutorial.course_id,
+                CourseEnrolment.user_id.in_(user_ids),
+            )
+        )
+
+        db_enrolments = (db_session.execute(query)).scalars().all()
+        return [
+            {**enrolment.user.__dict__, "role": enrolment.role}
+            for enrolment in db_enrolments
+        ]
+
+    query = (
+        select(CourseEnrolment, Project.name)
+        .join(
+            Assignment,
+            CourseEnrolment.course_id == Assignment.course_id,
+        )
+        .join(
+            ProjectMembership,
+            CourseEnrolment.user_id == ProjectMembership.user_id,
+            isouter=True,
+        )
+        .join(
+            Project,
+            and_(
+                ProjectMembership.project_id == Project.id,
+                Project.assignment_id == Assignment.id,
+            ),
+            isouter=True,
+        )
+        .where(
+            and_(
+                CourseEnrolment.user_id.in_(user_ids),
+                Assignment.id == assignment_id,
+            )
+        )
+    )
+    db_data = (db_session.execute(query)).all()
+
+    # pprint(db_data)
+    return [
+        {**enrolment.user.__dict__, "role": enrolment.role, "group": project}
+        for enrolment, project in db_data
+    ]
 
 
 def get_tutorial_enrollable(db_session: Session, tutorial_id: str):
     db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
-    course_participants = get_course_participants(db_session, db_tutorial.parent.id)
+    subquery_tutorial_members = (
+        select(TutorialMembership.user_id).where(
+            TutorialMembership.tutorial_id == tutorial_id
+        )
+    ).subquery()
 
-    return list(set(course_participants) - set(db_tutorial.userset.members))
+    query = select(CourseEnrolment).where(
+        CourseEnrolment.course_id == db_tutorial.course_id,
+        CourseEnrolment.user_id.not_in(select(subquery_tutorial_members)),
+    )
+
+    db_enrollable_users = (db_session.execute(query)).scalars().all()
+
+    return [candidate.user for candidate in db_enrollable_users]
 
 
 def remove_tutorial_member(db_session: Session, user_id: str, tutorial_id: str):
-    # check if user is enrolled in parent tutorial
-    db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
-    # verify_single_course_enrolment(db_session, user_id, db_tutorial.course_id)
+    # # check if user is enrolled in parent tutorial
+    # db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
+    # # verify_single_course_enrolment(db_session, user_id, db_tutorial.course_id)
 
-    db_user = get_user(db_session, user_id)
-    db_tutorial.member_remove_one(db_user)  # handles user already in userset
+    # db_user = get_user(db_session, user_id)
+    # db_tutorial.member_remove_one(db_user)  # handles user already in userset
+    # db_session.commit()
+
+    query = (
+        delete(TutorialMembership)
+        .where(TutorialMembership.user_id == user_id)
+        .where(TutorialMembership.tutorial_id == tutorial_id)
+    )
+    db_session.execute(query)
     db_session.commit()
+
+
+def get_tutorial_assignments(db_session: Session, tutorial_id: str):
+    db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
+    query = select(Assignment).where(Assignment.course_id == db_tutorial.course_id)
+
+    return (db_session.execute(query)).scalars().all()
 
 
 # async def create_tutorial(db_session: AsyncSession, tutorial_form: dict):

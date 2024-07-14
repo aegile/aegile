@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import HTTPException
+from pprint import pprint
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -7,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.user import User, UserSet
 from src.models.project import Project
-from src.models.membership import TutorialProjectMembership
+from src.models.membership import TutorialProjectMembership, ProjectMembership
 from src.schemas.project import ProjectBase
 from .user import get_user
 
@@ -32,14 +33,13 @@ def get_projects(
 ):
     query = select(Project)
     if user_id:
-        query = (
-            query.join(Project.userset).join(UserSet.members).where(User.id == user_id)
-        )
+        query = query.where(Project.members.any(User.id == user_id))
     if tutorial_id:
         query = query.where(Project.tutorial_id == tutorial_id)
     if assignment_id:
         query = query.where(Project.assignment_id == assignment_id)
-    return (db_session.scalars(query)).all()
+    db_projects = (db_session.scalars(query)).all()
+    return db_projects
 
 
 def get_projects_by_assignment(db_session: Session, assignment_id: str):
@@ -71,15 +71,15 @@ def delete_project(db_session: Session, project_id: str):
 
 def get_enrolled_projects(db_session: Session, user_id: str):
     db_user = get_user(db_session, user_id)
-    query = select(Project).where(db_user in Project.userset.members)
+    query = select(Project).where(db_user in Project.members)
     return (db_session.scalars(query)).all()
 
 
 def enrol_user_to_project(db_session: Session, user_id: str, project_id: str):
     db_project = get_project(db_session, project_id)
     db_user = get_user(db_session, user_id)
-    db_tut_project_membership = TutorialProjectMembership(
-        user_id=user_id, project_id=project_id, tutorial_id=db_project.tutorial_id
+    db_tut_project_membership = ProjectMembership(
+        user_id=user_id, project_id=project_id
     )
     db_session.add(db_tut_project_membership)
     # db_project.member_add_one(db_user)

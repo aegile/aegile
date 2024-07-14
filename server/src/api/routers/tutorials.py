@@ -14,9 +14,12 @@ from src.crud.tutorial import (
     get_tutorial_members,
     get_tutorial_enrollable,
     remove_tutorial_member,
+    get_tutorial_assignments,
 )
 from src.schemas.tutorial import TutorialBase, TutorialInfo
 from src.schemas.user import UserInfo, UserEnrol
+from src.schemas.membership import TutorialProjectMembership
+from src.schemas.assignment import AssignmentSelector
 
 router = APIRouter(
     prefix="/api/tutorials",
@@ -85,9 +88,13 @@ def enrol_users_to_tutorial(
     return {"message": "Success!! Users enrolled to tutorial."}
 
 
-@router.get("/{tutorial_id}/members", response_model=List[UserInfo])
-def get_all_members_of_a_given_tutorial(tutorial_id: str, db_session: DBSessionDep):
-    return get_tutorial_members(db_session, tutorial_id)
+@router.get("/{tutorial_id}/members", response_model=List[TutorialProjectMembership])
+def get_all_members_of_a_given_tutorial(
+    db_session: DBSessionDep,
+    tutorial_id: str,
+    assignment_id: Optional[str] = None,
+):
+    return get_tutorial_members(db_session, tutorial_id, assignment_id)
 
 
 @router.get("/{tutorial_id}/enrollable", response_model=List[UserInfo])
@@ -103,6 +110,11 @@ def remove_a_single_user_from_a_given_tutorial(
 ):
     remove_tutorial_member(db_session, user_id, tutorial_id)
     return {"message": "Success!! User removed from tutorial."}
+
+
+@router.get("/{tutorial_id}/assignments", response_model=List[AssignmentSelector])
+def get_all_assignments_of_a_given_tutorial(tutorial_id: str, db_session: DBSessionDep):
+    return get_tutorial_assignments(db_session, tutorial_id)
 
 
 # @router.post("")
