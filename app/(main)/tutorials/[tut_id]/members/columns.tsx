@@ -2,21 +2,16 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-
-
 // import { labels, priorities, statuses } from '../data/data';
-import { User } from "@/lib/types";
+import { TutorialMember } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 
-
-
 import { roles } from "./data";
 import { DataTableRowActions } from "./tutorial_participants-row-actions";
 
-
-export function getColumns(): ColumnDef<User>[] {
+export function getColumns(): ColumnDef<TutorialMember>[] {
   return [
     {
       id: "select",
@@ -97,17 +92,6 @@ export function getColumns(): ColumnDef<User>[] {
       ),
     },
     {
-      accessorKey: "email",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
-      ),
-      cell: ({ row }) => (
-        <div className="max-w-[250px] truncate font-medium">
-          {row.getValue("email")}
-        </div>
-      ),
-    },
-    {
       accessorKey: "role",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Role" />
@@ -122,7 +106,7 @@ export function getColumns(): ColumnDef<User>[] {
         return (
           <div className="flex w-[100px] items-center">
             {role.icon && (
-              <role.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+              <role.icon className="mr-1 h-4 w-4 text-muted-foreground" />
             )}
             <span>{role.label}</span>
           </div>
@@ -131,6 +115,17 @@ export function getColumns(): ColumnDef<User>[] {
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id));
       },
+    },
+    {
+      accessorKey: "group",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Group" />
+      ),
+      cell: ({ row }) => (
+        <div className="max-w-[250px] truncate font-medium">
+          {row.getValue("group")}
+        </div>
+      ),
     },
     {
       id: "actions",

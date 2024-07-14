@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 
 import { Check, ChevronsUpDown, UserPlus2Icon } from "lucide-react";
+import { toast } from "sonner";
 
-import { cn } from "@/lib/utils";
+import { clientFetch, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -47,6 +49,20 @@ export function ProjectGroupAssignmentCombobox() {
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState("");
 
+  const router = useRouter();
+
+  async function handleCreateGroup() {
+    toast.info(`Creating group ${query}...`);
+
+    clientFetch(`/api/projects`, "POST", { name: query })
+      .then((data) => {
+        toast.success(`New group ${query} created successfully!`);
+        setOpen(false);
+        router.refresh();
+      })
+      .catch((error) => toast.error(error.message));
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -76,6 +92,7 @@ export function ProjectGroupAssignmentCombobox() {
               variant="ghost"
               size="xs"
               className="flex w-full justify-start space-x-1 rounded-sm"
+              onClick={handleCreateGroup}
             >
               <p className="font-normal">Create: </p>
               <p className="block truncate font-semibold text-primary">
@@ -84,11 +101,6 @@ export function ProjectGroupAssignmentCombobox() {
             </Button>
           </CommandEmpty>
           <CommandGroup>
-            {frameworks.length <= 0 && (
-              <CommandItem key="new" value="new">
-                + create group
-              </CommandItem>
-            )}
             {frameworks.map((framework) => (
               <CommandItem
                 key={framework.value}

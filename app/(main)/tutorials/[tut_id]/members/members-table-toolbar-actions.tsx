@@ -3,8 +3,7 @@
 import { DownloadIcon } from "@radix-ui/react-icons";
 import { type Table } from "@tanstack/react-table";
 
-import { Participant } from "@/lib/schemas";
-import { User } from "@/lib/types";
+import { TutorialMember, User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
 import { EnrolParticipantsDialog } from "./enrol-participants-dialog";
@@ -14,7 +13,7 @@ import { ProjectGroupAssignmentCombobox } from "./project-group-assignment-combo
 // import { DeleteTasksDialog } from "./delete-tasks-dialog";
 
 interface MembersTableToolbarActionsProps {
-  table: Table<User>;
+  table: Table<TutorialMember>;
   enrollableUsers: User[];
 }
 

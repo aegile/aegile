@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
-import { courseEnrolmentSchema } from "@/lib/schemas";
+import { TutorialMember } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,7 +34,7 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const user = courseEnrolmentSchema.parse(row.original);
+  const user = row.original as TutorialMember;
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const { tut_id } = useParams();
   return (
