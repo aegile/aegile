@@ -18,6 +18,7 @@ import {
   formatDatetimeFormal,
   formatDatetimeRelative,
 } from "@/lib/datetime";
+import { ProjectOverview } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -81,7 +82,15 @@ const badges: BadgeType[] = [
   { variant: "secondary", text: "Pending" },
 ];
 
-export default function ProjectsCard() {
+export default function ProjectsCard({
+  id,
+  name,
+  description,
+  next_deadline,
+  next_deliverable,
+  member_count,
+  members,
+}: ProjectOverview) {
   const lastUpdate = subHours(toDate(new Date()), 5);
   const randomBadge = badges[Math.floor(Math.random() * badges.length)];
   const tasksCompleted = 360;
@@ -93,14 +102,14 @@ export default function ProjectsCard() {
   );
   return (
     <Card
-      id={"asgasg"}
-      className="rounded-lg border bg-background/80 shadow-sm transition-all duration-300 hover:bg-accent"
+      id={id}
+      className="rounded-lg border bg-background/80 shadow-sm transition-all duration-300 hover:shadow-md"
       //   href={`/projects/1`}
     >
       <CardHeader className="grid grid-cols-[1fr_110px] items-start gap-4 space-y-0 pb-3">
         <div className="space-y-1">
-          <CardTitle>Group Name</CardTitle>
-          <CardDescription>INFS2605: H14A - T3 2023</CardDescription>
+          <CardTitle>{name}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </div>
         <div className="flex items-center space-x-1 rounded-md bg-secondary text-secondary-foreground">
           <Button variant="secondary" className="px-3 shadow-none">
@@ -144,19 +153,24 @@ export default function ProjectsCard() {
             Pending
           </Badge>
           <div className="truncate">
-            Due: <ClientDateTime datetime={lastUpdate} />
+            {/* Due: <ClientDateTime datetime={lastUpdate} /> */}
+            Due: {next_deadline}
             {/* {formatDatetimeFormal(lastUpdate)} */}
           </div>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-1 items-center justify-between">
           <AvatarGroup>
-            {users.map((user, index) => (
+            {members.map((member, index) => (
               <Avatar
                 className={cn("h-8 w-8", index > 0 && "-ml-2")}
                 key={`avatar-${index}`}
               >
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>{user.name}</AvatarFallback>
+                <AvatarImage
+                  src={member.image || "https://github.com/shadcn.png"}
+                />
+                <AvatarFallback>
+                  {member.first_name} {member.last_name}
+                </AvatarFallback>
               </Avatar>
             ))}
           </AvatarGroup>
@@ -167,7 +181,7 @@ export default function ProjectsCard() {
             </Avatar>
           </div>
         </div>
-        <div className="mt-2 flex justify-between space-x-4 text-sm text-xs text-muted-foreground">
+        <div className="mt-2 flex justify-between space-x-4 text-xs text-muted-foreground">
           {/* <div className="flex items-center">
               <CircleIcon className="mr-1 h-3 w-3 fill-sky-400 text-sky-400" />
               TypeScript

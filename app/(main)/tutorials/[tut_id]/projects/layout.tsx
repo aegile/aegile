@@ -8,10 +8,10 @@ export const metadata = {
 
 export default function TutorialProjectsLayout({
   children,
-  // group,
+  group,
 }: {
   children: React.ReactNode;
-  // group: React.ReactNode;
+  group: React.ReactNode;
 }) {
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">
@@ -23,9 +23,9 @@ export default function TutorialProjectsLayout({
       </div>
       <Separator className="my-6" />
       <div className="flex">
-        {/* <div className="mx-3 hidden w-[1px] shrink-0 bg-zinc-200 dark:bg-zinc-800 lg:block" /> */}
         {children}
-        {/* {group} */}
+        <div className="mx-2 hidden w-[1px] shrink-0 bg-zinc-200 dark:bg-zinc-800 md:mx-3 lg:block" />
+        <div className="-mr-52 max-w-full flex-1 lg:-mr-0">{group}</div>
       </div>
     </div>
   );

@@ -49,7 +49,7 @@ export function AssignmentInbox({ items }: AssignmentInboxProps) {
             </TabsTrigger>
           </TabsList>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
             className={cn(
               "float sticky top-16 h-9 w-9 shrink-0 lg:hidden",

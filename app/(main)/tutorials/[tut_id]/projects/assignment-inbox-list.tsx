@@ -1,6 +1,11 @@
 import { ComponentProps } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import { formatDistanceToNow } from "date-fns";
 import { ArrowRightIcon } from "lucide-react";
@@ -25,6 +30,7 @@ export function AssignmentInboxList({
 }: AssignmentInboxListProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { tut_id } = useParams();
   const searchParams = useSearchParams();
   const selectedId = searchParams.get("ass_id");
   return (
@@ -36,9 +42,9 @@ export function AssignmentInboxList({
             "flex w-full flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:shadow-md",
             selectedId === item.id && "border-primary/30 shadow-md",
           )}
-          // href={`/groups/${item.id}`}
+          // href={`/tutorials/${tut_id}/groups/${item.id}`}
           // passHref
-          onClick={() => router.push(`${pathname}?ass_id=${item.id}`)}
+          onClick={() => router.push(`/tutorials/${tut_id}/groups/${item.id}`)}
           // onClick={() => setSelected(item.id)}
         >
           <div className="flex w-full flex-col gap-1">
