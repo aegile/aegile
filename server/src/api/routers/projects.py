@@ -27,8 +27,8 @@ router = APIRouter(
 def create_project_for_assignment_in_tutorial(
     project: ProjectBase, db_session: DBSessionDep
 ):
-    create_project(db_session, project)
-    return {"message": "Success!! Project created."}
+    project_id: str = create_project(db_session, project)
+    return {"message": "Success!! Project created.", "project_id": project_id}
 
 
 @router.get("", response_model=List[ProjectOverview])
@@ -51,13 +51,13 @@ def get_enrolled_projects_of_a_user(user_id: str, db_session: DBSessionDep):
     return get_enrolled_projects(db_session, user_id)
 
 
-@router.post("/{project_id}/enrolments/{user_id}")
+@router.post("/{project_id}/members/{user_id}")
 def enrol_a_user_to_a_project(project_id: str, user_id: str, db_session: DBSessionDep):
     enrol_user_to_project(db_session, user_id, project_id)
     return {"message": "Success!! User enrolled to the project."}
 
 
-@router.post("/{project_id}/enrolments")
+@router.post("/{project_id}/members")
 def enrol_multiple_users_to_a_project(
     project_id: str, user_ids: UserEnrol, db_session: DBSessionDep
 ):

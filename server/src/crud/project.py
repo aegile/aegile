@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import HTTPException
 from pprint import pprint
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,10 +15,11 @@ from .user import get_user
 
 def create_project(db_session: Session, project_form: ProjectBase):
     # TODO - must check that assignment.course_id === tutorial.course_id
-    project = Project(**project_form.model_dump())
+    project: Project = Project(**project_form.model_dump())
     try:
         db_session.add(project)
         db_session.commit()
+        return project.id
     except IntegrityError as exc:
         db_session.rollback()
         raise HTTPException(
@@ -79,7 +80,7 @@ def enrol_user_to_project(db_session: Session, user_id: str, project_id: str):
     db_project = get_project(db_session, project_id)
     db_user = get_user(db_session, user_id)
     db_tut_project_membership = ProjectMembership(
-        user_id=user_id, project_id=project_id
+        user_id=user_id, project_id=project_id, assignment_id=db_project.assignment_id
     )
     db_session.add(db_tut_project_membership)
     # db_project.member_add_one(db_user)
@@ -88,9 +89,32 @@ def enrol_user_to_project(db_session: Session, user_id: str, project_id: str):
 
 def enrol_users_to_project(db_session: Session, user_ids: List[str], project_id: str):
     db_project = get_project(db_session, project_id)
-    query = select(User).where(User.id.in_(user_ids))
-    db_users = (db_session.scalars(query)).all()
-    db_project.member_add_many(db_users)
+    for user_id in user_ids:
+        # unassign users from their existing project if so,
+        # ProjectMembership(user_id, assignment_id, project_id)
+
+        # delete memberships of each user for that one assignment
+        # I don't believe they should have multiple?
+
+        query = delete(ProjectMembership).where(
+            and_(
+                ProjectMembership.user_id == user_id,
+                ProjectMembership.assignment_id == db_project.assignment_id,
+            )
+        )
+        db_session.execute(query)
+
+        db_tut_project_membership = ProjectMembership(
+            user_id=user_id,
+            project_id=project_id,
+            assignment_id=db_project.assignment_id,
+        )
+        db_session.add(db_tut_project_membership)
+
+    # db_project = get_project(db_session, project_id)
+    # query = select(User).where(User.id.in_(user_ids))
+    # db_users = (db_session.scalars(query)).all()
+    # db_project.member_add_many(db_users)
     db_session.commit()
 
 

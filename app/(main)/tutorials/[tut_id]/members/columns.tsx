@@ -37,15 +37,15 @@ export function getColumns(): ColumnDef<TutorialMember>[] {
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //   accessorKey: "id",
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="User" />
-    //   ),
-    //   cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
+    {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="User" />
+      ),
+      cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "first_name",
       header: ({ column }) => (
@@ -79,6 +79,17 @@ export function getColumns(): ColumnDef<TutorialMember>[] {
           rowValue.toLowerCase().startsWith(letter.toLowerCase()),
         );
       },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Email" />
+      ),
+      cell: ({ row }) => (
+        <div className="max-w-[250px] truncate font-medium">
+          {row.getValue("email")}
+        </div>
+      ),
     },
     {
       accessorKey: "handle",

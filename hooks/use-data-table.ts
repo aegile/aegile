@@ -64,12 +64,14 @@ interface UseDataTableProps<TData, TValue> {
    * ```
    */
   filterFields?: DataTableFilterField<TData>[];
+  visibility?: VisibilityState;
 }
 
 export function useDataTable<TData, TValue>({
   data,
   columns,
   filterFields = [],
+  visibility = {},
 }: UseDataTableProps<TData, TValue>) {
   // Memoize computation of searchableColumns and filterableColumns
   const { searchableColumns, filterableColumns } = React.useMemo(() => {
@@ -81,7 +83,7 @@ export function useDataTable<TData, TValue>({
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>(visibility);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );

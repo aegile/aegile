@@ -52,13 +52,14 @@ class ProjectMembership(Base):
 
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"))
+    assignment_id: Mapped[str] = mapped_column(ForeignKey("assignments.id"))
 
     # user: Mapped[User] = relationship("User", back_populates="projects", uselist=False)
     # project: Mapped[Project] = relationship(
     #     "Project", back_populates="members", uselist=False
     # )
 
-    __table_args__ = (PrimaryKeyConstraint("user_id", "project_id"),)
+    __table_args__ = (PrimaryKeyConstraint("user_id", "assignment_id", "project_id"),)
 
     # def __repr__(self) -> str:
     #     return f"""ProjectGroupMembership(

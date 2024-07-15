@@ -24,7 +24,7 @@ export function MembersTableToolbarActions({
   return (
     <div className="flex items-center gap-2">
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
-        <ProjectGroupAssignmentCombobox />
+        <ProjectGroupAssignmentCombobox table={table} />
       ) : null}
       <EnrolParticipantsDialog enrollableUsers={enrollableUsers} />
       <Button variant="outline" size="xs">

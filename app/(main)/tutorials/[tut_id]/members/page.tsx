@@ -53,8 +53,10 @@ export default async function TutorialMembersPage({
   const assignmentId = Array.isArray(searchParams?.ass_id)
     ? ""
     : searchParams?.ass_id || "";
-  const members: TutorialMember[] = await getTutorialMembers(params.tut_id, assignmentId);
-  console.log("🚀 ~ members:", members);
+  const members: TutorialMember[] = await getTutorialMembers(
+    params.tut_id,
+    assignmentId,
+  );
   const enrollableUsers: User[] = await getEnrollableMembers(params.tut_id);
   const assignments = await getTutorialAssignments(params.tut_id);
   return (

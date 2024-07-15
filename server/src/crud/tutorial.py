@@ -127,7 +127,10 @@ def get_tutorial_members(db_session: Session, tutorial_id: str, assignment_id: s
         )
         .join(
             ProjectMembership,
-            CourseEnrolment.user_id == ProjectMembership.user_id,
+            and_(
+                CourseEnrolment.user_id == ProjectMembership.user_id,
+                Assignment.id == ProjectMembership.assignment_id,
+            ),
             isouter=True,
         )
         .join(
