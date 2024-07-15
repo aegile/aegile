@@ -132,13 +132,15 @@ export function AssignmentInboxDisplay({ item }: AssignmentInboxDisplayProps) {
           <h3 className="text-xl font-medium">Deliverables</h3>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3">
             <DeliverableCard
-              title="Prototype Demonstration"
+              id="del_ag80a9dhg0adg"
+              name="Prototype Demonstration"
               weighting={20}
               deadline={new Date()}
               status="Submitted"
             />
             <DeliverableCard
-              title="Final Implementation"
+              id="del_ads7gtya97ga9dsg"
+              name="Final Implementation"
               weighting={80}
               deadline={new Date()}
               status="Late"

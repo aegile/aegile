@@ -1,48 +1,44 @@
-import { getCookie } from 'cookies-next';
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
-export const fetchServerAPIRequest = async (
+import { getCookie } from "cookies-next";
+
+// Utility function to handle API fetch
+export async function serverFetch(
   route: string,
   method: string,
-  bodyData: object = {}
-): Promise<any> => {
+  bodyData: object = {},
+) {
+  const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
+  const jwtCookie = getCookie("_vercel_jwt", { cookies });
   const options: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
+    cache: "no-store",
   };
-
-  if (method === 'GET') {
-    // append payload to path
-  } else {
-    options.body = JSON.stringify(bodyData);
-  }
-
-  const jwtCookie = getCookie('_vercel_jwt', { cookies });
-  // const authToken = session?.accessToken;
 
   options.headers = {
     ...options.headers,
-    // ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
     ...(jwtCookie ? { Cookie: `_vercel_jwt=${jwtCookie}` } : {}),
   };
 
-  // const routeProtocolPrefix =
-  //   process.env.NODE_ENV === 'production' && process.env.LOCAL !== 'true'
-  //     ? 'https://'
-  //     : 'http://';
-
-  // const url = `${routeProtocolPrefix}${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
-  const url = `${process.env.NEXT_PUBLIC_VERCEL_URL}${route}`;
-  const response = await fetch(url, options);
-
-  return response;
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(`${response.status}: ${data.msg}`);
+  if (method !== "GET") {
+    options.body = JSON.stringify(bodyData);
   }
 
-  return data;
-};
+  try {
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      throw new Error(
+        `Error ${response.status}: ${errorDetails.message || response.statusText}`,
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
+  }
+}

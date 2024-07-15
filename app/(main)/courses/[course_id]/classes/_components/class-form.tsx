@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import React from "react";
+import { useRouter } from "next/navigation";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
+import { ClassFormSchema } from "@/lib/schemas";
+import { Button } from "@/components/ui/button";
+import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -19,22 +19,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { DialogFooter, DialogClose } from '@/components/ui/dialog';
-
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ClassFormSchema } from '@/lib/schemas';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 type ClassFormProps = {
   defaultValues: z.infer<typeof ClassFormSchema>;
   fetchRoute: string;
-  method: 'PUT' | 'POST';
+  method: "PUT" | "POST";
 };
 
 export function ClassForm({
@@ -47,10 +46,10 @@ export function ClassForm({
   const form = useForm<z.infer<typeof ClassFormSchema>>({
     resolver: zodResolver(ClassFormSchema),
     defaultValues,
-    mode: 'onChange',
+    mode: "onChange",
   });
 
-  const endTime = form.watch('end_time');
+  const endTime = form.watch("end_time");
 
   async function onSubmit(data: z.infer<typeof ClassFormSchema>) {
     toast(
@@ -59,34 +58,20 @@ export function ClassForm({
         <pre className="mt-2 w-full rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>
         </pre>
-      </div>
+      </div>,
     );
     const { name, capacity, day, start_time, end_time, location } = data;
-    // const res = await fetchClientAPIRequest(fetchRoute, method, {
-    //   name,
-    //   capacity,
-    //   day,
-    //   times: `${start_time} - ${end_time}`,
-    //   location,
-    // });
-    // if (!res.ok) {
-    //   // Handle error
-    //   console.error('Class creation failed');
-    //   const data = await res.json();
-    //   toast.error(data.message);
-    //   return;
-    // }
     router.refresh();
   }
 
   React.useEffect(() => {
-    form.trigger('start_time');
+    form.trigger("start_time");
   }, [endTime]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
-        <div className="flex items-start gap-x-4 justify-between">
+        <div className="flex items-start justify-between gap-x-4">
           <FormField
             control={form.control}
             name="name"
@@ -130,7 +115,7 @@ export function ClassForm({
             )}
           />
         </div>
-        <div className="flex items-start gap-x-4 justify-start">
+        <div className="flex items-start justify-start gap-x-4">
           <FormField
             control={form.control}
             name="capacity"

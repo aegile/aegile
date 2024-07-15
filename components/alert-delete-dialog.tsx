@@ -1,18 +1,18 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
-
-
 import { toast } from "sonner";
 
-
-
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-
-
-
-
 
 export default function AlertDeleteDialog({
   deleteRoute,
@@ -39,12 +39,6 @@ export default function AlertDeleteDialog({
       toast.error("Failed to delete user.");
     }
     router.refresh();
-    // const res = await fetchClientAPIRequest(route, 'DELETE');
-    // if (!res.ok) {
-    //   const data = await res.json();
-    //   toast.error(data.message);
-    //   return;
-    // }
   }
 
   return (

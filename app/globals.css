@@ -75,7 +75,7 @@
   }
 }
 
-.bn-container {
+/* .bn-container {
   border-radius: calc(var(--radius) - 2px);
 }
 
@@ -108,4 +108,4 @@ h2.bn-inline-content {
 }
 h3.bn-inline-content {
   font-size: 16px !important;
-}
+} */

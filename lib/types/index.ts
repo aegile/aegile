@@ -1,4 +1,9 @@
-export type Day = 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+// lib/types/index.ts
+export * from "./api";
+
+// TODO: Clean up the following into their own folders
+
+export type Day = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 
 export type Course = {
   id: string;

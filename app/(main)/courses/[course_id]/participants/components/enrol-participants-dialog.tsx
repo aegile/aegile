@@ -1,7 +1,6 @@
 import { getCookie } from "cookies-next";
 import { Users } from "lucide-react";
 
-import { fetchServerAPIRequest } from "@/lib/server-utils";
 import { User } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {

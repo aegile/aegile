@@ -1,18 +1,54 @@
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
-export default function CourseSettingsAdminPage() {
+export default function CourseAdvancedSettingsPage({
+  params,
+}: {
+  params: { course_id: string };
+}) {
   return (
-    <div className="mx-auto grid w-full flex-1 auto-rows-max gap-4">
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" className="h-7 w-7">
-          <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Back</span>
-        </Button>
-        <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-          Advanced
-        </h1>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium">Advanced & Danger Zone</h3>
+        <p className="text-sm text-muted-foreground">
+          These settings are critical and should be handled with care.
+        </p>
+      </div>
+      <Separator />
+      <div className="space-y-3">
+        <h4 className="text-sm font-medium">Delete Course</h4>
+        <p className="text-sm text-muted-foreground">
+          Permanently delete this course and all associated data.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">Delete Course</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

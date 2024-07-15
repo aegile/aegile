@@ -20,15 +20,15 @@ interface AssignmentInboxProps {
 
 export function AssignmentInbox({ items }: AssignmentInboxProps) {
   const [collapsed, setCollapsed] = React.useState(false);
-  const [selected, setSelected] = React.useState(items[0].id);
+  const [selected, setSelected] = React.useState(items[0]?.id);
 
   return (
-    <div className="flex ">
+    <div className="flex">
       {/* Left Panel */}
       <div
         className={cn(
-          "sticky top-16 w-full self-start transition-all lg:w-[35%] lg:opacity-100 xl:w-[25%]",
-          collapsed && "w-0 opacity-0",
+          "sticky top-16 w-full max-w-full self-start transition-all duration-300 ease-in-out lg:max-w-sm lg:opacity-100 xl:max-w-md",
+          collapsed && "max-w-0 opacity-0",
         )}
       >
         <Tabs defaultValue="ongoing">
@@ -71,7 +71,7 @@ export function AssignmentInbox({ items }: AssignmentInboxProps) {
         variant="ghost"
         size="icon"
         className={cn(
-          "float sticky top-16 lg:hidden",
+          "float sticky top-16 shrink-0 lg:hidden",
           collapsed ? "-ml-2" : " -mr-2 ml-1",
         )}
         onClick={() => setCollapsed((prev) => !prev)}
@@ -82,14 +82,9 @@ export function AssignmentInbox({ items }: AssignmentInboxProps) {
           <ChevronRightIcon className="h-5 w-5" />
         )}
       </Button>
-      <div className="mx-3 hidden w-[1px] shrink-0 flex-grow bg-zinc-200 dark:bg-zinc-800 lg:block" />
+      <div className="mx-3 hidden w-[1px] shrink-0 bg-zinc-200 dark:bg-zinc-800 lg:block" />
       {/* Right Panel */}
-      <div
-        className={cn(
-          "w-full lg:w-[65%] xl:w-[75%]",
-          !collapsed && "hidden lg:block",
-        )}
-      >
+      <div className={cn("flex-1", !collapsed && "hidden lg:block")}>
         <AssignmentInboxDisplay
           item={items.find((item) => item.id === selected) || null}
         />

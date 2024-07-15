@@ -23,6 +23,8 @@ from src.config import settings
 class Base(DeclarativeBase):
     def update(self, data: BaseModel):
         for field, value in data.model_dump().items():
+            if isinstance(value, bool) and value == False:
+                setattr(self, field, value)
             if value:
                 setattr(self, field, value)
 

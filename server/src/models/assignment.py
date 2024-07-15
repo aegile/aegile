@@ -22,6 +22,8 @@ class Assignment(Base):
     deadline: Mapped[str]
     weighting: Mapped[float]
     variant: Mapped[str]
+    archived: Mapped[bool]
+
     __table_args__ = (UniqueConstraint("name", "course_id"),)
 
     def __repr__(self) -> str:

@@ -1,9 +1,12 @@
 import { ComponentProps } from "react";
+import Link from "next/link";
 
 import { formatDistanceToNow } from "date-fns";
+import { ArrowRightIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
@@ -21,13 +24,13 @@ export function AssignmentInboxList({
   setSelected,
 }: AssignmentInboxListProps) {
   return (
-    <div className="flex flex-col gap-2 py-2">
+    <div className="flex w-full flex-col gap-2 py-2">
       {items.map((item) => (
         <button
           key={item.id}
           className={cn(
-            "flex flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:bg-accent",
-            selected === item.id && "border-primary/30 bg-accent",
+            "flex w-full flex-col items-start gap-2 rounded-lg border bg-background/80 p-3 text-left text-sm transition-all duration-300 hover:shadow-md",
+            selected === item.id && "border-primary/30 shadow-md",
           )}
           onClick={() => setSelected(item.id)}
         >
@@ -57,15 +60,27 @@ export function AssignmentInboxList({
           <div className="line-clamp-2 text-xs text-muted-foreground">
             {item.description.substring(0, 300)}
           </div>
-          {item.labels.length ? (
-            <div className="flex items-center gap-2">
-              {item.labels.map((label) => (
-                <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
-                  {label}
-                </Badge>
-              ))}
-            </div>
-          ) : null}
+          <div className="flex w-full flex-nowrap items-center justify-between">
+            {item?.labels.length ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {item.labels.map((label) => (
+                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto shrink-0"
+              asChild
+            >
+              <Link href={`/assignments/${item.id}`}>
+                <ArrowRightIcon className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </button>
       ))}
     </div>

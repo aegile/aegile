@@ -1,22 +1,7 @@
 import { Metadata } from "next";
 
-import { fetchServerAPIRequest } from "@/lib/server-utils";
 import { Course } from "@/lib/types";
 import { NavCollapsedMenu, NavMenuBar } from "@/components/custom/nav-menu-bar";
-
-// async function getCourse(course_id: string) {
-//   const res = await fetchServerAPIRequest(
-//     `/api/v1/courses/${course_id}`,
-//     'GET'
-//   );
-//   if (res.status === 401)
-//     throw new Error("You don't have permission to view this page.");
-//   if (res.status === 403)
-//     throw new Error('You are not authorized to view this page.');
-
-//   const data = await res.json();
-//   return data;
-// }
 
 export default async function CourseLayout({
   params,
@@ -28,6 +13,11 @@ export default async function CourseLayout({
   // const course: Course = await getCourse(params.course_id);
 
   const links = [
+    {
+      title: "Home",
+      href: "",
+      description: "Start here to get an overview of this course.",
+    },
     {
       title: "Classes",
       href: "classes",

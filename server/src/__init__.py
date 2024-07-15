@@ -42,9 +42,9 @@ def create_app():
     app.include_router(users_router)
     app.include_router(courses_router)
     app.include_router(assignments_router)
+    app.include_router(deliverables_router)
     app.include_router(tutorials_router)
     app.include_router(projects_router)
-    app.include_router(deliverables_router)
 
     return app
 
