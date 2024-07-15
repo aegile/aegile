@@ -12,11 +12,12 @@ class TutorialMembership(Base):
 
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     tutorial_id: Mapped[str] = mapped_column(ForeignKey("tutorials.id"))
+    course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
 
     # user: Mapped[User] = relationship("User", uselist=False)
     # tutorial: Mapped[Tutorial] = relationship("Tutorial", uselist=False)
 
-    __table_args__ = (PrimaryKeyConstraint("user_id", "tutorial_id"),)
+    __table_args__ = (PrimaryKeyConstraint("user_id", "course_id", "tutorial_id"),)
 
     def __repr__(self) -> str:
         return f"""\nTutorialMembership(

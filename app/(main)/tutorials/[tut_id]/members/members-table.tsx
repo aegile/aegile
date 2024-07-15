@@ -53,7 +53,7 @@ export default function MembersTable({
   assignments,
 }: MembersTableProps) {
   const [selectedAssignment, setSelectedAssignment] = React.useState<string>(
-    assignments[0].id || "",
+    assignments[0]?.id || "",
   );
 
   const router = useRouter();

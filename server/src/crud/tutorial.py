@@ -83,7 +83,7 @@ def enrol_tutorial_member(db_session: Session, user_id: str, tutorial_id: str):
 
     db_user = get_user(db_session, user_id)
     db_tutorial_membership = TutorialMembership(
-        tutorial_id=tutorial_id, user_id=user_id
+        tutorial_id=tutorial_id, user_id=user_id, course_id=db_tutorial.course_id
     )
     db_session.add(db_tutorial_membership)
     # db_tutorial.member_add_one(db_user)  # handles user already in userset
@@ -159,12 +159,14 @@ def get_tutorial_members(db_session: Session, tutorial_id: str, assignment_id: s
 
 def get_tutorial_enrollable(db_session: Session, tutorial_id: str):
     db_tutorial: Tutorial = get_tutorial(db_session, tutorial_id)
+    # subquery filters for all tutorial members belonging to the current course
     subquery_tutorial_members = (
         select(TutorialMembership.user_id).where(
-            TutorialMembership.tutorial_id == tutorial_id
+            TutorialMembership.course_id == db_tutorial.course_id
         )
     ).subquery()
 
+    print((db_session.execute(select(subquery_tutorial_members))).all())
     query = select(CourseEnrolment).where(
         CourseEnrolment.course_id == db_tutorial.course_id,
         CourseEnrolment.user_id.not_in(select(subquery_tutorial_members)),
