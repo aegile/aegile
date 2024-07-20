@@ -29,12 +29,12 @@ async def lifespan(app: FastAPI):
 def create_app():
     # sessionmanager.drop_tables()
     # sessionmanager.create_tables()
-    sessionmanager.check_tables()
+    sessionmanager.sync_tables()
     app = FastAPI(
         lifespan=lifespan,
         version=settings.VERSION,
         title="aegile",
-        description="REST AOPI Backend for aegile task management services.",
+        description="REST API Backend for aegile task management services.",
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
     )

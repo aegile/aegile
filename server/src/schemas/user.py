@@ -17,8 +17,6 @@ class UserInfo(UserBase):
     id: str
     handle: str
     image: Optional[str] = None
-    role: Optional[str] = "student"
-    last_login: Optional[str] = None
 
 
 class UserProfile(UserBase):

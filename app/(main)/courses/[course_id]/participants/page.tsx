@@ -1,15 +1,14 @@
+import { Suspense } from "react";
 import { cookies } from "next/headers";
 
 import { getCookie } from "cookies-next";
 
-import { Participant } from "@/lib/schemas";
-import { User } from "@/lib/types";
+import { CourseMember, User } from "@/lib/types";
 import { Separator } from "@/components/ui/separator";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { Shell } from "@/components/shell";
 
-import { columns } from "./columns";
-import { EnrolParticipantsDialog } from "./components/enrol-participants-dialog";
-import { DataTableToolbar } from "./course-participants-table-toolbar";
-import { DataTable } from "./data-table";
+import MembersTable from "./members-table";
 
 async function getParticipants(courseId: string) {
   const url = `${process.env.VERCEL_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/courses/${courseId}/enrolments`;
@@ -68,8 +67,8 @@ export default async function CourseParticipantsPage({
 }: {
   params: { course_id: string };
 }) {
-  const members: Participant[] = await getParticipants(params.course_id);
-  const enrollables: User[] = await getEnrollableUsers(params.course_id);
+  const members: CourseMember[] = await getParticipants(params.course_id);
+  const enrollableUsers: User[] = await getEnrollableUsers(params.course_id);
   return (
     <div className="bg-muted/20 px-4 py-6 md:px-10">
       <div className="space-y-0.5">
@@ -81,12 +80,21 @@ export default async function CourseParticipantsPage({
         </p>
       </div>
       <Separator className="my-6" />
-      <div className="mb-2">
-        <EnrolParticipantsDialog enrollableUsers={enrollables} />
-      </div>
-      <DataTable columns={columns} data={members} />
+      <Shell className="gap-2">
+        <Suspense
+          fallback={
+            <DataTableSkeleton
+              columnCount={5}
+              searchableColumnCount={1}
+              filterableColumnCount={2}
+              cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem"]}
+              shrinkZero
+            />
+          }
+        >
+          <MembersTable members={members} candidates={enrollableUsers} />
+        </Suspense>
+      </Shell>
     </div>
-    // <main className="min-h-[calc(100vh-6.5rem)] flex-1 gap-4 bg-muted/40 p-4 sm:px-6 md:gap-8 ">
-    // </main>
   );
 }

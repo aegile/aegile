@@ -1,9 +1,10 @@
 from uuid import uuid4
+from typing import Optional, List
 from sqlalchemy import ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from . import Base
 from .course import Course
-from .user import UserSet, UserSetManager
+from .user import User, UserSet, UserSetManager
 
 
 class Tutorial(Base, UserSetManager):
@@ -20,7 +21,13 @@ class Tutorial(Base, UserSetManager):
     parent = synonym("course")
     name: Mapped[str]
     capacity: Mapped[int]
-    location: Mapped[str]
+    day: Mapped[str]
+    start_time: Mapped[str]
+    end_time: Mapped[str]
+
+    members: Mapped[List[User]] = relationship("User", secondary="tutorial_memberships")
+
+    location: Mapped[Optional[str]]
     userset_id: Mapped[str] = mapped_column(ForeignKey("usersets.id"))
     userset: Mapped[UserSet] = relationship("UserSet", uselist=False, lazy="selectin")
 
@@ -32,5 +39,9 @@ class Tutorial(Base, UserSetManager):
         self.userset = UserSet()
         # self.member_add_creator(self.creator_id)
 
-    def __repr__(self) -> str:
-        return f"Tutorial(id={self.id!r}, course_id={self.course_id!r}, name={self.name!r})"
+    @property
+    def member_count(self) -> int:
+        return len(self.members)
+
+    # def __repr__(self) -> str:
+    #     return f"Tutorial(id={self.id!r}, course_id={self.course_id!r}, name={self.name!r})"

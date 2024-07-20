@@ -1,7 +1,7 @@
 import time
 
 from fastapi import HTTPException
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -124,8 +124,8 @@ def get_enrolled_courses(db_session: Session, user_id: str):
 
 
 def enrol_user_to_course(db_session: Session, user_id: str, course_id: str):
-    get_course(db_session, course_id)  # check if course exists
-    get_user(db_session, user_id)  # check if user exists
+    # get_course(db_session, course_id)  # check if course exists
+    # get_user(db_session, user_id)  # check if user exists
     db_enrolment = CourseEnrolment(user_id=user_id, course_id=course_id)
     # TODO - roles or default a role
     try:
@@ -133,13 +133,33 @@ def enrol_user_to_course(db_session: Session, user_id: str, course_id: str):
         db_session.commit()
     except IntegrityError as exc:
         db_session.rollback()
-        raise HTTPException(status_code=400, detail="User already enrolled") from exc
+        raise HTTPException(status_code=400, detail=exc.orig.args[0]) from exc
+
+
+def update_user_enrolment(
+    db_session: Session, user_id: str, course_id: str, update_data: dict
+):
+    query = select(CourseEnrolment).where(
+        and_(
+            CourseEnrolment.user_id == user_id,
+            CourseEnrolment.course_id == course_id,
+        )
+    )
+    db_enrolment: CourseEnrolment = (db_session.scalars(query)).first()
+    print("🚀 ~ db_enrolment:", db_enrolment)
+    if not db_enrolment:
+        raise HTTPException(status_code=404, detail="Course not found")
+    db_enrolment.update(update_data)
+    db_session.commit()
 
 
 def get_course_participants(db_session: Session, course_id: str):
     query = select(CourseEnrolment).where(CourseEnrolment.course_id == course_id)
     db_enrolments = (db_session.scalars(query)).all()
-    return [enrolment.user for enrolment in db_enrolments]
+    return [
+        {**enrolment.user.__dict__, "role": enrolment.role}
+        for enrolment in db_enrolments
+    ]
 
 
 def remove_user_from_course(db_session: Session, user_id: str, course_id: str):

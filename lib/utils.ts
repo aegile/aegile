@@ -31,8 +31,9 @@ export async function clientFetch(
     const response = await fetch(url, options);
     if (!response.ok) {
       const errorDetails = await response.json();
+
       throw new Error(
-        `${response.status}: ${errorDetails.message || response.statusText}`,
+        `${response.status}: ${errorDetails.message || errorDetails.detail || response.statusText}`,
       );
     }
     return await response.json();

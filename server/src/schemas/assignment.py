@@ -32,3 +32,8 @@ class AssignmentEdit(BaseModel):
     description: str
     labels: list[str]
     archived: bool
+
+
+class AssignmentSelector(BaseModel):
+    id: str
+    name: str

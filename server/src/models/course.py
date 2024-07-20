@@ -38,13 +38,14 @@ class Course(Base):
 
 
 class CourseEnrolment(Base):
-    __tablename__ = "enrolments"
+    __tablename__ = "course_enrolments"
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
     user: Mapped[User] = relationship("User", uselist=False)
     course: Mapped[Course] = relationship("Course", uselist=False)
+    role: Mapped[str] = mapped_column(String, default="student")
     # TODO - Add roles
     __table_args__ = (PrimaryKeyConstraint("user_id", "course_id"),)
 
     def __repr__(self) -> str:
-        return f"CourseEnrolment(user_id={self.user!r}, course_id={self.course!r})"
+        return f"CourseEnrolment(user={self.user!r}, course={self.course!r}, role={self.role!r})"

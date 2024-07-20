@@ -1,11 +1,14 @@
 import os
+import math
+import random
+
 import contextlib
 from sqlite3 import Connection as SQLite3Connection
 from typing import Any, AsyncIterator, Iterator
 from pydantic import BaseModel
 
 # from sqlalchemy import create_engine, Column, Integer, String, select
-from sqlalchemy import event, create_engine, inspect
+from sqlalchemy import event, create_engine, inspect, MetaData
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
 from sqlalchemy.pool import NullPool
@@ -16,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from werkzeug.security import generate_password_hash
 
 from src.config import settings
 
@@ -170,14 +174,163 @@ class DatabaseSessionManager:
         finally:
             session.close()
 
-    def check_tables(self):
-        inspector = inspect(self._engine)
-        tables = inspector.get_table_names()
-        if len(tables) <= 0:
-            Base.metadata.create_all(self._engine)
+    # def check_tables(self):
+    #     inspector = inspect(self._engine)
+    #     tables = inspector.get_table_names()
+    #     if len(tables) <= 0:
+    #         Base.metadata.create_all(self._engine)
+
+    def seed_data(self):
+        # Local import to avoid circular import issues
+        from src.models.user import User
+
+        users_data = [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@email.com",
+                "password": "password123",
+            },
+            {
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "email": "jane.doe@email.com",
+                "password": "password456",
+            },
+            {
+                "first_name": "Jim",
+                "last_name": "Beam",
+                "email": "jim.beam@email.com",
+                "password": "password789",
+            },
+            {
+                "first_name": "Alex",
+                "last_name": "Xu",
+                "email": "alex@email.com",
+                "password": "AlexXu123!",
+            },
+            {
+                "first_name": "Sam",
+                "last_name": "Yu",
+                "email": "sam@email.com",
+                "password": "SamYu123!",
+            },
+            {
+                "first_name": "Tom",
+                "last_name": "Wu",
+                "email": "tom@email.com",
+                "password": "TomWu123!",
+            },
+            {
+                "first_name": "Sara",
+                "last_name": "Li",
+                "email": "sara@email.com",
+                "password": "SaraLi123!",
+            },
+            {
+                "first_name": "Linda",
+                "last_name": "Zhang",
+                "email": "linda@email.com",
+                "password": "LindaZhang123!",
+            },
+            {
+                "first_name": "Mike",
+                "last_name": "Chen",
+                "email": "mike@email.com",
+                "password": "MikeChen123!",
+            },
+            {
+                "first_name": "Eva",
+                "last_name": "Wang",
+                "email": "eva@email.com",
+                "password": "EvaWang123!",
+            },
+            {
+                "first_name": "Gary",
+                "last_name": "Zhao",
+                "email": "gary@email.com",
+                "password": "GaryZhao123!",
+            },
+            {
+                "first_name": "Grace",
+                "last_name": "Liu",
+                "email": "grace@email.com",
+                "password": "GraceLiu123!",
+            },
+            {
+                "first_name": "Tony",
+                "last_name": "Hu",
+                "email": "tony@email.com",
+                "password": "TonyHu123!",
+            },
+            {
+                "first_name": "Frodo",
+                "last_name": "Baggins",
+                "email": "frodobaggins@shire.com",
+                "password": "OneRingToRuleThemAll",
+            },
+            {
+                "first_name": "Samwise",
+                "last_name": "Gamgee",
+                "email": "samwisegamgee@shire.com",
+                "password": "Potatoes!",
+            },
+        ]
+
+        with self.session() as session:
+            # Check if the table is empty to avoid re-seeding
+            if session.query(User).first() is not None:
+                print("Database already seeded.")
+                return
+
+            for user_data in users_data:
+                user = User(
+                    first_name=user_data["first_name"],
+                    last_name=user_data["last_name"],
+                    email=user_data["email"],
+                    handle=f"{user_data['first_name']}{user_data['last_name']}{math.floor(random.random()*10000)}",
+                    hashed_password=generate_password_hash(user_data["password"]),
+                )
+                session.add(user)
+            session.commit()
+            print("Seed data added.")
+
+    def sync_tables(self):
+        metadata_reflected = MetaData()
+        metadata_reflected.reflect(bind=self._engine)
+        metadata_declared = Base.metadata
+
+        has_mismatch: bool = False
+
+        for table_name in metadata_declared.tables:
+            if table_name not in metadata_reflected.tables:
+                print(f"Table '{table_name}' is missing in the database.")
+                has_mismatch = True
+                continue
+
+            declared_table = metadata_declared.tables[table_name]
+            reflected_table = metadata_reflected.tables[table_name]
+
+            declared_columns = set(declared_table.columns.keys())
+            reflected_columns = set(reflected_table.columns.keys())
+
+            if declared_columns != reflected_columns:
+                has_mismatch = True
+                print(f"Mismatch in table: '{table_name}'")
+                missing = declared_columns - reflected_columns
+                extra = reflected_columns - declared_columns
+                print("          Missing:", missing if missing else "N/A")
+                print("            Extra:", extra if extra else "N/A")
+                print("")
+
+        if has_mismatch:
+            print("Resetting tables")
+            self.drop_tables()
+            self.create_tables()
 
     def create_tables(self):
         Base.metadata.create_all(self._engine)
+        self.seed_data()
 
     def drop_tables(self):
         Base.metadata.drop_all(self._engine)
