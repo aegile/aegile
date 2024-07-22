@@ -50,7 +50,7 @@ export default function SettingsLayout({
           className="hidden dark:block"
         />
       </div> */}
-      <div className="flex-grow space-y-6 bg-muted/30 px-10 pb-16 pt-6">
+      <div className="flex-grow space-y-6 px-10 pb-16 pt-6">
         <div className="space-y-0.5">
           <h2 className="text-xl font-medium tracking-tight">
             Course Settings

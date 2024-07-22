@@ -70,7 +70,7 @@ export default async function CourseParticipantsPage({
   const members: CourseMember[] = await getParticipants(params.course_id);
   const enrollableUsers: User[] = await getEnrollableUsers(params.course_id);
   return (
-    <div className="bg-muted/20 px-4 py-6 md:px-10">
+    <div className="px-4 py-6 md:px-10">
       <div className="space-y-0.5">
         <h2 className="text-xl font-medium tracking-tight">
           Course Participants

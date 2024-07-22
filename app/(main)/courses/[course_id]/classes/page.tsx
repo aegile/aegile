@@ -35,7 +35,7 @@ export default async function CourseClassesPage({
     : searchParams?.days?.split(",") || [];
 
   return (
-    <div className="min-h-dvh flex flex-col bg-muted/20 px-4 py-6 md:px-10">
+    <div className="min-h-dvh flex flex-col px-4 py-6 md:px-10">
       <div className="space-y-0.5">
         <h2 className="text-xl font-medium tracking-tight">Tutorial Classes</h2>
         <p className="text-sm text-muted-foreground">
