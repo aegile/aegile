@@ -43,5 +43,9 @@ class Project(Base, UserSetManager):
         self.userset = UserSet()
         # self.member_add_creator(self.creator_id)
 
+    @property
+    def member_count(self) -> int:
+        return len(self.members)
+
     def __repr__(self) -> str:
         return f"Project(id={self.id!r}, name={self.name!r}, members={self.members!r})"

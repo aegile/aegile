@@ -11,6 +11,7 @@ from .api.routers.assignments import router as assignments_router
 from .api.routers.tutorials import router as tutorials_router
 from .api.routers.projects import router as projects_router
 from .api.routers.deliverables import router as deliverables_router
+from .api.routers.tasks import router as tasks_router
 
 
 @asynccontextmanager
@@ -45,7 +46,7 @@ def create_app():
     app.include_router(deliverables_router)
     app.include_router(tutorials_router)
     app.include_router(projects_router)
-
+    app.include_router(tasks_router)
     return app
 
 
