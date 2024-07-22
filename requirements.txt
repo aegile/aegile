@@ -14,3 +14,4 @@ PyJWT==2.8.0
 Werkzeug==2.2.2
 httpx==0.27.0
 psycopg2-binary
+nanoid
